@@ -92,6 +92,9 @@ gem 'tzinfo-data', '~> 1.2021'
 gem 'webpacker', '~> 5.4'
 gem 'webpush', '~> 0.3'
 gem 'webauthn', '~> 3.0.0.alpha1'
+gem 'awesome_print'
+gem 'pry'
+gem 'solargraph'
 
 gem 'json-ld'
 gem 'json-ld-preloaded', '~> 3.2'
@@ -135,6 +138,7 @@ group :development do
   gem 'rubocop-rails', '~> 2.13', require: false
   gem 'brakeman', '~> 5.2', require: false
   gem 'bundler-audit', '~> 0.9', require: false
+
 
   gem 'capistrano', '~> 3.16'
   gem 'capistrano-rails', '~> 1.6'
