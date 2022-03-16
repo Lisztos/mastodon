@@ -5,14 +5,19 @@ services:
     restart: always
     image: postgres:14-alpine
     shm_size: 256mb
+    environment:
+      - "POSTGRES_DB=mastodon_production"
+      - "POSTGRES_USER=mastodon"
+      - "POSTGRES_PASSWORD=some_password"
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
     networks:
       - internal_network
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
     volumes:
       - ./postgres14:/var/lib/postgresql/data
-    environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+    ports:
+      - "5432:5432"
 
   redis:
     restart: always
@@ -24,24 +29,24 @@ services:
     volumes:
       - ./redis:/data
 
-#  es:
-#    restart: always
-#    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
-#    environment:
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#      - "cluster.name=es-mastodon"
-#      - "discovery.type=single-node"
-#      - "bootstrap.memory_lock=true"
-#    networks:
-#      - internal_network
-#    healthcheck:
-#      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-#    volumes:
-#      - ./elasticsearch:/usr/share/elasticsearch/data
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
+  es:
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "cluster.name=es-mastodon"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
 
   web:
     build: .
@@ -59,7 +64,7 @@ services:
     depends_on:
       - db
       - redis
-#      - es
+      - es
     volumes:
       - ./public/system:/mastodon/public/system
 
@@ -81,7 +86,7 @@ services:
       - redis
 
   sidekiq:
-    build: .
+    # build: .
     image: tootsuite/mastodon
     restart: always
     env_file: .env.production
