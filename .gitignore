@@ -25,6 +25,16 @@
 .env
 .env.production
 .env.development
+.env.test
+.env.vagrant
+.env.nanobox
+.nvmrc
+.rubocup.yml
+.ruby-version
+.foreman
+.github
+.yarn
+.circleci
 /node_modules/
 /build/
 
@@ -66,3 +76,4 @@ yarn-debug.log
 
 # Ignore Docker option files
 docker-compose.override.yml
+
