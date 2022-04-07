@@ -5,17 +5,17 @@ AllCops:
   TargetRubyVersion: 2.5
   NewCops: disable
   Exclude:
-  - 'spec/**/*'
-  - 'db/**/*'
-  - 'app/views/**/*'
-  - 'config/**/*'
-  - 'bin/*'
-  - 'Rakefile'
-  - 'node_modules/**/*'
-  - 'Vagrantfile'
-  - 'vendor/**/*'
-  - 'lib/json_ld/*'
-  - 'lib/templates/**/*'
+    - 'spec/**/*'
+    - 'db/**/*'
+    - 'app/views/**/*'
+    - 'config/**/*'
+    - 'bin/*'
+    - 'Rakefile'
+    - 'node_modules/**/*'
+    - 'Vagrantfile'
+    - 'vendor/**/*'
+    - 'lib/json_ld/*'
+    - 'lib/templates/**/*'
 
 Bundler/OrderedGems:
   Enabled: false
@@ -29,6 +29,9 @@ Layout/EmptyLineAfterMagicComment:
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
 
+Layout/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 
@@ -36,7 +39,7 @@ Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
 Layout/HashAlignment:
-  Enabled: false
+  Enabled: true
 
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
@@ -132,7 +135,7 @@ Rails/ContentTag:
   Enabled: false
 
 Rails/EnumHash:
-  Enabled: false
+  Enabled: true
 
 Rails/Exit:
   Exclude:
@@ -170,7 +173,7 @@ Rails/RakeEnvironment:
   Enabled: false
 
 Rails/RedundantForeignKey:
-  Enabled: false
+  Enabled: true
 
 Rails/SkipsModelValidations:
   Enabled: false

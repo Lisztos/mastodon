@@ -29,7 +29,7 @@
 .env.vagrant
 .env.nanobox
 .nvmrc
-.rubocup.yml
+.rubocop.yml
 .ruby-version
 .foreman
 .github

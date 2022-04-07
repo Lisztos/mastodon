@@ -9,7 +9,7 @@ development:
   <<: *default
   database: <%= ENV['DB_NAME'] || 'mastodon_dev' %>
   username: <%= ENV['DB_USER'] || 'mastodon'%>
-  password: <%= (ENV['DB_PASS'] || 'TsLXJPYaN7N06YQAHkNj').to_json %>
+  password: <%= (ENV['DB_PASS']).to_json %>
   host: <%= ENV['DB_HOST'] || 'localhost' %>
   port: <%= ENV['DB_PORT'] || '5432' %>
 

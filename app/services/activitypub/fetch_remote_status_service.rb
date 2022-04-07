@@ -5,13 +5,11 @@ class ActivityPub::FetchRemoteStatusService < BaseService
 
   # Should be called when uri has already been checked for locality
   def call(uri, id: true, prefetched_body: nil, on_behalf_of: nil)
-    @json = begin
-      if prefetched_body.nil?
-        fetch_resource(uri, id, on_behalf_of)
-      else
-        body_to_json(prefetched_body, compare_id: id ? uri : nil)
-      end
-    end
+    @json = if prefetched_body.nil?
+              fetch_resource(uri, id, on_behalf_of)
+            else
+              body_to_json(prefetched_body, compare_id: id ? uri : nil)
+            end
 
     return unless supported_context?
 

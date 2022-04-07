@@ -10,12 +10,10 @@ class Api::V1::Trends::TagsController < Api::BaseController
   private
 
   def set_tags
-    @tags = begin
-      if Setting.trends
-        Trends.tags.query.allowed.limit(limit_param(10))
-      else
-        []
-      end
-    end
+    @tags = if Setting.trends
+              Trends.tags.query.allowed.limit(limit_param(10))
+            else
+              []
+            end
   end
 end

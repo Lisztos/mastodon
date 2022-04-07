@@ -29,13 +29,11 @@ class EmailDomainBlock < ApplicationRecord
 
   def self.block?(domain_or_domains, ips: [], attempt_ip: nil)
     domains = Array(domain_or_domains).map do |str|
-      domain = begin
-        if str.include?('@')
-          str.split('@', 2).last
-        else
-          str
-        end
-      end
+      domain = if str.include?('@')
+                 str.split('@', 2).last
+               else
+                 str
+               end
 
       TagManager.instance.normalize_domain(domain) if domain.present?
     rescue Addressable::URI::InvalidURIError

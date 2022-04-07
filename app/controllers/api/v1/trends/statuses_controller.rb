@@ -10,13 +10,11 @@ class Api::V1::Trends::StatusesController < Api::BaseController
   private
 
   def set_statuses
-    @statuses = begin
-      if Setting.trends
-        cache_collection(statuses_from_trends, Status)
-      else
-        []
-      end
-    end
+    @statuses = if Setting.trends
+                  cache_collection(statuses_from_trends, Status)
+                else
+                  []
+                end
   end
 
   def statuses_from_trends

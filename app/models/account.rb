@@ -77,8 +77,8 @@ class Account < ApplicationRecord
   include DomainMaterializable
   include AccountMerging
 
-  enum protocol: [:ostatus, :activitypub]
-  enum suspension_origin: [:local, :remote], _prefix: true
+  enum protocol: { ostatus: 0, activitypub: 1 }
+  enum suspension_origin: { local: 0, remote: 1 }, _prefix: true
 
   validates :username, presence: true
   validates_with UniqueUsernameValidator, if: -> { will_save_change_to_username? }
@@ -405,9 +405,9 @@ class Account < ApplicationRecord
       @original_field = attributes
       string_limit = account.local? ? 255 : 2047
       super(
-        account:     account,
-        name:        attributes['name'].strip[0, string_limit],
-        value:       attributes['value'].strip[0, string_limit],
+        account: account,
+        name: attributes['name'].strip[0, string_limit],
+        value: attributes['value'].strip[0, string_limit],
         verified_at: attributes['verified_at']&.to_datetime,
       )
     end
@@ -417,13 +417,11 @@ class Account < ApplicationRecord
     end
 
     def value_for_verification
-      @value_for_verification ||= begin
-        if account.local?
-          value
-        else
-          ActionController::Base.helpers.strip_tags(value)
-        end
-      end
+      @value_for_verification ||= if account.local?
+                                    value
+                                  else
+                                    ActionController::Base.helpers.strip_tags(value)
+                                  end
     end
 
     def verifiable?
@@ -485,13 +483,12 @@ class Account < ApplicationRecord
       return [] if text.blank?
 
       text.scan(MENTION_RE).map { |match| match.first.split('@', 2) }.uniq.filter_map do |(username, domain)|
-        domain = begin
-          if TagManager.instance.local_domain?(domain)
-            nil
-          else
-            TagManager.instance.normalize_domain(domain)
-          end
-        end
+        domain = if TagManager.instance.local_domain?(domain)
+                   nil
+                 else
+                   TagManager.instance.normalize_domain(domain)
+                 end
+
         EntityCache.instance.mention(username, domain)
       end
     end

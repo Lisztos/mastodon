@@ -10,13 +10,11 @@ class Api::V1::Trends::LinksController < Api::BaseController
   private
 
   def set_links
-    @links = begin
-      if Setting.trends
-        links_from_trends
-      else
-        []
-      end
-    end
+    @links = if Setting.trends
+               links_from_trends
+             else
+               []
+             end
   end
 
   def links_from_trends

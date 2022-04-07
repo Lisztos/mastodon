@@ -132,7 +132,8 @@ class Formatter
   def count_tag_nesting(tag)
     if tag[1] == '/' then -1
     elsif tag[-2] == '/' then 0
-    else 1
+    else
+      1
     end
   end
 
@@ -157,13 +158,12 @@ class Formatter
 
         if emoji
           original_url, static_url = emoji
-          replacement = begin
-            if animate
-              image_tag(original_url, draggable: false, class: 'emojione', alt: ":#{shortcode}:", title: ":#{shortcode}:")
-            else
-              image_tag(original_url, draggable: false, class: 'emojione custom-emoji', alt: ":#{shortcode}:", title: ":#{shortcode}:", data: { original: original_url, static: static_url })
-            end
-          end
+          replacement = if animate
+                          image_tag(original_url, draggable: false, class: 'emojione', alt: ":#{shortcode}:", title: ":#{shortcode}:")
+                        else
+                          image_tag(original_url, draggable: false, class: 'emojione custom-emoji', alt: ":#{shortcode}:", title: ":#{shortcode}:", data: { original: original_url, static: static_url })
+                        end
+
           before_html = shortname_start_index.positive? ? html[0..shortname_start_index - 1] : ''
           html        = before_html + replacement + html[i + 1..-1]
           i          += replacement.size - (shortcode.size + 2) - 1
@@ -217,7 +217,7 @@ class Formatter
   end
 
   def utf8_friendly_extractor(text, options = {})
-    # Note: I couldn't obtain list_slug with @user/list-name format
+    # NOTE: I couldn't obtain list_slug with @user/list-name format
     # for mention so this requires additional check
     special = Extractor.extract_urls_with_indices(text, options)
     standard = Extractor.extract_entities_with_indices(text, options)

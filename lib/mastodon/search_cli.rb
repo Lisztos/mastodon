@@ -41,13 +41,11 @@ module Mastodon
         exit(1)
       end
 
-      indices = begin
-        if options[:only]
-          options[:only].map { |str| "#{str.camelize}Index".constantize }
-        else
-          INDICES
-        end
-      end
+      indices = if options[:only]
+                  options[:only].map { |str| "#{str.camelize}Index".constantize }
+                else
+                  INDICES
+                end
 
       progress = ProgressBar.create(total: nil, format: '%t%c/%u |%b%i| %e (%r docs/s)', autofinish: false)
 
@@ -87,59 +85,57 @@ module Mastodon
 
           batch.each_slice(slice_size) do |records|
             futures << Concurrent::Future.execute(executor: pool) do
-              begin
-                if !progress.total.nil? && progress.progress + records.size > progress.total
-                  # The number of items has changed between start and now,
-                  # since there is no good way to predict the final count from
-                  # here, just change the progress bar to an indeterminate one
+              if !progress.total.nil? && progress.progress + records.size > progress.total
+                # The number of items has changed between start and now,
+                # since there is no good way to predict the final count from
+                # here, just change the progress bar to an indeterminate one
 
-                  progress.total = nil
-                end
-
-                grouped_records = nil
-                bulk_body       = nil
-                index_count     = 0
-                delete_count    = 0
-
-                ActiveRecord::Base.connection_pool.with_connection do
-                  grouped_records = records.to_a.group_by do |record|
-                    index.adapter.send(:delete_from_index?, record) ? :delete : :to_index
-                  end
-
-                  bulk_body = Chewy::Index::Import::BulkBuilder.new(index, **grouped_records).bulk_body
-                end
-
-                index_count  = grouped_records[:to_index].size  if grouped_records.key?(:to_index)
-                delete_count = grouped_records[:delete].size    if grouped_records.key?(:delete)
-
-                # The following is an optimization for statuses specifically, since
-                # we want to de-index statuses that cannot be searched by anybody,
-                # but can't use Chewy's delete_if logic because it doesn't use
-                # crutches and our searchable_by logic depends on them
-                if index == StatusesIndex
-                  bulk_body.map! do |entry|
-                    if entry[:to_index] && entry.dig(:to_index, :data, 'searchable_by').blank?
-                      index_count  -= 1
-                      delete_count += 1
-
-                      { delete: entry[:to_index].except(:data) }
-                    else
-                      entry
-                    end
-                  end
-                end
-
-                Chewy::Index::Import::BulkRequest.new(index).perform(bulk_body)
-
-                progress.progress += records.size
-
-                added.increment(index_count)
-                removed.increment(delete_count)
-
-                sleep 1
-              rescue => e
-                progress.log pastel.red("Error importing #{index}: #{e}")
+                progress.total = nil
               end
+
+              grouped_records = nil
+              bulk_body       = nil
+              index_count     = 0
+              delete_count    = 0
+
+              ActiveRecord::Base.connection_pool.with_connection do
+                grouped_records = records.to_a.group_by do |record|
+                  index.adapter.send(:delete_from_index?, record) ? :delete : :to_index
+                end
+
+                bulk_body = Chewy::Index::Import::BulkBuilder.new(index, **grouped_records).bulk_body
+              end
+
+              index_count  = grouped_records[:to_index].size  if grouped_records.key?(:to_index)
+              delete_count = grouped_records[:delete].size    if grouped_records.key?(:delete)
+
+              # The following is an optimization for statuses specifically, since
+              # we want to de-index statuses that cannot be searched by anybody,
+              # but can't use Chewy's delete_if logic because it doesn't use
+              # crutches and our searchable_by logic depends on them
+              if index == StatusesIndex
+                bulk_body.map! do |entry|
+                  if entry[:to_index] && entry.dig(:to_index, :data, 'searchable_by').blank?
+                    index_count  -= 1
+                    delete_count += 1
+
+                    { delete: entry[:to_index].except(:data) }
+                  else
+                    entry
+                  end
+                end
+              end
+
+              Chewy::Index::Import::BulkRequest.new(index).perform(bulk_body)
+
+              progress.progress += records.size
+
+              added.increment(index_count)
+              removed.increment(delete_count)
+
+              sleep 1
+            rescue => e
+              progress.log pastel.red("Error importing #{index}: #{e}")
             end
           end
 
