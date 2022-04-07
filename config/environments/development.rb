@@ -1,10 +1,11 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-
+   # Whitelist one hostname
+  config.hosts << "lisztos.com"
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
-  config.cache_classes = false
+  config.cache_classes = false 
 
   # Do not eager load code on boot.
   config.eager_load = false
@@ -69,12 +70,33 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  config.action_mailer.default_options = { from: 'notifications@localhost' }
+  # E-mails
+  outgoing_email_address = ENV.fetch('SMTP_FROM_ADDRESS', 'notifications@lisztos.com')
+  outgoing_mail_domain   = Mail::Address.new(outgoing_email_address).domain
+  config.action_mailer.default_options = {
+    from: outgoing_email_address,
+    reply_to: ENV['SMTP_REPLY_TO'],
+    'Message-ID': -> { "<#{Mail.random_tag}@#{outgoing_mail_domain}>" },
+  }
 
-  # If using a Heroku, Vagrant or generic remote development environment,
-  # use letter_opener_web, accessible at  /letter_opener.
-  # Otherwise, use letter_opener, which launches a browser window to view sent mail.
-  config.action_mailer.delivery_method = (ENV['HEROKU'] || ENV['VAGRANT'] || ENV['REMOTE_DEV']) ? :letter_opener_web : :letter_opener
+  config.action_mailer.smtp_settings = {
+    :port                 => ENV['SMTP_PORT'],
+    :address              => ENV['SMTP_SERVER'],
+    :user_name            => ENV['SMTP_LOGIN'].presence,
+    :password             => ENV['SMTP_PASSWORD'].presence,
+    :domain               => ENV['SMTP_DOMAIN'] || ENV['LOCAL_DOMAIN'],
+    :authentication       => :plain,
+    :ca_file              => '/etc/ssl/certs/ca-certificates.crt',
+    :openssl_verify_mode  => ENV['SMTP_OPENSSL_VERIFY_MODE'],
+    :enable_starttls_auto => ENV['SMTP_ENABLE_STARTTLS_AUTO'] != 'false',
+    :tls                  => ENV['SMTP_TLS'].presence && ENV['SMTP_TLS'] == 'true',
+    :ssl                  => ENV['SMTP_SSL'].presence && ENV['SMTP_SSL'] == 'true',
+  }
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.raise_delivery_errors = true
+  # Send email in development mode?
+  config.action_mailer.perform_deliveries = true
 
   config.after_initialize do
     Bullet.enable        = true
