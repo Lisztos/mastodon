@@ -108,7 +108,7 @@ group :development, :test do
   gem 'pry-rails', '~> 0.3'
   gem 'rspec-rails', '~> 5.1'
   gem 'solargraph'
-  gem 'awesome_print' 
+  gem 'awesome_print'
   gem 'pry'
 end
 
@@ -141,7 +141,6 @@ group :development do
   gem 'rubocop-rails', '~> 2.13', require: false
   gem 'brakeman', '~> 5.2', require: false
   gem 'bundler-audit', '~> 0.9', require: false
-
 
   gem 'capistrano', '~> 3.16'
   gem 'capistrano-rails', '~> 1.6'

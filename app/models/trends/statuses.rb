@@ -102,13 +102,11 @@ class Trends::Statuses < Trends::Base
         expected  = 1.0
         observed  = (status.reblogs_count + status.favourites_count).to_f
 
-        score = begin
-          if expected > observed || observed < options[:threshold]
-            0
-          else
-            ((observed - expected)**2) / expected
-          end
-        end
+        score = if expected > observed || observed < options[:threshold]
+                  0
+                else
+                  ((observed - expected)**2) / expected
+                end
 
         decaying_score = score * (0.5**((at_time.to_f - status.created_at.to_f) / options[:score_halflife].to_f))
 

@@ -37,20 +37,18 @@ module Mastodon
     def purge(*domains)
       dry_run = options[:dry_run] ? ' (DRY RUN)' : ''
 
-      scope = begin
-        if options[:limited_federation_mode]
-          Account.remote.where.not(domain: DomainAllow.pluck(:domain))
-        elsif !domains.empty?
-          if options[:by_uri]
-            domains.map { |domain| Account.remote.where(Account.arel_table[:uri].matches("https://#{domain}/%", false, true)) }.reduce(:or)
-          else
-            Account.remote.where(domain: domains)
-          end
-        else
-          say('No domain(s) given', :red)
-          exit(1)
-        end
-      end
+      scope = if options[:limited_federation_mode]
+                Account.remote.where.not(domain: DomainAllow.pluck(:domain))
+              elsif !domains.empty?
+                if options[:by_uri]
+                  domains.map { |domain| Account.remote.where(Account.arel_table[:uri].matches("https://#{domain}/%", false, true)) }.reduce(:or)
+                else
+                  Account.remote.where(domain: domains)
+                end
+              else
+                say('No domain(s) given', :red)
+                exit(1)
+              end
 
       processed, = parallelize_with_progress(scope) do |account|
         DeleteAccountService.new.call(account, reserve_username: false, skip_side_effects: true) unless options[:dry_run]

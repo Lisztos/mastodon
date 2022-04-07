@@ -14,13 +14,11 @@ module Admin
     private
 
     def redis_info
-      @redis_info ||= begin
-        if Redis.current.is_a?(Redis::Namespace)
-          Redis.current.redis.info
-        else
-          Redis.current.info
-        end
-      end
+      @redis_info ||= if Redis.current.is_a?(Redis::Namespace)
+                        Redis.current.redis.info
+                      else
+                        Redis.current.info
+                      end
     end
   end
 end

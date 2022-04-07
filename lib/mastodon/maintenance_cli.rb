@@ -13,8 +13,8 @@ module Mastodon
       true
     end
 
-    MIN_SUPPORTED_VERSION = 2019_10_01_213028
-    MAX_SUPPORTED_VERSION = 2022_01_18_183123
+    MIN_SUPPORTED_VERSION = 20_191_001_213_028
+    MAX_SUPPORTED_VERSION = 20_220_118_183_123
 
     # Stubs to enjoy ActiveRecord queries while not depending on a particular
     # version of the code/database
@@ -95,11 +95,9 @@ module Mastodon
 
         owned_classes.each do |klass|
           klass.where(account_id: other_account.id).find_each do |record|
-            begin
-              record.update_attribute(:account_id, id)
-            rescue ActiveRecord::RecordNotUnique
-              next
-            end
+            record.update_attribute(:account_id, id)
+          rescue ActiveRecord::RecordNotUnique
+            next
           end
         end
 
@@ -108,11 +106,9 @@ module Mastodon
 
         target_classes.each do |klass|
           klass.where(target_account_id: other_account.id).find_each do |record|
-            begin
-              record.update_attribute(:target_account_id, id)
-            rescue ActiveRecord::RecordNotUnique
-              next
-            end
+            record.update_attribute(:target_account_id, id)
+          rescue ActiveRecord::RecordNotUnique
+            next
           end
         end
 
@@ -175,7 +171,7 @@ module Mastodon
       deduplicate_tags!
       deduplicate_webauthn_credentials!
 
-      Scenic.database.refresh_materialized_view('instances', concurrently: true, cascade: false) if ActiveRecord::Migrator.current_version >= 2020_12_06_004238
+      Scenic.database.refresh_materialized_view('instances', concurrently: true, cascade: false) if ActiveRecord::Migrator.current_version >= 20_201_206_004_238
       Rails.cache.clear
 
       @prompt.say 'Finished!'
@@ -199,7 +195,7 @@ module Mastodon
       end
 
       @prompt.say 'Restoring index_accounts_on_username_and_domain_lower…'
-      if ActiveRecord::Migrator.current_version < 20200620164023
+      if ActiveRecord::Migrator.current_version < 20_200_620_164_023
         ActiveRecord::Base.connection.add_index :accounts, 'lower (username), lower(domain)', name: 'index_accounts_on_username_and_domain_lower', unique: true
       else
         ActiveRecord::Base.connection.add_index :accounts, "lower (username), COALESCE(lower(domain), '')", name: 'index_accounts_on_username_and_domain_lower', unique: true
@@ -242,7 +238,7 @@ module Mastodon
         end
       end
 
-      if ActiveRecord::Migrator.current_version < 20220118183010
+      if ActiveRecord::Migrator.current_version < 20_220_118_183_010
         ActiveRecord::Base.connection.select_all("SELECT string_agg(id::text, ',') AS ids FROM users WHERE remember_token IS NOT NULL GROUP BY remember_token HAVING count(*) > 1").each do |row|
           users = User.where(id: row['ids'].split(',')).sort_by(&:updated_at).reverse.drop(1)
           @prompt.warn "Unsetting remember token for those accounts: #{users.map(&:account).map(&:acct).join(', ')}"
@@ -265,7 +261,7 @@ module Mastodon
       @prompt.say 'Restoring users indexes…'
       ActiveRecord::Base.connection.add_index :users, ['confirmation_token'], name: 'index_users_on_confirmation_token', unique: true
       ActiveRecord::Base.connection.add_index :users, ['email'], name: 'index_users_on_email', unique: true
-      ActiveRecord::Base.connection.add_index :users, ['remember_token'], name: 'index_users_on_remember_token', unique: true if ActiveRecord::Migrator.current_version < 20220118183010
+      ActiveRecord::Base.connection.add_index :users, ['remember_token'], name: 'index_users_on_remember_token', unique: true if ActiveRecord::Migrator.current_version < 20_220_118_183_010
       ActiveRecord::Base.connection.add_index :users, ['reset_password_token'], name: 'index_users_on_reset_password_token', unique: true
     end
 
@@ -278,7 +274,7 @@ module Mastodon
       end
 
       @prompt.say 'Restoring account domain blocks indexes…'
-      ActiveRecord::Base.connection.add_index :account_domain_blocks, ['account_id', 'domain'], name: 'index_account_domain_blocks_on_account_id_and_domain', unique: true
+      ActiveRecord::Base.connection.add_index :account_domain_blocks, %w(account_id domain), name: 'index_account_domain_blocks_on_account_id_and_domain', unique: true
     end
 
     def deduplicate_account_identity_proofs!
@@ -292,7 +288,7 @@ module Mastodon
       end
 
       @prompt.say 'Restoring account identity proofs indexes…'
-      ActiveRecord::Base.connection.add_index :account_identity_proofs, ['account_id', 'provider', 'provider_username'], name: 'index_account_proofs_on_account_and_provider_and_username', unique: true
+      ActiveRecord::Base.connection.add_index :account_identity_proofs, %w(account_id provider provider_username), name: 'index_account_proofs_on_account_and_provider_and_username', unique: true
     end
 
     def deduplicate_announcement_reactions!
@@ -306,7 +302,7 @@ module Mastodon
       end
 
       @prompt.say 'Restoring announcement_reactions indexes…'
-      ActiveRecord::Base.connection.add_index :announcement_reactions, ['account_id', 'announcement_id', 'name'], name: 'index_announcement_reactions_on_account_id_and_announcement_id', unique: true
+      ActiveRecord::Base.connection.add_index :announcement_reactions, %w(account_id announcement_id name), name: 'index_announcement_reactions_on_account_id_and_announcement_id', unique: true
     end
 
     def deduplicate_conversations!
@@ -344,7 +340,7 @@ module Mastodon
       end
 
       @prompt.say 'Restoring custom_emojis indexes…'
-      ActiveRecord::Base.connection.add_index :custom_emojis, ['shortcode', 'domain'], name: 'index_custom_emojis_on_shortcode_and_domain', unique: true
+      ActiveRecord::Base.connection.add_index :custom_emojis, %w(shortcode domain), name: 'index_custom_emojis_on_shortcode_and_domain', unique: true
     end
 
     def deduplicate_custom_emoji_categories!
@@ -560,11 +556,9 @@ module Mastodon
       owned_classes = [ConversationMute, AccountConversation]
       owned_classes.each do |klass|
         klass.where(conversation_id: duplicate_conv.id).find_each do |record|
-          begin
-            record.update_attribute(:account_id, main_conv.id)
-          rescue ActiveRecord::RecordNotUnique
-            next
-          end
+          record.update_attribute(:account_id, main_conv.id)
+        rescue ActiveRecord::RecordNotUnique
+          next
         end
       end
     end
@@ -588,47 +582,37 @@ module Mastodon
       owned_classes << Bookmark if ActiveRecord::Base.connection.table_exists?(:bookmarks)
       owned_classes.each do |klass|
         klass.where(status_id: duplicate_status.id).find_each do |record|
-          begin
-            record.update_attribute(:status_id, main_status.id)
-          rescue ActiveRecord::RecordNotUnique
-            next
-          end
-        end
-      end
-
-      StatusPin.where(account_id: main_status.account_id, status_id: duplicate_status.id).find_each do |record|
-        begin
           record.update_attribute(:status_id, main_status.id)
         rescue ActiveRecord::RecordNotUnique
           next
         end
       end
 
+      StatusPin.where(account_id: main_status.account_id, status_id: duplicate_status.id).find_each do |record|
+        record.update_attribute(:status_id, main_status.id)
+      rescue ActiveRecord::RecordNotUnique
+        next
+      end
+
       Status.where(in_reply_to_id: duplicate_status.id).find_each do |record|
-        begin
-          record.update_attribute(:in_reply_to_id, main_status.id)
-        rescue ActiveRecord::RecordNotUnique
-          next
-        end
+        record.update_attribute(:in_reply_to_id, main_status.id)
+      rescue ActiveRecord::RecordNotUnique
+        next
       end
 
       Status.where(reblog_of_id: duplicate_status.id).find_each do |record|
-        begin
-          record.update_attribute(:reblog_of_id, main_status.id)
-        rescue ActiveRecord::RecordNotUnique
-          next
-        end
+        record.update_attribute(:reblog_of_id, main_status.id)
+      rescue ActiveRecord::RecordNotUnique
+        next
       end
     end
 
     def merge_tags!(main_tag, duplicate_tag)
       [FeaturedTag].each do |klass|
         klass.where(tag_id: duplicate_tag.id).find_each do |record|
-          begin
-            record.update_attribute(:tag_id, main_tag.id)
-          rescue ActiveRecord::RecordNotUnique
-            next
-          end
+          record.update_attribute(:tag_id, main_tag.id)
+        rescue ActiveRecord::RecordNotUnique
+          next
         end
       end
     end

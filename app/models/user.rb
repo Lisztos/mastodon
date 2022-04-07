@@ -179,7 +179,8 @@ class User < ApplicationRecord
   end
 
   def update_sign_in!(new_sign_in: false)
-    old_current, new_current = current_sign_in_at, Time.now.utc
+    old_current = current_sign_in_at
+    new_current = Time.now.utc
     self.last_sign_in_at     = old_current || new_current
     self.current_sign_in_at  = new_current
 
