@@ -28,6 +28,17 @@
   }
 }
 
+.dev_banner{
+  background-color: red;
+  color: white;
+  font-size: 15px;
+}
+
+.dev_text{
+  padding: 10px;
+  text-align: center;
+}
+
 @media screen and (max-width: 600px) {
   .account-header {
     margin-top: 0;

@@ -36,6 +36,9 @@
     = yield :header_tags
 
   %body{ class: body_classes }
+    %div.w-100.dev_banner
+      %p.dev_text This is a Mastodon instance for research purposes. Any information here may be deleted without prior notice.
+      %p.dev_text For any questions, please contact the admin: adrian@lisztos.com. Thanks!
     = content_for?(:content) ? yield(:content) : yield
 
     .logo-resources
