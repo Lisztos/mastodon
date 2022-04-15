@@ -23,7 +23,8 @@ Rails.application.configure do
     if Rails.env.production?
       "ws#{https ? 's' : ''}://#{web_host}"
     else
-      "ws://#{ENV['REMOTE_DEV'] == 'true' ? host.split(':').first : 'localhost'}:4000"
+      # "ws://#{ENV['REMOTE_DEV'] == 'true' ? host.split(':').first : 'localhost'}:4000"
+      "ws://#{host}"
     end
   end
 
