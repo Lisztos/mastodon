@@ -6,99 +6,98 @@ services:
     image: postgres:14-alpine
     shm_size: 256mb
     environment:
-      - "POSTGRES_DB=mastodon_production"
+      - "POSTGRES_DB=mastodon_dev"
       - "POSTGRES_USER=mastodon"
-      - "POSTGRES_PASSWORD=some_password"
+      - "POSTGRES_PASSWORD=TsLXJPYaN7N06YQAHkNj"
       - "POSTGRES_HOST_AUTH_METHOD=trust"
     networks:
-      - internal_network
+      - test
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
     volumes:
       - ./postgres14:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   redis:
     restart: always
     image: redis:6-alpine
     networks:
-      - internal_network
+      - test
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
     volumes:
       - ./redis:/data
 
-  es:
-    restart: always
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "cluster.name=es-mastodon"
-      - "discovery.type=single-node"
-      - "bootstrap.memory_lock=true"
-    networks:
-      - internal_network
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-    volumes:
-      - ./elasticsearch:/usr/share/elasticsearch/data
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+  # es:
+  #   restart: always
+  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+  #   environment:
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - "cluster.name=es-mastodon"
+  #     - "discovery.type=single-node"
+  #     - "bootstrap.memory_lock=true"
+  #   networks:
+  #     - internal_network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+  #   volumes:
+  #     - ./elasticsearch:/usr/share/elasticsearch/data
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
 
   web:
-    build: .
-    image: tootsuite/mastodon
+    # docker build -f Dockerfile.dev -t mastodon:dev .
+    image: mastodon:dev
     restart: always
-    env_file: .env.production
-    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
+    env_file: .env.development
+    # -b 0.0.0.0 explicitly because on dev envs it only listens on localhost
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000 -b 0.0.0.0"
     networks:
-      - external_network
-      - internal_network
+      - test
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:3000/health || exit 1"]
     ports:
-      - "127.0.0.1:3000:3000"
+      - 3000:3000
     depends_on:
       - db
       - redis
-      - es
+      # - es
     volumes:
       - ./public/system:/mastodon/public/system
+      # volume mount for dev
+      - ./:/opt/mastodon
 
   streaming:
-    build: .
-    image: tootsuite/mastodon
+    image: mastodon:dev
     restart: always
-    env_file: .env.production
+    env_file: .env.development
     command: node ./streaming
     networks:
-      - external_network
-      - internal_network
+      - test
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1"]
     ports:
-      - "127.0.0.1:4000:4000"
+      - 4000:4000
     depends_on:
       - db
       - redis
+    volumes:
+      - ./:/opt/mastodon
 
   sidekiq:
-    # build: .
-    image: tootsuite/mastodon
+    image: mastodon:dev
     restart: always
-    env_file: .env.production
+    env_file: .env.development
     command: bundle exec sidekiq
     depends_on:
       - db
       - redis
     networks:
-      - external_network
-      - internal_network
+      - test
     volumes:
       - ./public/system:/mastodon/public/system
+      - ./:/opt/mastodon
     healthcheck:
       test: ["CMD-SHELL", "ps aux | grep '[s]idekiq\ 6' || false"]
 
@@ -120,6 +119,4 @@ services:
 #      - internal_network
 
 networks:
-  external_network:
-  internal_network:
-    internal: true
+        test:
