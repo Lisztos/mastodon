@@ -12,8 +12,6 @@ services:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
     networks:
       - test
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
     volumes:
       - ./postgres14:/var/lib/postgresql/data
 
