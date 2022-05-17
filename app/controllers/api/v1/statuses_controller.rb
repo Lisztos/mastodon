@@ -106,6 +106,7 @@ class Api::V1::StatusesController < Api::BaseController
       :spoiler_text,
       :visibility,
       :language,
+      :poll,
       :scheduled_at,
       media_ids: [],
       poll: [

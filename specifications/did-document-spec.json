@@ -1,0 +1,39 @@
+{
+  "@context": "https://w3.org/ns/did/v1",
+  "id": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm",
+  "publicKey": [
+    {
+      "id": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm",
+      "publicKeyBase58": "ADgFYPUqwBN74sy7xsTAPgLtBsS4v7FFFEzpfruVGiuP"
+    }
+  ],
+  "authentication": [
+    "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm"
+  ],
+  "assertionMethod": [
+    "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm"
+  ],
+  "capabilityDelegation": [
+    "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm"
+  ],
+  "capabilityInvocation": [
+    "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm"
+  ],
+  "keyAgreement": [
+    {
+      "id": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#z6LSqEtp6h2nvNxE28Sn1AHXRiovJ2dUqCQm233DAFLuQNR2",
+      "type": "X25519KeyAgreementKey2019",
+      "controller": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm",
+      "publicKeyBase58": "EZieaPDvpvEUvk51UWma78bSSt6N8bEc94KXfnhNgzeG"
+    }
+  ],
+  "service": [
+    {
+      "id": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#activitypub",
+      "type": ["ActivityPub", "DIDComm Messaging"]
+      "serviceEndpoint": "https://lisztos.com/did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm"
+    }
+  ]
+}
