@@ -36,7 +36,7 @@ services:
   #     - "discovery.type=single-node"
   #     - "bootstrap.memory_lock=true"
   #   networks:
-  #     - internal_network
+  #     - test
   #   healthcheck:
   #     test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
   #   volumes:
@@ -84,6 +84,15 @@ services:
       - redis
     volumes:
       - ./:/opt/mastodon
+
+  uni-resolver-web:
+    image: universalresolver/uni-resolver-web:latest
+    ports:
+      - "8080:8080"
+  driver-did-ion:
+    image: identityfoundation/driver-did-ion:v0.8.1
+    ports:
+      - "8111:8080"
 
   sidekiq:
     image: mastodon:dev
