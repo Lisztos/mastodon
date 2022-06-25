@@ -248,7 +248,7 @@ class Header extends ImmutablePureComponent {
     const content         = { __html: account.get('note_emojified') };
     const displayNameHtml = { __html: account.get('display_name_html') };
     const fields          = account.get('fields');
-    const acct            = account.get('acct').indexOf('@') === -1 && domain ? `${account.get('acct')}@${domain}` : account.get('acct');
+    const acct            = account.get('acct');
 
     let badge;
 
@@ -291,7 +291,7 @@ class Header extends ImmutablePureComponent {
           <div className='account__header__tabs__name'>
             <h1>
               <span dangerouslySetInnerHTML={displayNameHtml} /> {badge}
-              <small>@{acct} {lockedIcon}</small>
+              <small>{acct} {lockedIcon}</small>
             </h1>
           </div>
 

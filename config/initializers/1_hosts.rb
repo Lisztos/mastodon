@@ -24,7 +24,7 @@ Rails.application.configure do
       "ws#{https ? 's' : ''}://#{web_host}"
     else
       # "ws://#{ENV['REMOTE_DEV'] == 'true' ? host.split(':').first : 'localhost'}:4000"
-      "ws://#{host}"
+      "wss://#{host}"
     end
   end
 
