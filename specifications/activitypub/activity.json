@@ -2,14 +2,12 @@
   "@context": "https://www.w3.org/ns/activitystreams",
   "type": "Create",
   "id": "https://some.activitypub.server/moriel/posts/a29a6843-9feb-4c74-a7f7-081b9c9201d3",
-  "to": [
-    "did:method:adrian........."
-  ],
-  "actor": "did:method:moriel.......",
+  "to": "did:method:did:example:29384otherdid2938498",
+  "actor": "id:method:did:example:123456789abcdefghi",
   "object": {
     "type": "Note",
-    "to": "did:method:adrian.........",
-    "attributedTo": "did:method:moriel.......",
+    "to": "did:method:did:example:29384otherdid2938498",
+    "attributedTo": "did:method:did:example:123456789abcdefghi",
     "content": "Hello Adrian!"
   }
 }

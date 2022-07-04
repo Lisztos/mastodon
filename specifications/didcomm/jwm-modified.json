@@ -1,0 +1,23 @@
+{
+  "id": "https://some.activitypub.server/moriel/posts/a29a6843-9feb-4c74-a7f7-081b9c9201d3",
+  "type": "https://www.w3.org/ns/activitystreams",
+  "body": {
+    "message": {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      "type": "Create",
+      "id": "https://mastodon.example/users/alice/statuses/...",
+      "actor": "https://mastodon.example/users/alice",
+      "to": [ 
+            "bob@chatty.social"
+        ],
+      "object": {
+        "type": "Note",
+        "to": [ 
+            "bob@chatty.social"
+        ],
+        "attributedTo": "https://mastodon.example/users/alice",
+        "content": "Hello Adrian!"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "@context": "https://w3.org/ns/did/v1",
+  "id": "did:web:lisztos.com:users:alice",
+  "publicKey": [{
+    "id": "did:web:lisztos.com:users:alice#J8AUozyxzi",
+    "controller": "did:web:lisztos.com:users:alice",
+    "type": "Ed25519VerificationKey2018",
+    "publicKeyBase58": "J8AUozyxziEZfJJRfvErTQMmZk7Qx3hcv5PgZu4MSr9J"
+  }],
+  "authentication": [
+    "did:web:lisztos.com:users:alice#J8AUozyxzi"
+  ],
+  "assertionMethod": [
+    "did:web:lisztos.com:users:alice#J8AUozyxzi"
+  ],
+  "capabilityDelegation": [
+    "did:web:lisztos.com:users:alice#J8AUozyxzi"
+  ],
+  "capabilityInvocation": [
+    "did:web:lisztos.com:users:alice#J8AUozyxzi"
+  ],
+  "keyAgreement": [{
+    "id": "did:web:lisztos.com:users:alice#2SBZuCwZCP",
+    "controller": "did:web:lisztos.com:users:alice",
+    "type": "X25519KeyAgreementKey2019",
+    "publicKeyBase58": "2SBZuCwZCPL27mTK3BSdmSPpdxqPU2dXfeLhbw7ci9Kg"
+  }]
+}

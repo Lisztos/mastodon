@@ -1,0 +1,30 @@
+{
+  "@context": "https://w3.org/ns/did/v1",
+  "id": "did:example:123456789abcdefghi",
+  "publicKey": [],
+  "authentication": [
+    "did:example:123456789abcdefghi#auth-key"
+  ],
+  "service": [
+    {
+      "id": "did:example:123456789abcdefghi#outbox",
+      "type": ["ActivityPub"],
+      "serviceEndpoint": "https://chatty.social/users/bob/outbox"
+    },
+    {
+      "id": "did:example:123456789abcdefghi#inbox",
+      "type": ["ActivityPub"],
+      "serviceEndpoint": "https://chatty.social/users/bob/inbox"
+    },
+    {
+      "id": "did:example:123456789abcdefghi#following",
+      "type": ["ActivityPub"],
+      "serviceEndpoint": "https://chatty.social/users/bob/following"
+    },
+    {
+      "id": "did:example:123456789abcdefghi#followers",
+      "type": ["ActivityPub"],
+      "serviceEndpoint": "https://chatty.social/users/bob/followers"
+    }
+  ]
+}
