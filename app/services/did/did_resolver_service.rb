@@ -1,12 +1,12 @@
-# frozen_string_literal: true
-
-class Dids::DidResolverService
+class Did::DidResolverService < BaseService
+  class InvalidDidError < StandardError; end
+  class DIDNotFoundError < StandardError; end
 
   attr_accessor :requester
 
   def initialize
     @requester = RestClient::Request
-    @url = "http://127.0.0.1:5080/1.0/identifiers/"
+    @url = "http://did-resolver:8080/1.0/identifiers/"
     @retry_client = NetworkRetry.new
 
     @headers = {
@@ -16,11 +16,14 @@ class Dids::DidResolverService
   end
 
   def resolve(did:)
-    execute_wrapper(
+    res = execute_wrapper(
       method: :get,
       url: @url + did,
       headers: @headers,
     )
+    throw DIDNotFoundError if res == 1
+
+    JSON.parse(res.body)
   end
 
   private
