@@ -86,10 +86,8 @@ class Account < ApplicationRecord
   # Remote user validations
   validates :username, format: { with: /\A#{USERNAME_RE}\z/i }, if: -> { !local? && will_save_change_to_username? }
 
-  # Local user validations
-  validates :username, format: { with: /\A[a-z0-9_]+\z/i }, length: { maximum: 30 }, if: -> { local? && will_save_change_to_username? && actor_type != 'Application' }
   validates_with UnreservedUsernameValidator, if: -> { local? && will_save_change_to_username? }
-  validates :display_name, length: { maximum: 30 }, if: -> { local? && will_save_change_to_display_name? }
+  validates :display_name, uniqueness: true, length: { maximum: 30 }, if: -> { local? && will_save_change_to_display_name? }
   validates :note, note_length: { maximum: 500 }, if: -> { local? && will_save_change_to_note? }
   validates :fields, length: { maximum: 4 }, if: -> { local? && will_save_change_to_fields? }
 
@@ -570,9 +568,23 @@ class Account < ApplicationRecord
   def generate_keys
     return unless local? && private_key.blank? && public_key.blank?
 
-    keypair = OpenSSL::PKey::RSA.new(2048)
-    self.private_key = keypair.to_pem
-    self.public_key  = keypair.public_key.to_pem
+    [:publicKey, :keyAgreement].each do |p|
+      keypair = OpenSSL::PKey::RSA.new(2048)
+      self.keys.create(
+        public_key: keypair.public_key.to_pem,
+        private_key: keypair.to_pem,
+        purpose: p,
+        type: Did::KeyService.get_type(keypair),
+      )
+    end
+  end
+
+  def private_key
+    self.keys.publicKey.first.private_key
+  end
+
+  def public_key
+    self.keys.publicKey.first.public_key
   end
 
   def normalize_domain
