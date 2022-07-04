@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   get '.well-known/host-meta', to: 'well_known/host_meta#show', as: :host_meta, defaults: { format: 'xml' }
   get '.well-known/nodeinfo', to: 'well_known/nodeinfo#index', as: :nodeinfo, defaults: { format: 'json' }
   get '.well-known/webfinger', to: 'well_known/webfinger#show', as: :webfinger
+  get '.well-known/did', to: 'well_known/did#show', as: :did
   get '.well-known/change-password', to: redirect('/auth/edit')
 
   get '/nodeinfo/2.0', to: 'well_known/nodeinfo#show', as: :nodeinfo_schema
@@ -55,6 +56,7 @@ Rails.application.routes.draw do
     confirmations:      'auth/confirmations',
   }
 
+  get '/users/:username/did', to: 'web_did#show', as: :did_document, defauts: { format: 'json'}
   get '/users/:username', to: redirect('/@%{username}'), constraints: lambda { |req| req.format.nil? || req.format.html? }
   get '/authorize_follow', to: redirect { |_, request| "/authorize_interaction?#{request.params.to_query}" }
 

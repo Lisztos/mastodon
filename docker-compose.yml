@@ -27,24 +27,24 @@ services:
     volumes:
       - ./redis:/data
 
-  # es:
-  #   restart: always
-  #   image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
-  #   environment:
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - "cluster.name=es-mastodon"
-  #     - "discovery.type=single-node"
-  #     - "bootstrap.memory_lock=true"
-  #   networks:
-  #     - test
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-  #   volumes:
-  #     - ./elasticsearch:/usr/share/elasticsearch/data
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
+  es:
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "cluster.name=es-mastodon"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+    networks:
+      - test
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
 
   web:
     # docker build -f Dockerfile.dev -t mastodon:dev .
@@ -85,14 +85,20 @@ services:
     volumes:
       - ./:/opt/mastodon
 
-  uni-resolver-web:
+  did-resolver:
     image: universalresolver/uni-resolver-web:latest
-    ports:
-      - "8080:8080"
+    networks:
+      - test
+
   driver-did-ion:
     image: identityfoundation/driver-did-ion:v0.8.1
-    ports:
-      - "8111:8080"
+    networks:
+      - test
+
+  uni-resolver-driver-did-uport:
+    image: uport/uni-resolver-driver-did-uport:2.4.0
+    networks:
+      - test
 
   sidekiq:
     image: mastodon:dev

@@ -32,7 +32,7 @@
   "service": [
     {
       "id": "did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm#activitypub",
-      "type": ["ActivityPub", "DIDComm Messaging"]
+      "type": ["ActivityPub", "DIDComm Messaging"],
       "serviceEndpoint": "https://lisztos.com/did:method:z6MkofwJ8djHGiraBNopeSR1Emtt1ShvKzVbwFukW8sWBwgm"
     }
   ]

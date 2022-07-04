@@ -1,0 +1,47 @@
+[{
+  "@context": "https://w3.org/ns/did/v1",
+  "id": "did:example:123456789abcdefghi",
+  "service": [
+    {
+      "id": "did:example:123456789abcdefghi#activitypub",
+      "type": ["ActivityPub"],
+      "serviceEndpoints" : [
+        {
+          "type": "Person",
+          "name": "Alyssa P. Hacker",
+          "preferredUsername": "alyssa",
+          "summary": "Lisp enthusiast hailing from MIT",
+          "inbox": "https://123456789abcdefghi.onion/alyssa/inbox/",
+          "outbox": "https://123456789abcdefghi.onion/alyssa/outbox/",
+          "followers": "https://123456789abcdefghi.onion/alyssa/followers/",
+          "following": "https://123456789abcdefghi.onion/alyssa/following/",
+          "liked": "https://123456789abcdefghi.onion/alyssa/liked/"
+        }
+      ]
+    }
+  ]
+},
+{
+  "@context": ["https://example.org/did/v1",
+              "https://www.w3.org/ns/activitystreams"],
+  "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt",
+  "owner": [],
+  "control": [],
+  "created": "2002-10-10T17:00:00Z",
+  "updated": "2016-10-17T02:41:00Z",
+  "signature": {},
+  "activityPubService": {
+    "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt#services/ActivityPub",
+    "type": "Person",
+    "name": "Alyssa P. Hacker",
+    "preferredUsername": "alyssa",
+    "summary": "Lisp enthusiast hailing from MIT",
+    "inbox": "https://9GaksjPhy0mWToTV.onion/alyssa/inbox/",
+    "outbox": "https://9GaksjPhy0mWToTV.onion/alyssa/outbox/",
+    "followers": "https://9GaksjPhy0mWToTV.onion/alyssa/followers/",
+    "following": "https://9GaksjPhy0mWToTV.onion/alyssa/following/",
+    "liked": "https://9GaksjPhy0mWToTV.onion/alyssa/liked/"
+  }
+}
+]
+

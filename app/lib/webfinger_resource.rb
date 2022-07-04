@@ -45,11 +45,13 @@ class WebfingerResource
   end
 
   def username_from_acct
-    if domain_matches_local?
-      local_username
-    else
-      raise ActiveRecord::RecordNotFound
-    end
+    local_username
+    # Not necessary when using DID's
+    # if domain_matches_local?
+    #   local_username
+    # else
+    #   raise ActiveRecord::RecordNotFound
+    # end
   end
 
   def split_acct

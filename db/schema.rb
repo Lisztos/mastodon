@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_04_195405) do
+ActiveRecord::Schema.define(version: 2022_06_29_183700) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -502,6 +502,18 @@ ActiveRecord::Schema.define(version: 2022_03_04_195405) do
     t.text "comment", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "keys", force: :cascade do |t|
+    t.integer "purpose"
+    t.string "type"
+    t.text "public_key"
+    t.text "private_key"
+    t.json "jwk"
+    t.bigint "account_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["account_id"], name: "index_keys_on_account_id"
   end
 
   create_table "list_accounts", force: :cascade do |t|
@@ -1085,6 +1097,7 @@ ActiveRecord::Schema.define(version: 2022_03_04_195405) do
   add_foreign_key "identities", "users", name: "fk_bea040f377", on_delete: :cascade
   add_foreign_key "imports", "accounts", name: "fk_6db1b6e408", on_delete: :cascade
   add_foreign_key "invites", "users", on_delete: :cascade
+  add_foreign_key "keys", "accounts"
   add_foreign_key "list_accounts", "accounts", on_delete: :cascade
   add_foreign_key "list_accounts", "follows", on_delete: :cascade
   add_foreign_key "list_accounts", "lists", on_delete: :cascade

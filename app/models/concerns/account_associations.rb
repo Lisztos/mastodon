@@ -68,5 +68,8 @@ module AccountAssociations
 
     # Account statuses cleanup policy
     has_one :statuses_cleanup_policy, class_name: 'AccountStatusesCleanupPolicy', inverse_of: :account, dependent: :destroy
+
+    # Keys
+    has_many :keys, inverse_of: :account, dependent: :destroy
   end
 end

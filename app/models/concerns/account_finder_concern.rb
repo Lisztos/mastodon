@@ -45,7 +45,8 @@ module AccountFinderConcern
       Account.unscoped.tap do |scope|
         scope.merge! with_usernames
         scope.merge! matching_username
-        scope.merge! matching_domain
+        # Remove matching domains as with DID's is not necessary anymore. 
+        # scope.merge! matching_domain
       end
     end
 
