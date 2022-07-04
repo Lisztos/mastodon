@@ -322,7 +322,8 @@ GEM
       json-ld (~> 3.2)
       rdf (~> 3.2)
     jsonapi-renderer (0.2.2)
-    jwt (2.2.2)
+    jwe (0.4.0)
+    jwt (2.4.1)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.2)
@@ -763,6 +764,8 @@ DEPENDENCIES
   idn-ruby
   json-ld
   json-ld-preloaded (~> 3.2)
+  jwe
+  jwt (~> 2.4.1)
   kaminari (~> 1.2)
   kt-paperclip (~> 7.1)
   letter_opener (~> 1.7)
@@ -843,4 +846,4 @@ RUBY VERSION
    ruby 3.0.3p157
 
 BUNDLED WITH
-   2.3.11
+   2.3.15
