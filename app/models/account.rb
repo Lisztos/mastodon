@@ -5,8 +5,6 @@
 #
 #  username                      :string           default(""), not null
 #  domain                        :string
-#  private_key                   :text
-#  public_key                    :text             default(""), not null
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  note                          :text             default(""), not null
@@ -504,16 +502,6 @@ class Account < ApplicationRecord
       end
     end
 
-  def private_key
-    self.keys.publicKey.first.private_key
-  end
-
-  def public_key
-    self.keys.publicKey.first.public_key
-  end
-
-    private
-
     def generate_query_for_search(unsanitized_terms)
       terms = unsanitized_terms.gsub(DISALLOWED_TSQUERY_CHARACTERS, ' ')
 
@@ -574,6 +562,14 @@ class Account < ApplicationRecord
   before_validation :prepare_contents, if: :local?
   before_validation :prepare_username, on: :create
   before_destroy :clean_feed_manager
+  
+  def private_key
+    self.keys.publicKey.first.private_key
+  end
+
+  def public_key
+    self.keys.publicKey.first.public_key
+  end
 
   private
 
