@@ -61,7 +61,8 @@ class Account < ApplicationRecord
     trust_level
   )
 
-  USERNAME_RE   = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\_\#]+/i
+  # USERNAME_RE   = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\_\#]+/i
+  USERNAME_RE   = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
   MENTION_RE    = /(?<=^|[^\/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]\.\-]+[[:word:]]+)?)/i
   URL_PREFIX_RE = /\Ahttp(s?):\/\/[^\/]+/
 
@@ -143,7 +144,7 @@ class Account < ApplicationRecord
   update_index('accounts', :self)
 
   def local?
-    true
+    domain.nil?
   end
 
   def moved?
@@ -171,16 +172,28 @@ class Account < ApplicationRecord
   alias group group?
 
   def acct
-    username
+    local? ? username : "#{username}@#{domain}"
   end
 
   def pretty_acct
-    username
+    local? ? username : "#{username}@#{Addressable::IDNA.to_unicode(domain)}"
   end
 
   def local_username_and_domain
-    username
+    "#{username}@#{Rails.configuration.x.local_domain}"
   end
+
+  # def acct
+  #   username
+  # end
+
+  # def pretty_acct
+  #   username
+  # end
+
+  # def local_username_and_domain
+  #   username
+  # end
 
   def local_followers_count
     Follow.where(target_account_id: id).count
@@ -491,6 +504,14 @@ class Account < ApplicationRecord
       end
     end
 
+  def private_key
+    self.keys.publicKey.first.private_key
+  end
+
+  def public_key
+    self.keys.publicKey.first.public_key
+  end
+
     private
 
     def generate_query_for_search(unsanitized_terms)
@@ -566,7 +587,7 @@ class Account < ApplicationRecord
   end
 
   def generate_keys
-    return unless local? && private_key.blank? && public_key.blank?
+    return unless local? && self.keys.empty?
 
     [:publicKey, :keyAgreement].each do |p|
       keypair = OpenSSL::PKey::RSA.new(2048)
@@ -577,14 +598,6 @@ class Account < ApplicationRecord
         type: Did::KeyService.get_type(keypair),
       )
     end
-  end
-
-  def private_key
-    self.keys.publicKey.first.private_key
-  end
-
-  def public_key
-    self.keys.publicKey.first.public_key
   end
 
   def normalize_domain

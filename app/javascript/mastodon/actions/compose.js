@@ -452,7 +452,7 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, token) => 
 
     params: {
       q: token.slice(1),
-      resolve: false,
+      resolve: true,
       limit: 4,
     },
   }).then(response => {

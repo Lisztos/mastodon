@@ -173,7 +173,8 @@ class AccountSearchService < BaseService
   end
 
   def username_complete?
-    query.include?('@') && "@#{query}".match?(/\A#{Account::MENTION_RE}\Z/)
+    # query.include?('@') && "@#{query}".match?(/\A#{Account::MENTION_RE}\Z/)
+    query.include?('@')
   end
 
   def likely_acct?
