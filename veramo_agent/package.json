@@ -1,0 +1,41 @@
+{
+  "name": "veramo-agent",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.0.3",
+    "@types/uuid": "^8.3.4",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  },
+  "scripts": {
+    "id:list": "ts-node ./src/list_identifiers",
+    "id:create": "ts-node ./src/create_identifier",
+    "id:add_service": "ts-node ./src/add_service",
+    "id:delete_service": "ts-node ./src/delete_service",
+    "id:add_key": "ts-node ./src/add_key",
+    "id:remove_key": "ts-node ./src/remove_key",
+    "id:resolve_did": "ts-node ./src/resolve_did"
+  },
+  "dependencies": {
+    "@veramo/core": "^3.1.3",
+    "@veramo/credential-w3c": "^3.1.3",
+    "@veramo/data-store": "^3.1.4",
+    "@veramo/did-manager": "^3.1.3",
+    "@veramo/did-provider-ethr": "^3.1.3",
+    "@veramo/did-provider-web": "^3.1.3",
+    "@veramo/did-resolver": "^3.1.3",
+    "@veramo/key-manager": "^3.1.3",
+    "@veramo/kms-local": "^3.1.3",
+    "dotenv": "^16.0.1",
+    "ethers": "^5.6.9",
+    "ethr-did-resolver": "^6.0.2",
+    "sqlite3": "^5.0.10",
+    "uint8arrays": "^3.0.0",
+    "uuid": "^8.3.2",
+    "web-did-resolver": "^2.0.19"
+  },
+  "description": "Agent to create DIDs with the did:ethr method",
+  "author": "Adrian Sanchez"
+}
