@@ -24,7 +24,7 @@ class ActivityPub::RawDistributionWorker
 
   def distribute!
     return if inboxes.empty?
-
+    Rails.logger.info "RawDistributionWorker......."
     ActivityPub::DeliveryWorker.push_bulk(inboxes) do |inbox_url|
       [payload, source_account_id, inbox_url, options]
     end
