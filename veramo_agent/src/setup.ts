@@ -32,27 +32,26 @@ import { createConnection } from 'typeorm'
 
 import * as dotenv from 'dotenv';
 
+dotenv.config();
+
+export const ALICE_DID = process.env.ALICE_DID;
+export const ALICE_PUBLIC_KEY = process.env.ALICE_DID;
+export const ALICE_PRIVATE_KEY = process.env.ALICE_DID;
+export const BOB_DID = process.env.BOB_DID;
+export const BOB_PUBLIC_KEY = process.env.BOB_PUBLIC_KEY;
+export const BOB_PRIVATE_KEY = process.env.BOB_PRIVATE_KEY;
+const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
+
 // This will be the name for the local sqlite database for demo purposes
 const DATABASE_FILE = 'database.sqlite';
-
-// You will need to get a project ID from infura https://www.infura.io
-const INFURA_PROJECT_ID = 'cfee2564967a401683542ccdfc265376';
 
 // This will be the secret key for the KMS
 const KMS_SECRET_KEY = '24c8be1ef425eb5a29d1ed2439bf8372128edcf2edcc8a5b3214e35089117e1e';
 
 const PROVIDER = new ethers.providers.InfuraProvider(
   'ropsten',
-  'cfee2564967a401683542ccdfc265376'
+  INFURA_PROJECT_ID
 );
-
-
-dotenv.config();
-
-export const ALICE_DID = process.env.ALICE_DID;
-export const BOB_DID = process.env.BOB_DID;
-export const BOB_PUBLIC_KEY = process.env.BOB_PUBLIC_KEY;
-export const BOB_PRIVATE_KEY = process.env.BOB_PRIVATE_KEY;
 
 const dbConnection = createConnection({
   type: 'sqlite',
