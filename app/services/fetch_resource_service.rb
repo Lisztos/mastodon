@@ -35,7 +35,8 @@ class FetchResourceService < BaseService
       # and prevents even public resources from being fetched, so
       # don't do it
 
-      request.on_behalf_of(Account.representative) unless Rails.env.development?
+      # request.on_behalf_of(Account.representative) unless Rails.env.development?
+      request.on_behalf_of(Account.representative)
     end.perform(&block)
   end
 

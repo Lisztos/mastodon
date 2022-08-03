@@ -102,6 +102,9 @@ services:
 
   sidekiq:
     image: mastodon:dev
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
     restart: always
     env_file: .env.development
     command: bundle exec sidekiq

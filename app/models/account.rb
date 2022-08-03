@@ -172,28 +172,19 @@ class Account < ApplicationRecord
   alias group group?
 
   def acct
-    local? ? username : "#{username}@#{domain}"
+    # local? ? username : "#{username}@#{domain}"
+    username
   end
 
   def pretty_acct
-    local? ? username : "#{username}@#{Addressable::IDNA.to_unicode(domain)}"
+    # local? ? username : "#{username}@#{Addressable::IDNA.to_unicode(domain)}"
+    username
   end
 
   def local_username_and_domain
-    "#{username}@#{Rails.configuration.x.local_domain}"
+    # "#{username}@#{Rails.configuration.x.local_domain}"
+    username
   end
-
-  # def acct
-  #   username
-  # end
-
-  # def pretty_acct
-  #   username
-  # end
-
-  # def local_username_and_domain
-  #   username
-  # end
 
   def local_followers_count
     Follow.where(target_account_id: id).count
