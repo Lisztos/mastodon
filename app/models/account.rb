@@ -47,6 +47,8 @@
 #  trendable                     :boolean
 #  reviewed_at                   :datetime
 #  requested_review_at           :datetime
+#  public_key                    :text
+#  private_key                   :text
 #
 
 class Account < ApplicationRecord
@@ -59,8 +61,8 @@ class Account < ApplicationRecord
     trust_level
   )
 
-  # USERNAME_RE   = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\_\#]+/i
-  USERNAME_RE   = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
+  USERNAME_RE   = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\:\_\#]+/i
+  # USERNAME_RE   = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
   MENTION_RE    = /(?<=^|[^\/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]\.\-]+[[:word:]]+)?)/i
   URL_PREFIX_RE = /\Ahttp(s?):\/\/[^\/]+/
 
@@ -91,7 +93,7 @@ class Account < ApplicationRecord
   validates :fields, length: { maximum: 4 }, if: -> { local? && will_save_change_to_fields? }
 
   scope :remote, -> { where.not(domain: nil) }
-  scope :local, -> { where(domain: nil) }
+  scope :local, -> { where.not(id: nil) }
   scope :partitioned, -> { order(Arel.sql('row_number() over (partition by domain)')) }
   scope :silenced, -> { where.not(silenced_at: nil) }
   scope :suspended, -> { where.not(suspended_at: nil) }
@@ -142,7 +144,7 @@ class Account < ApplicationRecord
   update_index('accounts', :self)
 
   def local?
-    domain.nil?
+    true
   end
 
   def moved?
@@ -558,20 +560,13 @@ class Account < ApplicationRecord
     @emojis ||= CustomEmoji.from_text(emojifiable_text, domain)
   end
 
-  after_create :generate_keys
+  before_create :generate_keys
+  after_create :generate_didcomm_keys!
   before_validation :prepare_contents, if: :local?
   before_validation :prepare_username, on: :create
   before_destroy :clean_feed_manager
-  
-  def private_key
-    self.keys.publicKey.first.private_key
-  end
 
-  def public_key
-    self.keys.publicKey.first.public_key
-  end
-
-  private
+  # private
 
   def prepare_contents
     display_name&.strip!
@@ -583,9 +578,17 @@ class Account < ApplicationRecord
   end
 
   def generate_keys
-    return unless local? && self.keys.empty?
+    return unless local? && private_key.blank? && public_key.blank?
 
-    [:publicKey, :keyAgreement].each do |p|
+    keypair = OpenSSL::PKey::RSA.new(2048)
+    self.private_key = keypair.to_pem
+    self.public_key  = keypair.public_key.to_pem
+  end
+
+  def generate_didcomm_keys!
+    return unless self.keys.keyAgreement.empty?
+
+    [:keyAgreement].each do |p|
       keypair = OpenSSL::PKey::RSA.new(2048)
       self.keys.create(
         public_key: keypair.public_key.to_pem,
@@ -624,5 +627,22 @@ class Account < ApplicationRecord
     return unless local?
 
     CanonicalEmailBlock.where(reference_account: self).delete_all
+  end
+
+  def self.update_alice!
+    alice = Account.find(108758770720752258)
+    alice.domain =  "lisztos.com",
+    alice.uri =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4",
+    alice.url =  "https://lisztos.com/@did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4",
+    alice.avatar_remote_url =  nil,
+    alice.inbox_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/inbox",
+    alice.outbox_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/outbox",
+    alice.shared_inbox_url =  "https://lisztos.com/inbox",
+    alice.followers_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/followers",
+    alice.featured_collection_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/collections/featured",
+    alice.devices_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/collections_devices",
+
+    alice.save!
+
   end
 end

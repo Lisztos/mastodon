@@ -7,6 +7,7 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
     @status  = Status.find(status_id)
     @account = @status.account
 
+    Rails.logger.info "DistributionWorker......."
     distribute!
   rescue ActiveRecord::RecordNotFound
     true

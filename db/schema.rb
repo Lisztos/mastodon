@@ -143,8 +143,6 @@ ActiveRecord::Schema.define(version: 2022_06_29_183700) do
   create_table "accounts", id: :bigint, default: -> { "timestamp_id('accounts'::text)" }, force: :cascade do |t|
     t.string "username", default: "", null: false
     t.string "domain"
-    t.text "private_key"
-    t.text "public_key", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "note", default: "", null: false
@@ -186,6 +184,8 @@ ActiveRecord::Schema.define(version: 2022_06_29_183700) do
     t.boolean "trendable"
     t.datetime "reviewed_at"
     t.datetime "requested_review_at"
+    t.text "public_key"
+    t.text "private_key"
     t.index "(((setweight(to_tsvector('simple'::regconfig, (display_name)::text), 'A'::\"char\") || setweight(to_tsvector('simple'::regconfig, (username)::text), 'B'::\"char\")) || setweight(to_tsvector('simple'::regconfig, (COALESCE(domain, ''::character varying))::text), 'C'::\"char\")))", name: "search_index", using: :gin
     t.index "lower((username)::text), COALESCE(lower((domain)::text), ''::text)", name: "index_accounts_on_username_and_domain_lower", unique: true
     t.index ["moved_to_account_id"], name: "index_accounts_on_moved_to_account_id"
