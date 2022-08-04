@@ -23,7 +23,11 @@ The rest can are optional and can be updated afterwards.
 
 ## Good to know
 
-In order to do any operations, you need to fund the DID. For this, go to any Faucet and fund the blockchainAccountID of the DID. Which you can find when you resolve your DID using the resolver in code or the [Universal resolver](https://dev.uniresolver.io/) from the DID. 
+In order to do any operations, you need to fund the ethereum address where the DID is anchored. For this, go to any Faucet and fund the blockchainAccountID of the DID. Which you can find when you resolve your DID using the resolver in code or the [Universal resolver](https://dev.uniresolver.io/) from the DIF. 
+
+## Acknowledgments
+
+Special thanks to [Mirceanis](https://github.com/mirceanis) for helping me made this possible. 
 
  
 
