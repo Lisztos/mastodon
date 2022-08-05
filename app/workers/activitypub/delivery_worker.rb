@@ -13,6 +13,9 @@ class ActivityPub::DeliveryWorker
   HEADERS = { 'Content-Type' => 'application/activity+json' }.freeze
 
   def perform(json, source_account_id, inbox_url, options = {})
+    Rails.logger.info "DeliveryWorker......."
+    Rails.logger.info "Json: #{json}"
+    Rails.logger.info "Inbox_url: #{inbox_url}"
     return unless DeliveryFailureTracker.available?(inbox_url)
 
     @options        = options.with_indifferent_access

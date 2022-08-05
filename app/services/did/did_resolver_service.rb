@@ -1,7 +1,8 @@
 class Did::DidResolverService < BaseService
   class InvalidDidError < StandardError; end
   class DIDNotFoundError < StandardError; end
-
+  include Singleton
+  
   attr_accessor :requester
 
   def initialize

@@ -61,9 +61,9 @@ class Account < ApplicationRecord
     trust_level
   )
 
-  USERNAME_RE   = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\:\_\#]+/i
+  USERNAME_RE   = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\:\_\#]+/i #DID optimized
   # USERNAME_RE   = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
-  MENTION_RE    = /(?<=^|[^\/[:word:]])@((#{USERNAME_RE})(?:@[[:word:]\.\-]+[[:word:]]+)?)/i
+  MENTION_RE    = /(?<=^|[^\/[:word:]])@((#{USERNAME_RE})(?:[[:word:]\.\-]+[[:word:]]+)?)/i
   URL_PREFIX_RE = /\Ahttp(s?):\/\/[^\/]+/
 
   include Attachmentable
@@ -172,28 +172,19 @@ class Account < ApplicationRecord
   alias group group?
 
   def acct
-    local? ? username : "#{username}@#{domain}"
+    # local? ? username : "#{username}@#{domain}"
+    username
   end
 
   def pretty_acct
-    local? ? username : "#{username}@#{Addressable::IDNA.to_unicode(domain)}"
+    # local? ? username : "#{username}@#{Addressable::IDNA.to_unicode(domain)}"
+    username
   end
 
   def local_username_and_domain
-    "#{username}@#{Rails.configuration.x.local_domain}"
+    # "#{username}@#{Rails.configuration.x.local_domain}"
+    username
   end
-
-  # def acct
-  #   username
-  # end
-
-  # def pretty_acct
-  #   username
-  # end
-
-  # def local_username_and_domain
-  #   username
-  # end
 
   def local_followers_count
     Follow.where(target_account_id: id).count

@@ -4,6 +4,7 @@ class AccountSearchService < BaseService
   attr_reader :query, :limit, :offset, :options, :account
 
   def call(query, account = nil, options = {})
+    Rails.logger.info "CALLING ACCOUNT SEARCH SERVICE... Query: #{query}"
     @acct_hint = query&.start_with?('@')
     @query     = query&.strip&.gsub(/\A@/, '')
     @limit     = options[:limit].to_i
@@ -28,7 +29,8 @@ class AccountSearchService < BaseService
     return @exact_match if defined?(@exact_match)
 
     match = if options[:resolve]
-              ResolveAccountService.new.call(query)
+              Rails.logger.info 
+              Did::ResolveAccountService.new.call(query)
             elsif domain_is_local?
               Account.find_local(query_username)
             else
@@ -173,8 +175,7 @@ class AccountSearchService < BaseService
   end
 
   def username_complete?
-    # query.include?('@') && "@#{query}".match?(/\A#{Account::MENTION_RE}\Z/)
-    query.include?('@')
+    "@#{query}".match?(/\A#{Account::MENTION_RE}\Z/)
   end
 
   def likely_acct?
