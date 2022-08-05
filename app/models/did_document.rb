@@ -26,7 +26,7 @@ class DidDocument
     return OpenSSL::PKey::RSA.new(key) 
   end
 
-  def activitypub_enpoint
+  def activitypub_endpoint
     service[0]['serviceEndpoint']
   end
 
