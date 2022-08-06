@@ -40,7 +40,7 @@ class Request
     set_digest! if options.key?(:body)
   end
 
-  def on_behalf_of(account, key_id_format = :uri, sign_with: nil)
+  def on_behalf_of(account, key_id_format = :did, sign_with: nil)
     raise ArgumentError, 'account must not be nil' if account.nil?
 
     @account       = account
@@ -57,6 +57,7 @@ class Request
 
   def perform
     begin
+      Rails.logger.info "Performing request....Verb: #{@verb}, URL: #{@url.to_s}, headers: #{@headers}"
       response = http_client.public_send(@verb, @url.to_s, @options.merge(headers: headers))
     rescue => e
       raise e.class, "#{e.message} on #{@url}", e.backtrace[0]
@@ -133,6 +134,8 @@ class Request
       @account.to_webfinger_s
     when :uri
       [ActivityPub::TagManager.instance.uri_for(@account), '#main-key'].join
+    when :did
+      ActivityPub::TagManager.instance.uri_for(@account)
     end
   end
 
