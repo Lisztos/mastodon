@@ -68,8 +68,9 @@ module SignatureVerification
   end
 
   def signed_request_account
+    Rails.logger.info "signed_request_account: #{@signed_request_account.try(:username)}"
     return @signed_request_account if defined?(@signed_request_account)
-
+    
     raise SignatureVerificationError, 'Request not signed' unless signed_request?
     raise SignatureVerificationError, 'Incompatible request signature. keyId and signature are required' if missing_required_signature_parameters?
     raise SignatureVerificationError, 'Unsupported signature algorithm (only rsa-sha256 and hs2019 are supported)' unless %w(rsa-sha256 hs2019).include?(signature_algorithm)
@@ -142,6 +143,7 @@ module SignatureVerification
   end
 
   def verify_signature(account, signature, compare_signed_string)
+    Rails.logger.info "Verify Signature: Account: #{account.try(:username)}"
     if account.keypair.public_key.verify(OpenSSL::Digest.new('SHA256'), signature, compare_signed_string)
       @signed_request_account = account
       @signed_request_account
@@ -208,15 +210,18 @@ module SignatureVerification
   end
 
   def account_from_key_id(key_id)
+    Rails.logger.info "Key_id: #{key_id}"
     domain = key_id.start_with?('acct:') ? key_id.split('@').last : key_id
 
-    if domain_not_allowed?(domain)
+    if domain.present? && domain_not_allowed?(domain)
       @signature_verification_failure_code = 403
       return
     end
 
     if key_id.start_with?('acct:')
       stoplight_wrap_request { ResolveAccountService.new.call(key_id.gsub(/\Aacct:/, '')) }
+    elsif ActivityPub::TagManager.instance.local_uri?(key_id) && key_id.start_with?('did')
+      stoplight_wrap_request { Did::ResolveAccountService.new.call(key_id) }
     elsif !ActivityPub::TagManager.instance.local_uri?(key_id)
       account   = ActivityPub::TagManager.instance.uri_to_resource(key_id, Account)
       account ||= stoplight_wrap_request { ActivityPub::FetchRemoteKeyService.new.call(key_id, id: false) }
