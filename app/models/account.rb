@@ -144,7 +144,7 @@ class Account < ApplicationRecord
   update_index('accounts', :self)
 
   def local?
-    true
+    domain.blank?
   end
 
   def moved?
