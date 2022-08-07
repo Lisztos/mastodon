@@ -159,6 +159,10 @@ class Account < ApplicationRecord
     id == -99
   end
 
+  def is_did?
+    username.include?(Did::DID_PREFIX)
+  end
+
   alias bot bot?
 
   def bot=(val)
@@ -577,7 +581,7 @@ class Account < ApplicationRecord
   end
 
   def generate_didcomm_keys!
-    return unless self.keys.keyAgreement.empty?
+    return unless local? && self.keys.keyAgreement.empty?
 
     [:keyAgreement].each do |p|
       keypair = OpenSSL::PKey::RSA.new(2048)
@@ -618,22 +622,5 @@ class Account < ApplicationRecord
     return unless local?
 
     CanonicalEmailBlock.where(reference_account: self).delete_all
-  end
-
-  def self.update_alice!
-    alice = Account.find(108758770720752258)
-    alice.domain =  "lisztos.com",
-    alice.uri =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4",
-    alice.url =  "https://lisztos.com/@did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4",
-    alice.avatar_remote_url =  nil,
-    alice.inbox_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/inbox",
-    alice.outbox_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/outbox",
-    alice.shared_inbox_url =  "https://lisztos.com/inbox",
-    alice.followers_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/followers",
-    alice.featured_collection_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/collections/featured",
-    alice.devices_url =  "https://lisztos.com/users/did:ethr:ropsten:0x02388bbfbce5b69ea8a17887267cb1bcc25b51f68b94db1aab65ca65a07d6daaa4/collections_devices",
-
-    alice.save!
-
   end
 end

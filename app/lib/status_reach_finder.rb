@@ -13,6 +13,11 @@ class StatusReachFinder
     (reached_account_inboxes + followers_inboxes + relay_inboxes).uniq
   end
 
+  def direct_target_account
+    id = mentioned_account_ids.take(1)
+    Account.find_by(id: id)
+  end
+
   private
 
   def reached_account_inboxes

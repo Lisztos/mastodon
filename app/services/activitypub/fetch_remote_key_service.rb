@@ -36,7 +36,7 @@ class ActivityPub::FetchRemoteKeyService < BaseService
 
   def find_account(uri, prefetched_body)
     account   = ActivityPub::TagManager.instance.uri_to_resource(uri, Account)
-    account ||= Did::ActivityPub::FetchRemoteAccountService.new.call(uri, prefetched_body: prefetched_body) if uri.include?('did:')
+    account ||= Did::ActivityPub::FetchRemoteAccountService.new.call(uri, prefetched_body: prefetched_body) if uri.include?(Did::DID_PREFIX)
     account ||= ActivityPub::FetchRemoteAccountService.new.call(uri, prefetched_body: prefetched_body)
     account
   end

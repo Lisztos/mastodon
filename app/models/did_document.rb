@@ -23,6 +23,7 @@ class DidDocument
   def rsa_didcomm_key
     pem = dig_didcomm_key['publicKeyPem']
     key = clean_pem(pem)
+    Rails.logger.info "Key found: #{key}"
     return OpenSSL::PKey::RSA.new(key) 
   end
 
@@ -47,7 +48,7 @@ class DidDocument
     p = p.gsub('ENDPUBLICKEY', 'END PUBLIC KEY')
     p = p.gsub('BEGINPUBLICKEY', 'BEGIN PUBLIC KEY')
     p = p.gsub('ENDPRIVATEKEY', 'END PRIVATE KEY')
-    p = p.gsub('BEGINPRIVATEKEY', 'BEGIN PRIVATE KEY')
+    p.gsub('BEGINPRIVATEKEY', 'BEGIN PRIVATE KEY')
   end
 
 end

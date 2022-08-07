@@ -29,8 +29,7 @@ class AccountSearchService < BaseService
     return @exact_match if defined?(@exact_match)
 
     match = if options[:resolve]
-              Rails.logger.info 
-              Did::ResolveAccountService.new.call(query)
+              Mediators::ResolveAccountMediator.mediate_account_resolving(query)
             elsif domain_is_local?
               Account.find_local(query_username)
             else

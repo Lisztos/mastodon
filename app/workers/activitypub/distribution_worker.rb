@@ -7,7 +7,8 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
     @status  = Status.find(status_id)
     @account = @status.account
 
-    Rails.logger.info "DistributionWorker......."
+    Rails.logger.info "DistributionWorker.......Encrypted Payload: #{payload}"
+    
     distribute!
   rescue ActiveRecord::RecordNotFound
     true
@@ -16,11 +17,28 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
   protected
 
   def inboxes
-    @inboxes ||= StatusReachFinder.new(@status).inboxes
+    @inboxes ||= status_reacher.inboxes
+  end
+
+  def target_account
+    status_reacher.direct_target_account
   end
 
   def payload
-    @payload ||= Oj.dump(serialize_payload(activity, ActivityPub::ActivitySerializer, signer: @account))
+    @payload = didcommize_payload(activitypub_payload) if @status.direct_visibility?
+
+    @payload ||= activitypub_payload
+  end
+
+  def activitypub_payload
+    Oj.dump(serialize_payload(activity, ActivityPub::ActivitySerializer, signer: @account))
+  end
+
+  def didcommize_payload(payload)
+    Rails.logger.info "is Payload empty? #{payload}"
+    service = Did::DidcommService.new(payload, target_account)
+    
+    return service.encrypted_payload
   end
 
   def activity
@@ -29,5 +47,11 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
 
   def options
     { 'synchronize_followers' => @status.private_visibility? }
+  end
+
+  private
+
+  def status_reacher
+    @status_reacher ||= StatusReachFinder.new(@status)
   end
 end

@@ -1,4 +1,5 @@
 class Did 
-  include Did::AccountFinderConcern
+  include DidAccountFinderConcern
 
+  DID_PREFIX = 'did:'.freeze
 end

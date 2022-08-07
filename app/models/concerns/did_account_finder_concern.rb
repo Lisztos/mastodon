@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Did::AccountFinderConcern
+module DidAccountFinderConcern
   extend ActiveSupport::Concern
 
   class_methods do

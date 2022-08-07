@@ -23,8 +23,9 @@ class ActivityPub::RawDistributionWorker
   protected
 
   def distribute!
+    Rails.logger.info "Distribute! inboxes: #{inboxes}"
     return if inboxes.empty?
-    Rails.logger.info "RawDistributionWorker......."
+    Rails.logger.info "RawDistributionWorker pushing "
     ActivityPub::DeliveryWorker.push_bulk(inboxes) do |inbox_url|
       [payload, source_account_id, inbox_url, options]
     end
@@ -39,10 +40,11 @@ class ActivityPub::RawDistributionWorker
   end
 
   def inboxes
+    @exclude_inboxes = [] unless @exclude_inboxes.present?
     @inboxes ||= @account.followers.inboxes - @exclude_inboxes
   end
 
   def options
-    {}
+    {didcomm: true}
   end
 end
