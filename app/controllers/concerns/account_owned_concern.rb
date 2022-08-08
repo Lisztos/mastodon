@@ -5,7 +5,7 @@ module AccountOwnedConcern
 
   included do
     before_action :authenticate_user!, if: -> { whitelist_mode? && request.format != :json }
-    before_action :set_account, if: :account_required?
+    before_action :set_account, if: Proc.new { account_required? && !encrypted? }
     before_action :check_account_approval, if: :account_required?
     before_action :check_account_suspension, if: :account_required?
     before_action :check_account_confirmation, if: :account_required?
