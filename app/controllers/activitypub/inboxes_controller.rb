@@ -51,7 +51,7 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
     return @body if defined?(@body)
 
     if @verified_data.present?
-      @body = @verified_data
+      @body = @verified_data.to_s
     else
       @body = request.body.read
     end

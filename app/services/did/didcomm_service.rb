@@ -36,7 +36,7 @@ class Did::DidcommService < BaseService
   def verified_payload_and_signer
     set_from_account if from_account.nil?
 
-    [JWT.decode(decrypted_payload, public_key(from_account), true, { algorithm: 'RS256' })[0], from_account]
+    [JWT.decode(decrypted_payload, public_key(from_account), true, { algorithm: 'RS256' })[0]['body'], from_account]
   end
 
   def encrypt!
