@@ -12,13 +12,13 @@ class Did::DidcommService < BaseService
     @direction    = direction
   end
 
-  def set_from_account(did)
+  def set_from_account
     #Decode JWT without verification to get DID of issuer
     unverified_jwt = JWT.decode decrypted_payload, nil, false, { algorithm: 'RS256' }
 
     sender_did = unverified_jwt[1].dig('issuer')
     
-    @from_account ||= AccountSearchService.new.call(sender_did)
+    @from_account ||= Mediators::ResolveAccountMediator.mediate_account_resolving(sender_did)
     Rails.logger.info "Found account for did: #{sender_did}, @from_account: #{@from_account.try(:display_name)}"
   end
 
@@ -29,14 +29,14 @@ class Did::DidcommService < BaseService
   end
 
   def decrypted_payload
-    raise NotDidError unless account.is_did?
+    raise NotDidError unless to_account.is_did?
     decrypt!
   end
 
   def verified_payload_and_signer
     set_from_account if from_account.nil?
 
-    [JWT.decode(decrypted_payload, public_key(from_account), true, { algorithm: 'RS256' }), from_account]
+    [JWT.decode(decrypted_payload, public_key(from_account), true, { algorithm: 'RS256' })[0], from_account]
   end
 
   def encrypt!
