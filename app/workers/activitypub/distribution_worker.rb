@@ -36,7 +36,10 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
 
   def didcommize_payload(payload)
     Rails.logger.info "is Payload empty? #{payload}"
-    service = Did::DidcommService.new(payload, target_account)
+    service = Did::DidcommService.new(payload: payload,
+                                      from_account: @account,
+                                      to_account: target_account,
+                                      direction: :outgoing)
     
     return service.encrypted_payload
   end

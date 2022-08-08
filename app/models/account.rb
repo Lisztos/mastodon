@@ -143,6 +143,14 @@ class Account < ApplicationRecord
 
   update_index('accounts', :self)
 
+  def self.alice
+    Account.find_by(display_name: "alice")
+  end
+  
+  def self.bob
+    Account.find_by(display_name: "bob")
+  end
+
   def local?
     domain.blank?
   end

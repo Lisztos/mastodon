@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class ActivityPub::InboxesController < ActivityPub::BaseController
+  include DidcommHelper
   include SignatureVerification
   include JsonLdHelper
   include AccountOwnedConcern
 
   before_action :skip_unknown_actor_activity
-  before_action :require_signature!
+  before_action :require_signature!, unless: :encrypted?
   skip_before_action :authenticate_user!
 
   def create
@@ -17,6 +18,11 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
   end
 
   private
+
+  def encrypted?
+    Rails.logger.info "URL: #{request.url}"
+    request.raw_post.start_with?(JWT_SUFFIX)
+  end
 
   def skip_unknown_actor_activity
     head 202 if unknown_affected_account?
@@ -40,7 +46,11 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
   def body
     return @body if defined?(@body)
 
-    @body = request.body.read
+    if @verified_data.present?
+      @body = @verified_data
+    else
+      @body = request.body.read
+    end
     @body.force_encoding('UTF-8') if @body.present?
 
     request.body.rewind if request.body.respond_to?(:rewind)

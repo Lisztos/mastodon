@@ -102,6 +102,7 @@ module SignatureVerification
   end
 
   def request_body
+    @request_body = @verified_data if @verified_data.present?
     @request_body ||= request.raw_post
   end
 
@@ -220,7 +221,7 @@ module SignatureVerification
 
     if key_id.start_with?('acct:')
       stoplight_wrap_request { ResolveAccountService.new.call(key_id.gsub(/\Aacct:/, '')) }
-    elsif ActivityPub::TagManager.instance.local_uri?(key_id) && key_id.start_with?('did')
+    elsif ActivityPub::TagManager.instance.local_uri?(key_id) && key_id.start_with?(Did::DID_PREFIX)
       stoplight_wrap_request { Did::ResolveAccountService.new.call(key_id) }
     elsif !ActivityPub::TagManager.instance.local_uri?(key_id)
       account   = ActivityPub::TagManager.instance.uri_to_resource(key_id, Account)
