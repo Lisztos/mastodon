@@ -52,7 +52,7 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
     body = serialize_payload(activity, ActivityPub::ActivitySerializer)
     jwm = Didcomm::Jwm.new({id: @status.id, body: body})
 
-    jwm
+    jwm.to_hash
   end
 
   def options

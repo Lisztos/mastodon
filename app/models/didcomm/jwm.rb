@@ -8,4 +8,12 @@ class Didcomm::Jwm
     @body = attributes[:body]
   end
 
+  def to_hash
+    {
+      id: id,
+      type: type,
+      body: body
+    }
+  end
+
 end
