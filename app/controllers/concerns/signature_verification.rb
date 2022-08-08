@@ -109,10 +109,12 @@ module SignatureVerification
   private
 
   def signature_params
-    @signature_params ||= begin
-      raw_signature = request.headers['Signature']
-      tree          = SignatureParamsParser.new.parse(raw_signature)
-      SignatureParamsTransformer.new.apply(tree)
+    unless @verified_data.present?
+      @signature_params ||= begin
+        raw_signature = request.headers['Signature']
+        tree          = SignatureParamsParser.new.parse(raw_signature)
+        SignatureParamsTransformer.new.apply(tree)
+      end
     end
   rescue Parslet::ParseFailed
     raise SignatureVerificationError, 'Error parsing signature parameters'
