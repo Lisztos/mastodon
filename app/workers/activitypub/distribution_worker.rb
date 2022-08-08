@@ -8,7 +8,7 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
     @account = @status.account
 
     Rails.logger.info "DistributionWorker.......Encrypted Payload: #{payload}"
-    
+
     distribute!
   rescue ActiveRecord::RecordNotFound
     true
@@ -25,7 +25,7 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
   end
 
   def payload
-    @payload = didcommize_payload(activitypub_payload) if @status.direct_visibility?
+    @payload = didcommize_payload if @status.direct_visibility?
 
     @payload ||= activitypub_payload
   end
@@ -34,9 +34,9 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
     Oj.dump(serialize_payload(activity, ActivityPub::ActivitySerializer, signer: @account))
   end
 
-  def didcommize_payload(payload)
-    Rails.logger.info "is Payload empty? #{payload}"
-    service = Did::DidcommService.new(payload: payload,
+  def didcommize_payload
+    Rails.logger.info "JWM PAYLOAD: #{jwm_payload}"
+    service = Did::DidcommService.new(payload: jwm_payload,
                                       from_account: @account,
                                       to_account: target_account,
                                       direction: :outgoing)
@@ -46,6 +46,13 @@ class ActivityPub::DistributionWorker < ActivityPub::RawDistributionWorker
 
   def activity
     ActivityPub::ActivityPresenter.from_status(@status)
+  end
+
+  def jwm_payload
+    body = serialize_payload(activity, ActivityPub::ActivitySerializer)
+    jwm = Didcomm::Jwm.new({id: @status.id, body: body})
+
+    jwm
   end
 
   def options

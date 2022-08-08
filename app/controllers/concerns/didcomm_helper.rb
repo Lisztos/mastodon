@@ -13,13 +13,13 @@ module DidcommHelper
   end
 
   def decrypt_payload!
-    service = Did::DidcommService.new(payload: request.raw_post,
+    service = Did::DidcommService.new(payload: @raw_data,
                                       to_account: set_didcomm_account,
                                       direction: :incoming)
     
     @verified_data, @signed_request_account = service.verified_payload_and_signer
 
-    Rails.logger.info "Verified_data: #{@verified_data}"
+    Rails.logger.info "------------Verified_data: #{@verified_data}"
   end
   
   private

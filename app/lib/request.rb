@@ -57,7 +57,7 @@ class Request
 
   def perform
     begin
-      Rails.logger.info "Performing request....Verb: #{@verb}, URL: #{@url.to_s}, headers: #{@headers}"
+      Rails.logger.info "Performing request....Verb: #{@verb}, URL: #{@url.to_s}, Options.merge(headers): #{headers}"
       response = http_client.public_send(@verb, @url.to_s, @options.merge(headers: headers))
     rescue => e
       raise e.class, "#{e.message} on #{@url}", e.backtrace[0]
@@ -110,7 +110,7 @@ class Request
   end
 
   def set_digest!
-    @headers['Digest'] = "SHA-256=#{Digest::SHA256.base64digest(@options[:body])}"
+    # @headers['Digest'] = "SHA-256=#{Digest::SHA256.base64digest(@options[:body])}"
   end
 
   def signature

@@ -103,7 +103,7 @@ module SignatureVerification
 
   def request_body
     @request_body = @verified_data if @verified_data.present?
-    @request_body ||= request.raw_post
+    @request_body ||= @raw_data
   end
 
   private

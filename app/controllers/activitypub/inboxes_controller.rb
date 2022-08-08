@@ -20,8 +20,12 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
   private
 
   def encrypted?
-    Rails.logger.info "URL: #{request.url}"
-    request.raw_post.start_with?(JWT_SUFFIX)
+    Rails.logger.info "raw post: #{request.raw_post}"
+    body = JSON.parse(request.raw_post).with_indifferent_access
+    Rails.logger.info "Body post: #{body[:payload]}"
+    
+    @raw_data = body[:payload]
+    @raw_data.start_with?(JWT_SUFFIX)
   end
 
   def skip_unknown_actor_activity
@@ -75,12 +79,12 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
     tree   = SignatureParamsParser.new.parse(raw_params)
     params = SignatureParamsTransformer.new.apply(tree)
 
-    ActivityPub::PrepareFollowersSynchronizationService.new.call(signed_request_account, params)
+    ActivityPub::PrepareFollowersSynchronizationService.new.call(@signed_request_account, params)
   rescue Parslet::ParseFailed
     Rails.logger.warn 'Error parsing Collection-Synchronization header'
   end
 
   def process_payload
-    ActivityPub::ProcessingWorker.perform_async(signed_request_account.id, body, @account&.id)
+    ActivityPub::ProcessingWorker.perform_async(@signed_request_account.id, body, @account&.id)
   end
 end

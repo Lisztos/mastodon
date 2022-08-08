@@ -11,6 +11,7 @@ class ActivityPub::DeliveryWorker
   sidekiq_options queue: 'push', retry: 16, dead: false
 
   HEADERS = { 'Content-Type' => 'application/activity+json' }.freeze
+  DIDCOMM_HEADERS = { 'Content-Type' => 'application/didcomm-encrypted+json' }.freeze
 
   def perform(json, source_account_id, inbox_url, options = {})
     Rails.logger.info "DeliveryWorker......."
@@ -41,7 +42,7 @@ class ActivityPub::DeliveryWorker
   def build_request(http_client)
     Request.new(:post, @inbox_url, body: @json, http_client: http_client).tap do |request|
       request.on_behalf_of(@source_account, :uri, sign_with: @options[:sign_with])
-      request.add_headers(HEADERS)
+      request.add_headers(DIDCOMM_HEADERS)
       request.add_headers({ 'Collection-Synchronization' => synchronization_header }) if ENV['DISABLE_FOLLOWERS_SYNCHRONIZATION'] != 'true' && @options[:synchronize_followers]
     end
   end

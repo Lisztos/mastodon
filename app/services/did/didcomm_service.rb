@@ -25,7 +25,7 @@ class Did::DidcommService < BaseService
   def encrypted_payload
     raise NotDidError unless to_account.is_did?
     encrypted_data = encrypt!
-    return encrypted_data
+    return Oj.dump({'payload' => encrypted_data})
   end
 
   def decrypted_payload
