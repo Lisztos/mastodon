@@ -25,7 +25,10 @@ class Did::DidcommService < BaseService
   def encrypted_payload
     raise NotDidError unless to_account.is_did?
     encrypted_data = encrypt!
-    return Oj.dump({'payload' => encrypted_data})
+
+    to_return = Oj.dump({'payload' => encrypted_data})
+    Rails.logger.info "This is the encrypted payload that will be sent now: #{to_return}"
+    return to_return
   end
 
   def decrypted_payload
@@ -36,11 +39,13 @@ class Did::DidcommService < BaseService
   def verified_payload_and_signer
     set_from_account if from_account.nil?
 
+    Rails.logger.info "Verfying signature from #{from_account.try(:display_name)}"
+
     [JWT.decode(decrypted_payload, public_key(from_account), true, { algorithm: 'RS256' })[0]['body'], from_account]
   end
 
   def encrypt!
-    Rails.logger.info "Encrypting payload: #{@payload}, with public_key: #{public_key(to_account)}"
+    Rails.logger.info "Encrypting payload with public_key of: #{to_account.try(:display_name)}"
 
     if direction == :outgoing && from_account.present? && to_account.present?
       JWE.encrypt(signed_payload, public_key(to_account))
@@ -49,6 +54,8 @@ class Did::DidcommService < BaseService
 
   def signed_payload
     private_key = private_key(from_account)
+
+    Rails.logger.info "Signing Payload with private key of #{from_account.try(:display_name)}"
     JWT.encode(@payload, private_key, 'RS256', { issuer: from_account.username })
   end
 
@@ -59,7 +66,7 @@ class Did::DidcommService < BaseService
     raise InvalidKeyForActionError unless private_key.private?
     return unless direction == :incoming && to_account.present?
 
-    Rails.logger.info "Decrypting Data: #{@payload} with private key of account: #{to_account.try(:display_name)}}"
+    Rails.logger.info "Decrypting Data with private key of account: #{to_account.try(:display_name)}}"
 
     JWE.decrypt(@payload, private_key)
   end

@@ -1,0 +1,22 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "http://chatty.social/users/did:example:123456789abcdefghi",
+  "type": "Person",
+  "following": "http://chatty.social/users/did:example:123456789abcdefghi/following",
+  "followers": "http://chatty.social/users/did:example:123456789abcdefghi/followers",
+  "inbox": "http://chatty.social/users/did:example:123456789abcdefghi/inbox",
+  "outbox": "http://chatty.social/users/did:example:123456789abcdefghi/outbox",
+  "featured": "http://chatty.social/users/did:example:123456789abcdefghi/collections/featured",
+  "featuredTags": "http://chatty.social/users/did:example:123456789abcdefghi/collections/tags",
+  "preferredUsername": "did:example:123456789abcdefghi",
+  "name": "Bob",
+  "summary": "",
+  "url": "http://chatty.social/@did:example:123456789abcdefghi",
+  "manuallyApprovesFollowers": false,
+  "discoverable": false,
+  "published": "2022-04-15T00:00:00Z",
+  "devices": "http://chatty.social/users/did:example:123456789abcdefghi/collections/devices",
+  "publicKey": {},
+  "tag": [],
+  "attachment": []
+}

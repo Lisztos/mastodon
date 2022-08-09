@@ -22,7 +22,6 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
   def encrypted?
     Rails.logger.info "raw post: #{request.raw_post}"
     body = JSON.parse(request.raw_post).with_indifferent_access
-    Rails.logger.info "Body post: #{body[:payload]}"
     
     @raw_data = body[:payload]
     @raw_data.start_with?(JWT_SUFFIX)

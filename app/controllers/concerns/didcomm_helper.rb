@@ -19,7 +19,7 @@ module DidcommHelper
     
     @verified_data, @signed_request_account = service.verified_payload_and_signer
 
-    Rails.logger.info "------------Verified_data: #{@verified_data}"
+    Rails.logger.info "Verified_data: #{@verified_data}"
   end
   
   private
