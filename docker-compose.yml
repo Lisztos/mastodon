@@ -90,10 +90,10 @@ services:
     networks:
       - test
 
-  driver-did-ion:
-    image: identityfoundation/driver-did-ion:v0.8.1
-    networks:
-      - test
+  # driver-did-ion:
+  #   image: identityfoundation/driver-did-ion:v0.8.1
+  #   networks:
+  #     - test
 
   uni-resolver-driver-did-uport:
     image: uport/uni-resolver-driver-did-uport:2.4.0
