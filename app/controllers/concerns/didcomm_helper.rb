@@ -17,9 +17,10 @@ module DidcommHelper
                                       to_account: set_didcomm_account,
                                       direction: :incoming)
     
-    @verified_data, @signed_request_account = service.verified_payload_and_signer
+    hash_data, @signed_request_account = service.verified_payload_and_signer
 
-    Rails.logger.info "Verified_data: #{@verified_data}"
+    @verified_data = Oj.dump(hash_data)
+    Rails.logger.info "Verified_data class: #{@verified_data.class}, contents: #{@verified_data}"
   end
   
   private

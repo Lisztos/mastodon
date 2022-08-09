@@ -21,10 +21,10 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
 
   def encrypted?
     Rails.logger.info "raw post: #{request.raw_post}"
-    body = JSON.parse(request.raw_post).with_indifferent_access
+    body = Oj.load(request.raw_post, mode: :strict).with_indifferent_access
     
-    @raw_data = body[:payload]
-    @raw_data.start_with?(JWT_SUFFIX)
+    @raw_data = Oj.dump(body[:payload])
+    body[:payload].start_with?(JWT_SUFFIX)
   end
 
   def skip_unknown_actor_activity
@@ -50,11 +50,12 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
     return @body if defined?(@body)
 
     if @verified_data.present?
-      @body = @verified_data.to_s
+      @body = @verified_data
+      Rails.logger.info "@Body #{@body.class} is now: #{@body}"
     else
-      @body = request.body.read
+      @body = @raw_data
     end
-    @body.force_encoding('UTF-8') if @body.present?
+    # @body.force_encoding('UTF-8') if @body.present?
 
     request.body.rewind if request.body.respond_to?(:rewind)
 
@@ -84,6 +85,7 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
   end
 
   def process_payload
+    Rails.logger.info "Calling process Payload with body: #{body}, and Account.id: #{@account.id}"
     ActivityPub::ProcessingWorker.perform_async(@signed_request_account.id, body, @account&.id)
   end
 end
