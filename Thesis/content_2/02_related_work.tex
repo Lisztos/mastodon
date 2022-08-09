@@ -7,24 +7,23 @@ The following chapter covers the most important and significant concepts that ar
 \section{ActivityPub}
 Present first activityStreams to then go ahead and explain how ActivityPub works:
 
-In 2018, Mastodon started using ActivityPub. A decentralized social network protocol based upon the Activity Streams 2.0 data format, which provides a data model for representing an \emph{"Activity"} using a JSON-based syntax \cite{snell_prodromou_2017}. ActivityStreams also provides a vocabulary that includes all the common terms you need to represent all the activities and content flowing around a social network. ActivityPub can be described as decentralized, because it provides two different APIs. The first one provides endpoints to connect clients to servers, and the second one, used in federated implementations, includes a server-to-server API \cite{lemmer-webber_tallon_guy_prodromou_2018}. After it was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon switched and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
+In 2018, Mastodon started using ActivityPub. A decentralized social network protocol based upon the Activity Streams 2.0 data format, which provides a data model for representing an "Activity" using a JSON-based syntax \cite{snell_prodromou_2017}. ActivityStreams also provides a vocabulary that includes all the common terms you need to represent all the activities and content flowing around a social network. ActivityPub can be described as decentralized, because it provides two different APIs. The first one provides endpoints to connect clients to servers, and the second one, used in federated implementations, includes a server-to-server API \cite{lemmer-webber_tallon_guy_prodromou_2018}. After it was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon switched and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
 
-\subsection{Security and Privacy}
-Some text here...
+% Security and Privacy
 
-\section{Mastodon}
-In today's most popular social networks like Facebook, Twitter, or Youtube there exists a centralized architecture that keeps millions of users in one single platform. In which control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created with the idea of bringing social networking back into the hands of its users. In the time when switching apps, services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could put an end to this, and \emph{last forever} \cite{tilley_2018}. Today, Mastodon is a network of more than 3,500 communities. Each operated by different individuals and organizations that implement their own policies, codes of conduct and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
-Mastodon takes a big share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world, that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe that is independent of any corporation or official institution. It is not profit-driven, and it gives you the freedom of choosing which service and instance of the Fediverse to register to. On top of that, you are free to run your own instance with your own policies and allow other users to join \cite{holloway_2018}. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
+% \section{Mastodon}
+% In today's most popular social networks like Facebook, Twitter, or Youtube there exists a centralized architecture that keeps millions of users in one single platform. Here, the control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created with the idea of bringing social networking back into the hands of its users. In the time when switching apps, services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could put an end to this, and last forever [https://medium.com/we-distribute/one-mammoth-of-a-job-an-interview-with-eugen-rochko-of-mastodon-23b159d6796a ]. Today, Mastodon is a network of more than 3,500 communities, each operated by different individuals and organizations that implement their own policies and code of conduct. By means of this,  the user has the opportunity to choose whichever instance he finds most appropriate.
+% Mastodon takes a big share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world, that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe that is independent of any corporation or official institution. It is not profit-driven, and it gives you the freedom of choosing which service and instance of the Fediverse to register to. On top of that, you are free to run your own instance with your own policies and allow other users to join [Los22]. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
 
-\subsection{Well-known Endpoints}
-\cite{nottingham_2019}
-As per documentation, Mastodon implements the following 4 different well-known endpoints: 
+% \subsection{Well-known Endpoints}
+% [https://datatracker.ietf.org/doc/html/rfc8615 ]
+% As per documentation, Mastodon implements the following 4 different well-known endpoints: 
 
 % \subsubsection{Change password}
 % This endpoint origins form the proposal of the Web Application Security Working Group (WebAppSec) from the W3C, whose main mission is to provide security and policy frameworks to increase web application security and enable safe cross-site communication (https://www.w3.org/groups/wg/). It defines a well-known URL that sites can use to make their change password forms discoverable by tools. This URL would enable software, specially password managers, to easily redirect users to the right link for them to change their password.
 
-\subsubsection{NodeInfo}
-NodeInfo is an initiative to standardize the presentation of metadata about a server operating one of the distributed social networks. The two main aims are to get greater insights into the distributed social networking user base and to provide tools that allow users to select the most suited software and server for their requirements. Mastodon is one of the implementers of this protocol, along with other federated social networks such as Diaspora, Peertube and Wordpress [http://nodeinfo.diaspora.software/ ]. NodeInfo specifies that servers must provide the well-known path /.well-known/nodeinfo and provide a JRD document referencing the supported documents via Link elements, as shown in \label{NodeInfo response example}. [http://nodeinfo.diaspora.software/protocol.html ] Accessing the hypertext reference from the JRD response will give a schematized series of metadata of the instance running the endpoint, such as NodeInfo schema version, software, protocols supported by the server, statistics and even a list of third-party services that can interact with the server via an API. Figure \label{NodeInfo response for mastodon.social} shows the NodeInfo 2.0 schema of the Mastodon instance mastodon.social. 
+% \subsubsection{NodeInfo}
+% NodeInfo is an initiative to standardize the presentation of metadata about a server operating one of the distributed social networks. The two main aims are to get greater insights into the distributed social networking user base and to provide tools that allow users to select the most suited software and server for their requirements. Mastodon is one of the implementers of this protocol, along with other federated social networks such as Diaspora, Peertube and Wordpress [http://nodeinfo.diaspora.software/ ]. NodeInfo specifies that servers must provide the well-known path /.well-known/nodeinfo and provide a JRD document referencing the supported documents via Link elements, as shown in \label{NodeInfo response example}. [http://nodeinfo.diaspora.software/protocol.html ] Accessing the hypertext reference from the JRD response will give a schematized series of metadata of the instance running the endpoint, such as NodeInfo schema version, software, protocols supported by the server, statistics and even a list of third-party services that can interact with the server via an API. Figure \label{NodeInfo response for mastodon.social} shows the NodeInfo 2.0 schema of the Mastodon instance mastodon.social. 
 
 % \begin{lstlisting}[language=json, caption=NodeInfo response example, label=NodeInfo response example, float=H]
 %   {
@@ -71,7 +70,7 @@ NodeInfo is an initiative to standardize the presentation of metadata about a se
 
 
 % \subsubsection{Web Host Metadata}
-%     Web host metadata is lightweight metadata document format that allows for the identification of host policy or information, where "host" refers to the entity in charge of a collection of resources defined by URIs with a common URI host. It employs the XRD 1.0 document format, which offers a basic and flexible XML-based schema for resource description. Moreover,  it provides two mechanisms for providing resource-specific information, specifically,  Link templates and Link-based Resource Descriptor Documents \(LDD\). On the one hand, link templates require a URI in order to be a functioning link, thus avoiding the use of fixed URIs. On the other hand, the "lrdd" relation type is used to relate LRDD documents to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, as shown in Figure \ref{host_metadata_response}, accessing the host-meta endpoint will give us back the "lrdd" link to the Webfinger endpoint. In which specific resource information can be found. 
+%     Web host metadata is lightweight metadata document format that allows for the identification of host policy or information, where "host" refers to the entity in charge of a collection of resources defined by URIs with a common URI host. It employs the XRD 1.0 document format, which offers a basic and flexible XML-based schema for resource description. Moreover,  it provides two mechanisms for providing resource-specific information, specifically,  Link templates and Link-based Resource Descriptor Documents (LRDD). On the one hand, link templates require a URI in order to be a functioning link, thus avoiding the use of fixed URIs. On the other hand, the "lrdd" relation type is used to relate LRDD documents to resources or host-meta documents [https://datatracker.ietf.org/doc/html/rfc6415 ]. In the specific case of the Mastodon implementation, as shown in Figure \ref{host_metadata_response}, accessing the host-meta endpoint will give us back the "lrdd" link to the Webfinger endpoint. In which specific resource information can be found. 
 
 % \begin{lstlisting}[language=HTTP, caption=Host Medata request, label="Host Metadata request]
 %     GET /.well-known/host-meta HTTP/1.1
@@ -86,41 +85,40 @@ NodeInfo is an initiative to standardize the presentation of metadata about a se
 %     </XRD>
 % \end{lstlisting}
 
-\subsubsection{Webfinger}
-Finally, Webfinger is the protocol in which Mastodon heavily relies for the discovery process and for its normal functioning \cite{rochko_2020}. Webfinger allows for discovering information about persons or other entities on the Internet using HTTP that would not otherwise be useful as a locator, such as a personal profile address, identity service, telephone number or an email. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the \emph{acct}\footnote{https://datatracker.ietf.org/doc/html/rfc7565} URI format, which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol to be used when interacting with the account. In the same way NodeInfo works, it returns a JRD Document describing the entity \cite{jones_salgueiro_jones_smarr_2013}.  Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD that is being provided by the WebFinger endpoint in the mastodon social instance when querying the account "acct:bob@mastodon.social".
+% \subsubsection{Webfinger}
+% Finally, Webfinger is the protocol in which Mastodon heavily relies for the discovery process and for its normal functioning [https://docs.joinmastodon.org/spec/webfinger/ ]. Webfinger allows for discovering information about persons or other entities on the Internet using HTTP that would not otherwise be useful as a locator, such as a personal profile address, identity service, telephone number or an email. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the "acct" URI format [https://datatracker.ietf.org/doc/html/rfc7565 fn], which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol to be used when interacting with the account. In the same way NodeInfo works, it returns a JRD Document describing the entity [https://datatracker.ietf.org/doc/html/rfc7033 ].  Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD that is being provided by the WebFinger endpoint in the mastodon social instance when querying Bob's account "acct:bob@mastodon.social".
 
-\lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=HTTP request to Webfinger endpoint, label=Webfinger request]
-  GET /.well-known/webfinger?resource=acct:bob@mastodon.social
-  Host: mastodon.social
-  Accept: application/xrd+xml
-\end{lstlisting}
+% \begin{lstlisting}[language=Json, caption=HTTP request to Webfinger endpoint, label=Webfinger request]
+%   GET /.well-known/webfinger?resource=acct:bob@mastodon.social
+%   Host: mastodon.social
+%   Accept: application/xrd+xml
+% \end{lstlisting}
 
-\begin{lstlisting}[language=PHP, caption=Webfinger response, label=Webfinger response from mastodon.social]
-{
-   "subject": "acct:bob@mastodon.social",
-   "aliases": [
-       "https://mastodon.social/@bob",
-       "https://mastodon.social/users/bob"
-   ],
-   "links": [
-       {
-           "rel": "http://webfinger.net/rel/profile-page",
-           "type": "text/html",
-           "href": "https://mastodon.social/@bob"
-       },
-       {
-           "rel": "self",
-           "type": "application/activity+json",
-           "href": "https://mastodon.social/users/bob"
-       },
-       {
-           "rel": "http://ostatus.org/schema/1.0/subscribe",
-           "template": "https://mastodon.social/authorize_interaction?uri={uri}"
-       }
-   ]
-}
-\end{lstlisting}
+% \begin{lstlisting}[language=Json, caption=Webfinger response, label=Webfinger response from mastodon.social]
+% {
+%    "subject": "acct:bob@mastodon.social",
+%    "aliases": [
+%        "https://mastodon.social/@bob",
+%        "https://mastodon.social/users/bob"
+%    ],
+%    "links": [
+%        {
+%            "rel": "http://webfinger.net/rel/profile-page",
+%            "type": "text/html",
+%            "href": "https://mastodon.social/@bob"
+%        },
+%        {
+%            "rel": "self",
+%            "type": "application/activity+json",
+%            "href": "https://mastodon.social/users/bob"
+%        },
+%        {
+%            "rel": "http://ostatus.org/schema/1.0/subscribe",
+%            "template": "https://mastodon.social/authorize_interaction?uri={uri}"
+%        }
+%    ]
+% }
+% \end{lstlisting}
 
 % \subsection{Security}
 

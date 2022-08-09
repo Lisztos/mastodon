@@ -219,6 +219,9 @@
 \definecolor{bluegrey}{cmyk}{0.56,0.24,0.11,0.05}
 \definecolor{javadoc}{cmyk}{0.88,0.59,0,0}
 \definecolor{lstgrey}{cmyk}{0.55,0.44,0.42,0.32}
+\definecolor{tablegray}{cmyk}{0.06,0.04,0,0.0196}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codegreen}{rgb}{0,0.6,0}
 
 \lstdefinelanguage{SQL}{
      keywords={},
@@ -259,37 +262,6 @@
      morestring=[b]',
      morestring=[b]"
   }
-\colorlet{punct}{red!60!black}
-\definecolor{background}{HTML}{EEEEEE}
-\definecolor{delim}{RGB}{20,105,176}
-\colorlet{numb}{magenta!60!black}
-
-\lstdefinelanguage{json}{
-  basicstyle=\normalfont\ttfamily,
-  numbers=left,
-  numberstyle=\scriptsize,
-  stepnumber=1,
-  numbersep=8pt,
-  showstringspaces=false,
-  breaklines=true,
-  frame=lines,
-  backgroundcolor=\color{background},
-  literate=
-    *{0}{{{\color{numb}0}}}{1}
-    {1}{{{\color{numb}1}}}{1}
-    {2}{{{\color{numb}2}}}{1}
-    {3}{{{\color{numb}3}}}{1}
-    {4}{{{\color{numb}4}}}{1}
-    {5}{{{\color{numb}5}}}{1}
-    {6}{{{\color{numb}6}}}{1}
-    {7}{{{\color{numb}7}}}{1}
-    {8}{{{\color{numb}8}}}{1}
-    {9}{{{\color{numb}9}}}{1}
-    {:}{{{\color{punct}{:}}}}{1}
-    {,}{{{\color{punct}{,}}}}{1}
-    {\{}{{{\color{delim}{\{}}}}{1}
-    {\}}{{{\color{delim}{\}}}}}{1}
-}
 
 \lstdefinelanguage{HTTP}{
   basicstyle=\normalfont\ttfamily,
@@ -316,6 +288,25 @@
     {,}{{{\color{punct}{,}}}}{1}
     {\{}{{{\color{delim}{\{}}}}{1}
     {\}}{{{\color{delim}{\}}}}}{1}
+}
+\lstdefinestyle{JSONStyle}{
+	backgroundcolor=\color{tablegray},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{black},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codegreen},
+	basicstyle=\ttfamily\scriptsize,
+	numbers=left,
+	stepnumber=1,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
 }
 
 \lstdefinelanguage{Java}{
