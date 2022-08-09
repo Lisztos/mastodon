@@ -6,7 +6,7 @@ class Did::DidcommService < BaseService
   attr_accessor :from_account, :to_account, :direction
 
   def initialize(payload:, from_account: nil, to_account:, direction:)
-    @payload      = Oj.load(payload, mode: :strict)
+    @payload      = direction == :incoming ? Oj.load(payload, mode: :strict) : payload
     @from_account = from_account
     @to_account   = to_account
     @direction    = direction
