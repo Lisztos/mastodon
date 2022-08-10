@@ -6,19 +6,18 @@ The following chapter covers the most important and significant concepts that ar
 
 \section{ActivityPub}
 
-Present first activityStreams to then go ahead and explain how ActivityPub works:
-
+\subsection{Definition}
 In 2018, Mastodon started using ActivityPub. A decentralized social network protocol based upon the Activity Streams 2.0 data format, which provides a data model for representing an \emph{"Activity"} using a JSON-based syntax \cite{snell_prodromou_2017}. ActivityStreams also provides a vocabulary that includes all the common terms you need to represent all the activities and content flowing around a social network. ActivityPub can be described as decentralized, because it provides two different APIs. The first one provides endpoints to connect clients to servers, and the second one, used in federated implementations, includes a server-to-server API \cite{lemmer-webber_tallon_guy_prodromou_2018}. After it was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon switched and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
 
-\subsection{Security and Privacy}
+\subsection{Security considerations}
 Some text here...
 
 \section{Mastodon}
-
+\subsection{Definition}
 In today's most popular social networks like Facebook, Twitter, or Youtube there exists a centralized architecture that keeps millions of users in one single platform. In which control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created with the idea of bringing social networking back into the hands of its users. In the time when switching apps, services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could put an end to this, and \emph{last forever} \cite{tilley_2018}. Today, Mastodon is a network of more than 3,500 communities. Each operated by different individuals and organizations that implement their own policies, codes of conduct and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
 Mastodon takes a big share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world, that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe that is independent of any corporation or official institution. It is not profit-driven, and it gives you the freedom of choosing which service and instance of the Fediverse to register to. On top of that, you are free to run your own instance with your own policies and allow other users to join \cite{holloway_2018}. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
 
-\subsection{Well-known Endpoints}
+\subsection{Discovery}
 
 \cite{nottingham_2019}
 As per documentation, Mastodon implements the following 4 different well-known endpoints: 
@@ -158,25 +157,25 @@ The DID itself is a URI\footnote{https://www.rfc-editor.org/rfc/rfc3986} that co
   \label{fig:did}
 \end{figure}
 
-\subsection{DID-URL}
+\subsection{DID URL}
 
 A DID can include path, query and fragment in order to be able to locate a specific resource inside a DID document, as shown in \ref{fig:did_architecture}
 
 
-\subsection{DID-Subject}
+\subsection{DID Subject}
 
-Refers to the entity being identified by the DID. According to the specification \cite{sporny_longley_sabadello_reed_steele_2021}, any person, group, organization, physical thing, digital thing or logical thing can be a DID-Subject.
+Refers to the entity being identified by the DID. According to the specification \cite{sporny_longley_sabadello_reed_steele_2021}, any person, group, organization, physical thing, digital thing or logical thing can be a DID Subject.
 
-\subsection{DID-Controller}
+\subsection{DID Controller}
 
-The DID-controller is the entity that has the capability to make changes to the DID-Document. This entity is not necessarily the DID-Subject itself.
+The DID controller is the entity that has the capability to make changes to the DID Document. This entity is not necessarily the DID Subject itself.
   
-\subsection{DID-Document}
+\subsection{DID Document}
 
-They contain information associated with a DID. They usually describe verification methods, such as cryptographic public keys, as well as services that are relevant to interactions with the DID-subject. An example of a DID Document can be seen in \ref{fig:did_document}.
+They contain information associated with a DID. They usually describe verification methods, such as cryptographic public keys, as well as services that are relevant to interactions with the DID Subject. An example of a DID Document can be seen in \ref{fig:did_document}.
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Example DID-Document, label=fig:did_document]
+\begin{lstlisting}[language=PHP, caption=Example DID Document, label=fig:did_document]
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:example:123456789abcdefghi",
@@ -198,36 +197,36 @@ They contain information associated with a DID. They usually describe verificati
 
 % \end{lstlisting}
 
-The only required attribute for a DID-Document is the ID. Other optional attributes include a controller, which specifies the DID-controller; verification methods, used to authenticate or authorize interactions with the DID subject or associated parties; and services, which can be any type of service the DID subject wants to advertise, including decentralized identity management services for further discovery, authentication, authorization, or interaction.
+The only required attribute for a DID Document is the ID. Other optional attributes include a controller, which specifies the DID Controller; verification methods, used to authenticate or authorize interactions with the DID subject or associated parties; and services, which can be any type of service the DID subject wants to advertise, including decentralized identity management services for further discovery, authentication, authorization, or interaction.
  
 
-\subsection{DID-methods}
+\subsection{DID methods}
 
-DID-methods describe the processes for CRUD operations for DIDs and DID documents, based on a specific type of verifiable data registry. Each DID-method describe and implement their own security and privacy considerations. According to the DID registry of the W3C\footnote{https://www.w3.org/TR/did-spec-registries/\#did-methods}, there are around 130 registered DID-Methods. Based on their characteristics and patterns, the following a 4-way classification of DIDs has arised.
+DID methods describe the processes for CRUD operations for DIDs and DID documents, based on a specific type of verifiable data registry. Each DID method describes and implements its own security and privacy considerations. According to the DID registry of the W3C\footnote{https://www.w3.org/TR/did-spec-registries/\#did-methods}, there are around 130 registered DID methods. Based on their characteristics and patterns, the following 4-way classification of DIDs has arisen.
 
 \begin{itemize}
   \item \textbf{Ledger-based DIDs}: This includes all the DIDs that store DIDs in a blockchain or other Distributed Ledger Technologies (DLTs). Examples include did:btcr, did:ethr and did:trx, whose DIDs are stored correspondingly in the Bitcoin, Ethereum and Tron network \cite{preukschat_reed_2021}.
-  \item \textbf{Ledger Middleware ("Layer 2") DIDs}: Broadly speaking, Layer 2 refers to a framework or protocol that is built on top of an existing blockchain system that takes the transactional burden away from layer 1 and post finalized proofs back to layer 1. By removing this transaction load from layer 1, the base layer becomes less congested, and everything becomes more scalable [https://ethereum.org/en/layer-2/ ]. The Lightning Network ( \, LN	) \, is an example of a layer 2 Bitcoin protocol that offers users a fast micro-payment platform. Furthermore, regarding Layer 2 DID methods, the DIF has developed Sidetree\footnote{https://github.com/decentralized-identity/sidetree}. A protocol for creating scalable blockchain-agnostic Decentralized Identifier networks that enables users to create globally unique, user-controlled identifiers and manage their associated PKI metadata, without the need for centralized authorities or trusted third parties \cite{buchner_steele_ronda_2021}.
-  Examples include: did:ion, did: elem.
-  \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable, however not all of them have to be globally resolvable. The DIDs in this category do not exist on a global source of truth, but in a context of  relationships between peers in a limited number of participants. Nonetheless, their validity is not affected due to the fact that they comply with the core properties and functionalities that a DID has to provide. 
+  % \item \textbf{Ledger Middleware ("Layer 2") DIDs}: Broadly speaking, Layer 2 refers to a framework or protocol that is built on top of an existing blockchain system that takes the transactional burden away from layer 1 and post-finalized proofs back to layer 1. By removing this transaction load from layer 1, the base layer becomes less congested, and everything becomes more scalable [https://ethereum.org/en/layer-2/ ]. The Lightning Network ( \, LN	) \, is an example of a layer 2 Bitcoin protocol that offers users a fast micro-payment platform. Furthermore, regarding Layer 2 DID methods, the DIF has developed Sidetree\footnote{https://github.com/decentralized-identity/sidetree}. A protocol for creating scalable blockchain-agnostic Decentralized Identifier networks that enable users to create globally unique, user-controlled identifiers and manage their associated PKI metadata, without the need for centralized authorities or trusted third parties \cite{buchner_steele_ronda_2021}.
+  Examples include: did:ion, did:elem.
+  \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable, however not all of them have to be globally resolvable. The DIDs in this category do not exist on a global source of truth but in the context of relationships between peers in a limited number of participants. Nonetheless, their validity is not affected since they comply with the core properties and functionalities that a DID has to provide. 
 
-  \item \textbf{Static DIDs}: This type of DIDs are limited in the kind of operations that can be performed to them. These DIDs are not stored in any registry, consequently, it is not possible to update, deactivate or rotate them. Using the did:key method as an example, the DID-method-specific part of the DID is encoded in a way that the DID document can be deterministically extracted from the DID itself \cite{longley_zagidulin_sporny_2022}.
+  \item \textbf{Static DIDs}: This type of DIDs are limited in the kind of operations that can be performed on them. These DIDs are not stored in any registry, consequently, it is not possible to update, deactivate or rotate them. Using the did:key method as an example, the DID-method-specific part of the DID is encoded in a way that the DID document can be deterministically extracted from the DID itself \cite{longley_zagidulin_sporny_2022}.
 \end{itemize}
 
 
-did:ethr:
-This DID-method was registered by Uport, an Ethereum-based system for self sovereign identity \cite{Lundkvist_Heck_Torstensson_Mitton_Sena_2016}. It allows any Ethereum smart contract or key pair account, or any secp256k1 public key to become a valid identifier \cite{nistor_grassberger_carlin_2022}. UPort is a smart-contract-based system that abstracts user accounts using proxy contracts that are held by the user but may be retrieved if keys are lost. To do this, controller contracts create trusted entities for asserting ownership \cite{8783188}
+did:ethr
+This DID method was registered by Uport, an Ethereum-based system for self-sovereign identity \cite{Lundkvist_Heck_Torstensson_Mitton_Sena_2016}. It allows any Ethereum smart contract or key pair account, or any secp256k1 public key to becoming a valid identifier \cite{nistor_grassberger_carlin_2022}. UPort is a smart-contract-based system that abstracts user accounts using proxy contracts that are held by the user but may be retrieved if keys are lost. To do this, controller contracts create trusted entities for asserting ownership \cite{8783188}
 
 
-% did:ens:
+did:ens:
 % The Ethereum Name Service (ENS) is a distributed, open, and extensible naming system based on the Ethereum blockchain. Its purpose is to map names like 'bob.eth' into machine-readable identifiers like Ethereum addresses, other cryptocurrency addresses, content hashes, and metadata. In the same way the Domain Name System (DNS) maps human-readable domains like 'google.com' to IP addresses. However, their architecture differs due to the capabilities and constraints of the Ethereum blockchain. (https://github.com/veramolabs/did-ens-spec )
-% This DID-Method was registered by Consensys, a blockchain venture studio founded by Ethereum's cofounder Joseph Lubin that supports Ethereum-based projects. Some of these projects include uPort, Metamask, Civil, Truffle and Gnosis. [https://decrypt.co/resources/consensys]. 
+% This DID method was registered by Consensys, a blockchain venture studio founded by Ethereum's cofounder Joseph Lubin that supports Ethereum-based projects. Some of these projects include uPort, Metamask, Civil, Truffle and Gnosis. [https://decrypt.co/resources/consensys]. 
 
 
-% This DID-method was created with the following objectives, firstly to integrate ENS names to be interoperable with applications that implement DIDs, and secondly, to add DID-capabilities to ENS names such as services and verification methods [https://github.com/veramolabs/did-ens-spec].
+% This DID method was created with the following objectives, firstly to integrate ENS names to be interoperable with applications that implement DIDs, and secondly, to add DID-capabilities to ENS names such as services and verification methods [https://github.com/veramolabs/did-ens-spec].
 
 % did:ion:
-% This DID-method works by registering DIDs to the Bitcoin network. Launched to the public in March 2021, Identity Overlay Network (ION) is Microsoft's DID-network built on top of the Bitcoin Network implemented using Sidetree (https://techcommunity.microsoft.com/t5/identity-standards-blog/ion-we-have-liftoff/ba-p/1441555 ). 
+% This DID method works by registering DIDs to the Bitcoin network. Launched to the public in March 2021, Identity Overlay Network (ION) is Microsoft's DID-network built on top of the Bitcoin Network implemented using Sidetree (https://techcommunity.microsoft.com/t5/identity-standards-blog/ion-we-have-liftoff/ba-p/1441555 ). 
 % ION is public, permissionless, it does not implement its own currency and its nodes do not require an additional consensus mechanism. (https://github.com/decentralized-identity/ion ).
 
 \subsection{Verifiable Data Registry}
@@ -236,7 +235,7 @@ Essentially, any system that enables capturing DIDs and returning required data 
 
 \subsection{DID resolver}
 
-A DID-resolver is able to implement the DID-resolution, which consists of taking a DID as an input, and giving a DID Document as an output \cite{sporny_longley_sabadello_reed_steele_2021}. As of the writing of this thesis, the Identifiers \& Discovery Working Group (ID WG) has implemented a prototype Universal Resolver\footnote{https://github.com/decentralized-identity/universal-resolver}, which allows the resolution of DIDs for numerous DID-methods, including all the examples mentioned above. In addition, this working group has also developed a Universal Registrar\footnote{https://uniregistrar.io/}, which allows the creation, edition and deactivation of the DIDs across different DID-methods.
+A DID resolver is able to implement the DID resolution, which consists of taking a DID as an input, and giving a DID Document as an output \cite{sporny_longley_sabadello_reed_steele_2021}. As of the writing of this thesis, the Identifiers \& Discovery Working Group (ID WG) has implemented a prototype Universal Resolver\footnote{https://github.com/decentralized-identity/universal-resolver}, which allows the resolution of DIDs for numerous DID methods, including all the examples mentioned above. In addition, this working group has also developed a Universal Registrar\footnote{https://uniregistrar.io/}, which allows the creation, edition and deactivation of the DIDs across different DID methods.
 
 % Comparing DIDs with other identifiers
 
@@ -265,11 +264,11 @@ A DID-resolver is able to implement the DID-resolution, which consists of taking
 
 
 
-\section{DIDComm Messaging}
+\section{DIDComm Messaging}\label{section:didcomm}
 
 \subsection{Definition}
 
-The Hyperledger Foundation is an open-source collaborative effort intended to further develop blockchain technologies across industries \cite{jones_boswell_2022}. Started in 2016 by the Linux Foundation, it has given birth to numerous enterprise-grade software open-source projects that can be classified into DLTs, libraries, tools and labs \cite{lusard_lehors_muscara_boswell_zsigri_2021}. One of these graduated projects is Hyperledger Aries, which together with Hyperledger Indy (HI) and Hyperledger Ursa (HU), makes up the Sovereign Identity Blockchain Solutions of Hyperledger. HI supplies a distributed ledger specifically built for decentralized identity, HU is a shared cryptography library that helps to avoid duplicating cryptographic work across projects while also potentially increasing security. Finally, Aries provides solutions for SSI-based identity management, including key management, credential management, and an encrypted, peer-to-peer DID-based messaging system that is now labeled as Didcomm v1 \cite{jones_boswell_2022}. 
+The Hyperledger Foundation is an open-source collaborative effort intended to further develop blockchain technologies across industries \cite{jones_boswell_2022}. Started in 2016 by the Linux Foundation, it has given birth to numerous enterprise-grade software open-source projects that can be classified into DLTs, libraries, tools and labs \cite{lusard_lehors_muscara_boswell_zsigri_2021}. One of these graduate projects is Hyperledger Aries, which together with Hyperledger Indy (HI) and Hyperledger Ursa (HU), makes up the Sovereign Identity Blockchain Solutions of Hyperledger. HI supplies a distributed ledger specifically built for decentralized identity, HU is a shared cryptography library that helps to avoid duplicating cryptographic work across projects while also potentially increasing security. Finally, Aries provides solutions for SSI-based identity management, including key management, credential management, and an encrypted, peer-to-peer DID-based messaging system that is now labeled as Didcomm v1 \cite{jones_boswell_2022}. 
 Based on Didcomm v1, the Communication Working Group (CWG) of the DIF has implemented DIDcomm v2. Among other key differences between versions, such as formalizations of Didcomm v1 methods, Didcomm v2 has removed the special handling of Peer-DIDs in order to make all DIDs equal from the perspective of the DIDComm spec. Furthermore, the CWG pursues the standardization of DIDcomm not only to widen its implementation beyond Aries-based projects but to create an interoperable layer that would allow higher-order protocols to build upon its security, privacy, decentralization, and transport independence in the same way web services build upon HTTP. \cite{young_2020} \cite{curren_looker_terbu_2020}
 
 From this point on, we are going to refer to DIDComm Messaging v2 only as DIDComm. Didcomm can be described as a communication protocol that promises a secure and private methodology that builds on top of the decentralized design of DIDs. Moreover, Didcomm is a very versatile protocol, as it supports a wide range of features, such as security, privacy, decentralization, routable, interoperability, and the ability to be transport-agnostic \cite{curren_looker_terbu_2020}.
@@ -304,13 +303,13 @@ To better understand how it works, let's look at how it would work in a scenario
 
 % [https://arxiv.org/pdf/2006.02456.pdf ]
 
-DIDComm differs from the current dominant web paradigm, where something as simple as an API call requires an almost immediate response through the same channel from the receiving end. This duplex request-response interaction is, however, not always possible as many agents may not have a constant network connection, or may interact only in larger time frames, or may even not listen over the same channel where the original message was sent. DIDComm's paradigm is asynchronous and simplex. Thus showing a bigger resemblance with the email paradigm. Furthermore, the web paradigm goes under the assumption that traditional methods for processes like authentication, session management, and end-to-end encryption are being used. Didcomm does not require certificates from external parties to establish trust, nor does it require constant connections for end-to-end transport-level encryption (TLS). Taking the security and privacy responsibility away from institutions and placing it with the agents. All of this without limiting the communication possibilities because of its ability to function as a base layer where opposed capabilities like sessions and synchronous interactions can be built upon. \cite{curren_looker_terbu_2020}
+DIDComm differs from the current dominant web paradigm, where something as simple as an API call requires an almost immediate response through the same channel from the receiving end. This duplex request-response interaction is, however, not always possible as many agents may not have a constant network connection or may interact only in larger time frames, or may even not listen over the same channel where the original message was sent. DIDComm's paradigm is asynchronous and \emph{simplex}. Thus showing a bigger resemblance with the email paradigm. Furthermore, the web paradigm goes under the assumption that traditional methods for processes like authentication, session management, and end-to-end encryption are being used. Didcomm does not require certificates from external parties to establish trust, nor does it require constant connections for end-to-end transport-level encryption (TLS). Taking the security and privacy responsibility away from institutions and placing it with the agents. All of this without limiting the communication possibilities because of its ability to function as a base layer where opposed capabilities like sessions and synchronous interactions can be built upon. \cite{curren_looker_terbu_2020}
 
 To achieve the encryption and signing processes mentioned in algorithm \ref{alg:didcomm_example}, Didcomm implements a family of the Internet Engineering Task Force (IETF) standards, collectively called JSON Object Signing and Encryption (JOSE), which will be further explained in the next section. 
 
 \subsection{JOSE Family}
 
-This RFC family includes both the Json Web Signature (JWS) and the Json Web Encryption (JWE) standards that are subclasses of the Json Web Token (JWT), and Json Web Key (JWK).
+This RFC family includes both the JSON Web Signature (JWS) and the JSON Web Encryption (JWE) standards that are subclasses of the JSON Web Token (JWT), and JSON Web Key (JWK).
 
 Compare with other encryption methods. (TLS, Whatsapp end-to-end, Signal) (Use image below)
  

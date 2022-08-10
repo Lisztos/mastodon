@@ -1,4 +1,126 @@
 \chapter{Implementation}
 \label{cha:implementation}
 
-Describe the details of the actual implementation here...
+\section{Mastodon}
+
+The source code\footnote{https://github.com/mastodon/mastodon} of Mastodon is open source and accessible for everyone to download. The requirements to run a mastodon server include Ubuntu 20.04 or Debian 11 for the operating system, a domain name, an email delivery service, and an object storage service optionally. The prototype was implemented using two different servers. The first was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one. However, the latter was mainly used for debugging requests and testing the new discovery process. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de/}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers. The whole project is containerized using docker, and a docker-compose.yml file for production is given. A Vagrant file is also provided for development, but for this Thesis, a custom dockerfile was written to run Mastodon in development mode. The core backend was implemented using the Model-View-Controller (MVC) server-side framework Ruby on Rails (RoR), which, as the name says, is based on the programming language ruby. The backend manages a Postgres relational database, implements the ActivityPub server, provides a REST API for the frontend, and serves web pages in the about-endpoint. In addition, Mastodon offers a node.js-based streaming API that sends real-time updates through long-lived HTTP connections or WebSockets \cite{rochko_2020}. The frontend of Mastodon was developed using the React framework, which manages most of the dynamic parts of the social network.
+
+\subsection{DIDs}
+
+Replacing standard usernames with DIDs in Mastodon. 
+
+
+\section{Creating and editing a DID document}
+Creating a DID is rather a simple task. This prototype's main challenge was finding a DID method that would allow CRUD operations to add the service endpoint and a \emph{keyAgreement} key to its DID Document without needing to pay any GAS or any other kind of fees. My first option was MATTR\footnote{https://mattr.global}, which offers creating DIDs using \emph{did:key}, \emph{did:web} and \emph{did:ion} methods. However, they would not allow creating own keys or accessing private keys, which is necessary according to \autoref{section:enabling_didcomm}. Furthermore, any editing of the DID document was also restricted. Independent from MATTR, \emph{did:ion} offers a set of tools\footnote{https://github.com/decentralized-identity/ion-tools} to perform CRUD operations in a self-created DID and DID document. These tools are bundled in a library called ION.js, which wraps the SDK and provides an interface to interact easily with the components of ION. However, even though the \emph{update} operation is allowed, it was not possible to fetch a previously created DID and then update it, which was a necessary step. More users have encountered this issue\footnote{https://github.com/decentralized-identity/ion-tools/discussions/25}, but so far, it has not been addressed by the developers. An alternative to ledger-based DIDs developed for this thesis was using the \emph{did:web} method. This method allows hosting the DID Document on any server, giving the owner full control. This way, any new field or attribute could be added without the burden of making a third-party library work. The DID is \emph{did:web:lisztos.com} and an example of my self-hosted DID Document can be seen in figure \ref{fig:did_web_doc}.
+
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=did:web DID Document, label=fig:did_web_doc, float=h]
+  {
+    "context": "https://www.w3.org/ns/did/v1",
+    "id": "did:web:lisztos.com",
+    "publicKey": {
+        "id": "did:web:lisztos.com#main-key",
+        "controller": "did:web:lisztos.com",
+        "type": "RSA",
+        "publicJwk": {...}
+    },
+    "authentication": [
+        "did:web:lisztos.com#main-key"
+    ],
+    "assertionMethod": [
+        "did:web:lisztos.com#main-key"
+    ],
+    "capabilityDelegation": [
+        "did:web:lisztos.com#main-key"
+    ],
+    "capabilityInvocation": [
+        "did:web:lisztos.com#main-key"
+    ],
+    "keyAgreement": {
+        "id": "did:web:lisztos.com#main-key",
+        "controller": "did:web:lisztos.com",
+        "type": "RSA",
+        "publicJwk": {...}
+    },
+    "service": [
+        {
+            "id": "did:web:lisztos.com#ActivityPub",
+            "type": "ActivityPub",
+            "serviceEndpoint": "https://lisztos.com/users/@did:web:lisztos.com"
+        }
+    ]
+}
+\end{lstlisting}
+
+
+Nonetheless, the discovery process of this type of DID relies heavily on DNS because the DID resolver makes a GET request to the \emph{.well-known/did} endpoint of the domain in the DID to retrieve the DID document. This dependency on the domain would prevent achieving our goal of independence of centralized services. 
+
+Another DID method researched was the Uport-developed \emph{did:ethr}. Uport is now divided into two projects, namely Serto\footnote{https://serto.id} and Veramo\footnote{https://veramo.io}. Each one of them offers a decentralized identity solution. On the one hand, Serto provides a platform in the AWS Marketplace that can be easily deployed and would allow a user to create and manage DIDs from the \emph{did:ethr} method. Unfortunately, after failing to deploy the EC2 instance and contacting Serto's customer support, it turned out that they were having problems with the IAM permissions, and it was temporarily not available. On the other hand, Veramo offers a typescript-based API that allows users to manage DIDs not only in the Ethereum leading network but also in other test networks such as Ropsten and Rinkeby. This allows making CRUD operations to DIDs without incurring costs. Veramo provides a setup guide\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers}, where the only thing needed externally is an Infura\footnote{https://infura.io} account to use it as a Web3 Provider. Two DIDs were created in the Ropsten network for Alice and Bob, respectively. Figure \ref{fig:default_did_document_ethr} shows the default DID document that gets created when creating a new DID.
+
+\begin{itemize}
+  \item \textbf{Alice:} 
+  did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468\\e6a00cc6c4d.
+  \item \textbf{Bob:} 
+did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833d\\dd56397c37
+\end{itemize}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Initial DID document for Alice, label=fig:default_did_document_ethr, float=h]
+  {
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+  ],
+  "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+  "verificationMethod": [
+    {
+      "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
+      "type": "EcdsaSecp256k1RecoveryMethod2020",
+      "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+      "blockchainAccountId": "eip155:3:0xcDC3B55934073f7BCA8a34d0561006CC1f26E9Fa"
+    },
+    {
+      "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controllerKey",
+      "type": "EcdsaSecp256k1VerificationKey2019",
+      "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+      "publicKeyHex": "023ea34111106fc45001a76aed5681f8187c56d6eaf0a55fc9af92d11c2732c2c8"
+    },
+  ],
+  "authentication": [
+    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
+    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controllerKey"
+  ],
+  "assertionMethod": [
+    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
+    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controllerKey",
+  ],
+  "service": []
+}
+\end{lstlisting}
+
+\subsection{Adding a service}
+
+For DIDComm to work in our proposed implementation, a service endpoint with the profile URL must be added to the DID document of Bob and Alice, respectively. The parameters required for Veramo's API to process the information correctly, as shown in figure \ref{fig:add_service_payload}, are the DID, the service object, and options for the Web3 provider. The service object includes a type, the service endpoint, and a description. The service's id is optional, as the Web3 Provider will overwrite it. 
+
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:add_service_payload, float=h]
+  const service_args= {
+    did: <alice DID>,
+    service: {
+      id: 'ActivityPub', // This field will be overwritten
+      type: "ActivityPub",
+      serviceEndpoint: "http://lisztos.com/users/" + <alice DID>,
+      description: "DIDComm enabled ActivityPub Actor"
+    },
+    options: {
+      gas: 100_000, // between 40-60000
+      ttl: 60 * 60 * 24 * 365 * 10 // make the service valid for ~10 years
+    }
+  }
+\end{lstlisting}
+
+
+\subsection{Adding a key}
+Finally, the last required editing task in the DID document is to add a public key. As explained in 
