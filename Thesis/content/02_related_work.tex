@@ -2,12 +2,44 @@
 \label{cha:relatedwork}
 
 
-The following chapter covers the most important and significant concepts that are required to fully comprehend the approach of this thesis. This includes a closer look at decentralized  communication protocols and identifier standards, as well as social networks that implement them. The revision and structuring of these concepts allows us to understand, build upon, and apply them in order to address our identified research questions. 
+The following chapter covers the most significant concepts that are required to fully comprehend the approach of this thesis. This includes a closer look at decentralized communication protocols and identifier standards, as well as social networks that implement them. The revision and structuring of these concepts allow us to understand, build upon, and apply them to address our identified research questions. 
 
 \section{ActivityPub}
 
+Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs with a focus on social interactions. In addition, systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations including a collection of standards that enable various aspects of decentralized social interaction on the Web\cite{celik_prodromou_le_hors_2014}. 
+
+To be able to describe what a social activity is, it is important to first describe an Activity. One of the standards of the SocialWG is ActivityStreams 2.0. This standard provides a data model for representing \emph{"Activities"} using a JSON-based syntax and a vocabulary that includes all the common terms needed to represent social activities \cite{snell_prodromou_2017}. ActivityStreams describes an activity following a story of \emph{an actor performing an action on an object} and specifies different types of actors, activities and objects\ref{table:activitystreams_vocabulary}. This creates a solid foundation, on which other protocols can build. 
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{| l | l | l |}
+		\hline
+    Activities & Actors & Objects \\
+		\hline
+		\hline
+      Like & Application & Note \\
+    \hline
+     Follow  & Group & Document \\
+    \hline
+      Update & Organization & Image \\
+    \hline
+      Create & Person & Article \\
+    \hline
+      View & Service & Profile \\
+    \hline
+      ...  & & ...\\
+    \hline
+	\end{tabular}
+	\caption{ActivityStreams 2.0 vocabulary examples}
+  \label{table:activitystreams_vocabulary}
+\end{table}
+
+
 \subsection{Definition}
-In 2018, Mastodon started using ActivityPub. A decentralized social network protocol based upon the Activity Streams 2.0 data format, which provides a data model for representing an \emph{"Activity"} using a JSON-based syntax \cite{snell_prodromou_2017}. ActivityStreams also provides a vocabulary that includes all the common terms you need to represent all the activities and content flowing around a social network. ActivityPub can be described as decentralized, because it provides two different APIs. The first one provides endpoints to connect clients to servers, and the second one, used in federated implementations, includes a server-to-server API \cite{lemmer-webber_tallon_guy_prodromou_2018}. After it was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon switched and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
+A decentralized 
+is a decentralized social network protocol. 
+
+ActivityPub is decentralized because it provides two different APIs. The first one provides endpoints to connect clients to servers, .The second one, used in federated implementations, includes a server-to-server API \cite{lemmer-webber_tallon_guy_prodromou_2018}. 
 
 \subsection{Security considerations}
 Some text here...
@@ -16,6 +48,12 @@ Some text here...
 \subsection{Definition}
 In today's most popular social networks like Facebook, Twitter, or Youtube there exists a centralized architecture that keeps millions of users in one single platform. In which control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created with the idea of bringing social networking back into the hands of its users. In the time when switching apps, services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could put an end to this, and \emph{last forever} \cite{tilley_2018}. Today, Mastodon is a network of more than 3,500 communities. Each operated by different individuals and organizations that implement their own policies, codes of conduct and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
 Mastodon takes a big share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world, that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe that is independent of any corporation or official institution. It is not profit-driven, and it gives you the freedom of choosing which service and instance of the Fediverse to register to. On top of that, you are free to run your own instance with your own policies and allow other users to join \cite{holloway_2018}. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
+
+After ActivityPub was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon decided to switch from its prior and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
+
+Mastodon is a DOSN with microblogging features, where each server runs open source software. The basic aim of the project, which dates to 2016, is to restore control of the content distribution channels to the people by avoiding the insertion of sponsored users or posts in the feeds. From an architectural viewpoint, the platform follows a federated architecture organized into two layers implementing the ActivityPub protocol,1 as shown in Fig.1. The ActivityPub protocol allows it both to manage the communications (black links) among the servers – instances – comprising the federation and to offer a client-to-server interface which enables interactions (blue links) among the users having their accounts on the instances. In the server-to-server layer the instances form a network, and each of them administrates its 1https://www.w3.org/TR/activitypub/ Instance 1 Instance 2 Instance 3 Instance 4 User1@Instance4 User1@Instance3 User3@Instance1 User2@Instance1 User1@Instance1 Fig. 1. The decentralized architecture of Mastodon. We distinguish between two layers: the server-to-server layer, made up of interconnected (black links) instances (InstanceN); and the social network layer, formed by the ’follow’ relationships (blue links) between users (UserK@InstanceN) hosted (dotted cyan links) by the different instances. own rules, account privileges, and whether or not to share messages coming to and from other instances. Each server hosts individual user accounts, the content they produce, and the content they subscribe to. From a user experience viewpoint, Mastodon releases the major features of a microblogging platform: • users can follow one another, whether or not they are hosted on the same instance; • users can post short messages consisting of up to 500 text characters, called ’toots’, for others to read. • toots are aggregated in local and federated timelines. The former show messages from users hosted on a specific instance, while the latter aggregate the messages across all participating Mastodon instances. • users have control over the visibility of their posts. They can choose whether the post can be displayed on the federated timeline, on the timelines of the user’s followers only, or on the timeline of the users mentioned in the toot. Mastodon differs from other commercial microblogging platforms w.r.t. two key points. First, it is oriented towards small communities and community-based services. In fact, each instance may support and favor specific topics. So prior to registration, a user is encouraged to choose the instance better suited to her own tastes. Second, the Mastodon platform does not provide any algorithm for recommending new friends or promoted contents. So, the only way to establish a connection or consume a content is by searching an already known account through the search functions or by exploring the feeds of the instances in search of users with similar interests or interesting posts. These two characteristics are fundamental for the study of the interplay between the physical layer of a decentralized social network and its overlaid social network, since: (i) the coupling server/topic affects how people are distributed on the servers set and how they interact among themselves, this is true because it is well-known that common interests shape the structure of social networks [7], [8]; (ii) the lack of recommendation systems removes different external factors – often hidden by recommendation algorithms – from the mechanisms driving the formation of new links [9], [10].
+
+process and the decentralized organization of the instance might be one of the few factors affecting the choice of who to “follow”.
 
 \subsection{Discovery}
 
@@ -73,7 +111,7 @@ As per documentation, Mastodon implements the following 4 different well-known e
 
 
 \subsubsection{Web Host Metadata}
-    Web host metadata is lightweight metadata document format that allows for the identification of host policy or information, where "host" refers to the entity in charge of a collection of resources defined by URIs with a common URI host. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover,  it provides two mechanisms for providing resource-specific information, specifically,  link templates and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI in order to be a functioning link, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate LRDD documents to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, as shown in \ref{host_metadata_response}, accessing the host-meta endpoint will give us back the "lrdd" link to the Webfinger endpoint. In which specific resource information can be found. 
+    Web host metadata is a lightweight metadata document format that allows for the identification of host policy or information, where "host" refers to the entity in charge of a collection of resources defined by URIs with a common URI host. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover,  it provides two mechanisms for providing resource-specific information, specifically,  link templates and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI in order to be a functioning link, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate LRDD documents to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, as shown in \ref{host_metadata_response}, accessing the host-meta endpoint will give us back the "lrdd" link to the Webfinger endpoint. In which specific resource information can be found. 
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=Host Medata request, label="Host Metadata request]
@@ -168,7 +206,7 @@ Refers to the entity being identified by the DID. According to the specification
 
 \subsection{DID Controller}
 
-The DID controller is the entity that has the capability to make changes to the DID Document. This entity is not necessarily the DID Subject itself.
+The DID controller is the entity that can make changes to the DID Document. This entity is not necessarily the DID Subject itself.
   
 \subsection{DID Document}
 
@@ -275,30 +313,31 @@ From this point on, we are going to refer to DIDComm Messaging v2 only as DIDCom
 
 To better understand how it works, let's look at how it would work in a scenario where Alice wants to send a private message to Bob: 
 
-\begin{algorithm}[H]
-\caption{Example of DID communication using DIDComm \cite{Abramson_2020}}
-\label{alg:didcomm_example}
-  \begin{algorithmic}[1]
-    \State Alice has a private key \emph{sk\textsubscript{a}} and a DID Document for Bob containing an endpoint \emph{(endpoint\textsubscript{bob})} and a public key \emph{(pk\textsubscript{b})}.
 
-    \State Bob has a private key \emph{sk\textsubscript{b}} and a DID Document for Alice containing her public key \emph{(pk\textsubscript{a})}.
+% \begin{algorithm}[H]
+% \caption{Example of DID communication using DIDComm \cite{Abramson_2020}}
+% \label{alg:didcomm_example}
+%   \begin{algorithmic}[1]
+%     \State Alice has a private key \emph{sk\textsubscript{a}} and a DID Document for Bob containing an endpoint \emph{(endpoint\textsubscript{bob})} and a public key \emph{(pk\textsubscript{b})}.
 
-    \State Alice encrypts plaintext message \emph{(m)} using pk\textsubscript{b} and creates an encrypted message \emph{(eb)}.
+%     \State Bob has a private key \emph{sk\textsubscript{b}} and a DID Document for Alice containing her public key \emph{(pk\textsubscript{a})}.
 
-    \State Alice signs eb using her private key \emph{sk\textsubscript{a}} and creates a signature \emph{(s)}.
+%     \State Alice encrypts plaintext message \emph{(m)} using pk\textsubscript{b} and creates an encrypted message \emph{(eb)}.
 
-    \State Alice sends \emph{(eb, s)} to \emph{endpoint\textsubscript{bob}}.
+%     \State Alice signs eb using her private key \emph{sk\textsubscript{a}} and creates a signature \emph{(s)}.
 
-    \State Bob receives the message from Alice at \emph{{endpoint\textsubscript{bob}}.}
+%     \State Alice sends \emph{(eb, s)} to \emph{endpoint\textsubscript{bob}}.
 
-    \State Bob verifies \emph{(s)} using Alice's public key \emph{pk\textsubscript{a}}
+%     \State Bob receives the message from Alice at \emph{{endpoint\textsubscript{bob}}.}
 
-    \If{Verify \emph{(eb, s, pk\textsubscript{a})} = 1}
-    \State Bob decrypts \emph{eb} using \emph{sk\textsubscript{b}}.
-    \State Bob reads the plaintext message \emph{(m)} sent by Alice
-    \EndIf
-  \end{algorithmic}
-\end{algorithm}
+%     \State Bob verifies \emph{(s)} using Alice's public key \emph{pk\textsubscript{a}}
+
+%     \If{Verify \emph{(eb, s, pk\textsubscript{a})} = 1}
+%     \State Bob decrypts \emph{eb} using \emph{sk\textsubscript{b}}.
+%     \State Bob reads the plaintext message \emph{(m)} sent by Alice
+%     \EndIf
+%   \end{algorithmic}
+% \end{algorithm}
 
 
 % [https://arxiv.org/pdf/2006.02456.pdf ]
@@ -310,6 +349,35 @@ To achieve the encryption and signing processes mentioned in algorithm \ref{alg:
 \subsection{JOSE Family}
 
 This RFC family includes both the JSON Web Signature (JWS) and the JSON Web Encryption (JWE) standards that are subclasses of the JSON Web Token (JWT), and JSON Web Key (JWK).
+
+
+The second part of the DIDComm enablement, namely the signing and encrypting, will depend on what kind of security guarantees we want to achieve. DIDComm offers different approaches based on signing and two types of message encryption. Authenticated Sender Encryption (\emph{authcrypt}) and Anonymous Sender Encryption (\emph{anoncrypt}) are both encrypted and delivered to the recipient's DID. Still, they differ because only \emph{authcrypt} gives direct guarantees about the sender's identity. Sending anonymous messages in social networks is not usually the case, and removing the attribution of a post can lead to other problems \cite{martin_2022}. However, social networks like Ask.fm\footnote{https//ask.fm} or NGL\footnote{https://ask.fun} that rely on anonymous posts could use the advantages of \emph{anoncrypt}.
+
+DIDComm recommends using \emph{authcrypt} as the standard to provide confidentiality, message integrity, and authenticity of the sender. For this, \emph{authcrypt} requires the public key authenticated encryption algorithm \emph{ECDH-1PU}\footnote{https://datatracker.ietf.org/doc/html/draft-madden-jose-ecdh-1pu-04}. This algorithm j
+
+This is due to the use of the 
+Elliptic-curve Diffie\-Hellman (ECDH) protocol, which allows two parties to build a secure and private channel across an insecure and observable network. This protocol is part of the foundation of popular messaging apps such as Facebook Messenger, Whatsapp, Signal, and Didcomm V1 \cite{shaaban_2021}. This key agreement protocol works by having both parties interchanging the public keys of their EC keypairs and some other public information. Using this public data and their private keys both parties can calculate a shared secret value, which it's the same for both parties. Any other observer or third party is not able to compute this shared secret without the private data \cite{5972416}. 
+
+An alternative to \emph{Authcrypt} that also complies with the required confidentiality and non-repudiation requirements is to have a nested JWT. To achieve this, the plaintext is first signed and then the resulting JWS is used as the payload of a JWE. The algorithm \ref{alg:nested_jwt} illustrates better the workings of this. 
+
+\begin{algorithm}[H]
+  \caption{Communication example with nested JWT}
+  \label{alg:nested_jwt}
+    \begin{algorithmic}[1]
+      \State Alice signs a plain text message using her private key \emph{sk\textsubscript{a}} and creates a \emph{(jws)}.
+  
+      \State Alice encrypts the \emph{(jws)} using Bob's public key pk\textsubscript{b} and creates a \emph{(jwe)}.
+  
+      \State Alice sends \emph{jwe} to Bob.
+  
+      \State Bob decrypts \emph{(jwe)} using his private key \emph{sk\textsubscript{b}} and obtains the \emph{jws}
+      \State Bob verifies \emph{(jws)} using Alice's public key \emph{pk\textsubscript{a}}
+  \end{algorithmic}
+\end{algorithm}
+  
+In both alternatives, the identity of the sender can be confirmed and the plain text message remains encrypted and hidden from any third party that might manage to read the payload. As mentioned in \autoref{section:didcomm}, the JWE can be sent through any unprotected protocol and still keep all of its advantages. 
+
+
 
 Compare with other encryption methods. (TLS, Whatsapp end-to-end, Signal) (Use image below)
  
