@@ -218,29 +218,8 @@ As part of this proposal, we do not want to do further changes to the ActivityPu
 \end{lstlisting}
 
 
-The second part of the DIDComm enablement, namely the signing and/or encrypting, will depend on what kind of security guarantees we want to achieve. DIDComm offers different approaches based on signing and two types of message encryption. Authenticated Sender Encryption (\emph{authcrypt}) and Anonymous Sender Encryption (\emph{anoncrypt}) are both encrypted and delivered to the recipient's DID but they differ in the fact that only \emph{authcrypt} gives direct guarantees about the sender's identity. Sending anonymous messages in social networks is not usually the case, and removing the attribution of a post can lead to other problems \cite{martin_2022}. However, other social networks like Ask.fm\footnote{https//ask.fm} or NGL\footnote{https://ask.fun} that rely on anonymous posts could use the advantages of \emph{anoncrypt}.
 
-DIDComm recommends using \emph{Authcrypt} as it provides both confidentiality, message integrity, and non-repudiation altogether. This is due to the use of the 
-Elliptic-curve Diffie\-Hellman (ECDH) protocol, which allow two parties to build a secure and private channel across an insecure and observable network. This protocol is part of the foundation of popular messaging apps such as Facebook Messenger, Whatsapp, Signal and Didcomm V1 \cite{shaaban_2021}. This key agreement protocol works by having both parties interchanging the public keys of their EC keypairs and some other public information. Using this public data and their private keys both parties can calculate a shared secret value, which it's the same for both parties. Any other observer or third party is not able to compute this shared secret without the private data \cite{5972416}. 
-
-An alternative to \emph{Authcrypt} that also complies with the required confidentiality and non-repudiation requirements is to have a nested JWT. To achieve this, the plaintext is first signed and then the resulting JWS is used as the payload of a JWE. The algorithm \ref{alg:nested_jwt} illustrates better the workings of this. 
-
-\begin{algorithm}[H]
-  \caption{Communication example with nested JWT}
-  \label{alg:nested_jwt}
-    \begin{algorithmic}[1]
-      \State Alice signs a plain text message using her private key \emph{sk\textsubscript{a}} and creates a \emph{(jws)}.
-  
-      \State Alice encrypts the \emph{(jws)} using Bob's public key pk\textsubscript{b} and creates a \emph{(jwe)}.
-  
-      \State Alice sends \emph{jwe} to Bob.
-  
-      \State Bob decrypts \emph{(jwe)} using his private key \emph{sk\textsubscript{b}} and obtains the \emph{jws}
-      \State Bob verifies \emph{(jws)} using Alice's public key \emph{pk\textsubscript{a}}
-  \end{algorithmic}
-\end{algorithm}
-  
-In both alternatives, the identity of the sender can be confirmed and the plain text message remains encrypted and hidden from any third party that might manage to read the payload. As mentioned in \autoref{section:didcomm}, the JWE can be sent through any unprotected protocol and still keep all of its advantages. The final flow for our use case mention in\ref{section:use case} is illustrated in figure \ref{fig:did_flow}
+The final flow for our use case mention in\ref{section:use case} is illustrated in figure \ref{fig:did_flow}
 
 % Proposed Flow diagram
 \begin{figure}[h]

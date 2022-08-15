@@ -1,53 +1,90 @@
 \chapter{Related Work}
 \label{cha:relatedwork}
 
+The following chapter covers the most significant concepts required to comprehend this thesis's approach. It includes a closer look at decentralized communication protocols, identifier standards, and social networks that implement them. The revision and structuring of these concepts allow us to understand, build upon, and apply them to address our identified research questions. 
 
-The following chapter covers the most significant concepts that are required to fully comprehend the approach of this thesis. This includes a closer look at decentralized communication protocols and identifier standards, as well as social networks that implement them. The revision and structuring of these concepts allow us to understand, build upon, and apply them to address our identified research questions. 
+Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs focusing on social interactions. In addition, systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations, including a collection of standards that enable various aspects of decentralized social interaction on the Web\cite{celik_prodromou_le_hors_2014}. 
 
-\section{ActivityPub}
+\section{ActivityStreams 2.0}\label{section:activity_streams}
 
-Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs with a focus on social interactions. In addition, systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations including a collection of standards that enable various aspects of decentralized social interaction on the Web\cite{celik_prodromou_le_hors_2014}. 
-
-To be able to describe what a social activity is, it is important to first describe an Activity. One of the standards of the SocialWG is ActivityStreams 2.0. This standard provides a data model for representing \emph{"Activities"} using a JSON-based syntax and a vocabulary that includes all the common terms needed to represent social activities \cite{snell_prodromou_2017}. ActivityStreams describes an activity following a story of \emph{an actor performing an action on an object} and specifies different types of actors, activities and objects\ref{table:activitystreams_vocabulary}. This creates a solid foundation, on which other protocols can build. 
+To be able to describe what a social activity is, it is essential to be able to describe an Activity. One of the standards of the SocialWG is ActivityStreams 2.0\footnote{https://www.w3.org/TR/activitystreams-core/}. This standard provides a model for representing \emph{Activities} using a JSON-based syntax and a vocabulary that includes all the standard terms needed to represent social activities \cite{snell_prodromou_2017}. ActivityStreams describes an activity following a story of \emph{an actor performing an action on an object} and specifies different types of actors, activities, and objects, as shown in \autoref{table:activitystreams_vocabulary}. Each of these objects can be represented as a JSON object, creating a solid foundation on which other protocols can build. 
 
 \begin{table}[!ht]
-	\centering
-	\begin{tabular}{| l | l | l |}
-		\hline
-    Activities & Actors & Objects \\
-		\hline
-		\hline
-      Like & Application & Note \\
+  \centering
+  \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}| }
     \hline
-     Follow  & Group & Document \\
+    \multicolumn{3}{|c|}{ActivityStreams Vocabulary} \\
     \hline
-      Update & Organization & Image \\
+    Activity types & Actor types & Object types \\
     \hline
-      Create & Person & Article \\
+      Accept, Add & Application & Note \\
+      Announce, Arrive & Group & Document \\ 
+      Block, Create & Organization & Image \\
+      Delete, Dislike & Person & Article \\
+      Flag, Follow & Service & Profile \\
+      Ignore, Invite & & Audio \\
+      Join, Leave & & Event \\
+      Like, Listen & & Tombstone \\
+      etc... & & etc... \\
     \hline
-      View & Service & Profile \\
-    \hline
-      ...  & & ...\\
-    \hline
-	\end{tabular}
-	\caption{ActivityStreams 2.0 vocabulary examples}
+  \end{tabular}
+  \caption{ActivityStreams 2.0 vocabulary examples}
   \label{table:activitystreams_vocabulary}
 \end{table}
 
+ActivityStreams 2.0 builds on top of its predecessor, the 1.0 version, and it has improved it in more than one perspective. One of these is the compatibility with JSON-LD\footnote{https://www.w3.org/TR/json-ld/}, which is a JSON serialization for \emph{Linked Data}\footnote{https://www.w3.org/DesignIssues/LinkedData.html}. With JSON-LD, ActivityStreams 2.0 can define its own context and define the terms that will be used inside this context. Figure \ref{fig:activitystream_example} shows an example of a JSON-LD serialized ActivityStreams 2.0 activity. 
 
-\subsection{Definition}
-A decentralized 
-is a decentralized social network protocol. 
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Example of activity \cite{snell_prodromou_2017}, label=fig:activitystream_example, float=h]
+  {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    "summary": "Alice created an image",
+    "type": "Create",
+    "actor": "http://www.test.example/Alice",
+    "object": "http://example.org/foo.jpg"
+  }
+\end{lstlisting}
 
-ActivityPub is decentralized because it provides two different APIs. The first one provides endpoints to connect clients to servers, .The second one, used in federated implementations, includes a server-to-server API \cite{lemmer-webber_tallon_guy_prodromou_2018}. 
 
-\subsection{Security considerations}
-Some text here...
+\section{ActivityPub}
+
+ActivityPub is another W3C Recommendation that originated from the SocialWG. It is a decentralized social networking protocol that uses the syntax and vocabulary of ActivityStreams 2.0. It provides a client-to-server API, which covers the requirements of a Social API\cite{guy_2017}, i.e., publishing, subscribing, reading content, and notifying when content gets created. In addition, it provides a server-to-server API that enables decentralized, specifically, federated communication. The way ActivityPub works is the following. A user of a social network that implements this standard has its JSON-LD-based profile \ref{fig:actor_object}, which is the actor object specified before in \autoref{section:activity_streams}. ActivityPub added to this actor object two endpoints, namely, the inbox and the outbox, which represent how the actor gets and sends messages from other users. For example, when a user wants to share a post, it makes an HTTP POST request to its outbox with the respective activity object. After this, other users interested in seeing this user's posts can make an HTTP GET request to the user's outbox and retrieve all his public posts. In the case of a private message, such as user \emph{A} wanting to send a message to user \emph{B}, the same workflow would occur. User \emph{A} posts his message to his outbox, and then the activityPub server of \emph{A} will go ahead and look for the inbox of \emph{B} to make an HTTP POST request. Following this, \emph{B} makes an HTTP GET request to his inbox to retrieve all the posts addressed to him \cite{lemmer-webber_tallon_guy_prodromou_2018}. Figure \ref{fig:ap_flow} illustrates the functioning of ActivityPub. 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Actor object example in ActivityPub \cite{lemmer-webber_tallon_guy_prodromou_2018}, label=fig:actor_object, float=h!]
+
+  {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    "type": "Person",
+    "id": "https://social.example/alice/",
+    "name": "Alice P.",
+    "preferredUsername": "alice",
+    "summary": "TU Berlin student",
+    "inbox": "https://social.example/alice/inbox/",
+    "outbox": "https://social.example/alice/outbox/",
+    "followers": "https://social.example/alice/followers/",
+    "following": "https://social.example/alice/following/",
+    "liked": "https://social.example/alice/liked/"
+  }
+  
+\end{lstlisting}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{related_work/ActivityPub-tutorial-image.png}
+  \caption{ActivityPub overview \cite{lemmer-webber_tallon_guy_prodromou_2018}}
+  \label{fig:ap_flow}
+\end{figure}
+
+Regarding security, ActivityPub's specification does not define any official security mechanisms to ensure confidentiality, non-repudiation, message integrity, authentication, or authorization \cite{lemmer-webber_tallon_guy_prodromou_2018}. It recommends using HTTPS for its HTTP-based communication, relying on third-party certificate authorities to provide confidentiality. Nonetheless, other security aspects remain unaddressed. Although not included in ActivityPub, the SocialWG published a list of best security practices\footnote{https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication\_Authorization}. This list suggests using standards like OAuth 2.0\footnote{https://oauth.net/2/} for client-to-server authentication, as well as HTTP Signatures\footnote{https://tools.ietf.org/html/draft-cavage-http-signatures-08} and Linked Data Signatures\footnote{https://w3c-dvcg.github.io/ld-signatures/} for server-to-server authentication.
+
+HTTP signatures are a strong option that involves asymmetric keypairs for the actors, however it is exclusive for HTTP protocol.
+
 
 \section{Mastodon}
 \subsection{Definition}
-In today's most popular social networks like Facebook, Twitter, or Youtube there exists a centralized architecture that keeps millions of users in one single platform. In which control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created with the idea of bringing social networking back into the hands of its users. In the time when switching apps, services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could put an end to this, and \emph{last forever} \cite{tilley_2018}. Today, Mastodon is a network of more than 3,500 communities. Each operated by different individuals and organizations that implement their own policies, codes of conduct and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
-Mastodon takes a big share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world, that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe that is independent of any corporation or official institution. It is not profit-driven, and it gives you the freedom of choosing which service and instance of the Fediverse to register to. On top of that, you are free to run your own instance with your own policies and allow other users to join \cite{holloway_2018}. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
+In today's most popular social networks like Facebook, Twitter, or Youtube, a centralized architecture keeps millions of users on one platform. Control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created to bring social networking back into the hands of its users. When switching apps and services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could end this, and \emph{last forever} \cite{tilley_2018}. Today, Mastodon is a network of more than 3,500 communities. Each is operated by different individuals and organizations that implement their own policies, codes of conduct, and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
+Mastodon takes a significant share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe independent of any corporation or official institution. It is not profit-driven, and it gives users the freedom to choose which service and instance of the Fediverse to register. On top of that, you are free to run your own instance with your own policies and allow other users to join \cite{holloway_2018}. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
 
 After ActivityPub was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon decided to switch from its prior and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
 
