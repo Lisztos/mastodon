@@ -7,7 +7,75 @@ The source code\footnote{https://github.com/mastodon/mastodon} of Mastodon is op
 
 \subsection{DIDs}
 
-Replacing standard usernames with DIDs in Mastodon. 
+The way Mastodon validates the username format is through the following regular expression: 
+
+\begin{verbatim}
+  USERNAME_REGEX = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
+\end{verbatim}
+
+Additionally, it has a length constraint of 30 characters. A DID-syntax-compliant regular expression was used for the prototype, and the maximum length was incremented to 85 characters. 
+
+\verb|DID_REGEX = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:|\\\verb|[A-Za-z0-9\.\-\:\_\#]+/i |
+
+The universal resolver of the DIF was added to the docker-compose file to allow resolving DIDs. It consists of the main service, the query endpoint, and a driver for each DID method. The resolver was added to the same docker network as the main backend application, which meant the access through the alias name \emph{did-resolver} was possible. Figure \ref{fig:example_request_resolver} shows a sample request to the resolver. The resolver validates the DID document by comparing the searched DID against the id attribute of the DID document and only returns the DID document when both match. The service class \emph{DidResolverService} was added to the backend to make the requests to the resolver. The only parameter it needs is the DID it needs to resolve, and it returns the DID Document as a JSON object. Furthermore, a class \emph{DidDocument} was added with the methods listed in table \ref{table:did_doc_instance_methods}, to facilitate the interaction with the properties of the DID document
+
+\begin{lstlisting}[language=PHP, caption=Example request to the DID resolver, label=fig:example_request_resolver]
+  GET /1.0/identifiers/<did>
+  Host: did-resolver:8080
+  Accept: application/json
+\end{lstlisting}
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{| l | l | l |}
+		\hline
+    Function & Description \\
+		\hline
+		\hline
+      initialize(attributes) &  Stores the attributes of the DID document in instance variables\\
+    \hline
+      serviceEndpoint & Returns the service endpoint URL of the first service \\
+    \hline
+      rsaDidcommKey & Looks for a specific key in the \\ & DID document and returns an RSA instance of it \\
+    \hline
+	\end{tabular}
+	\caption{DID document instance methods}
+  \label{table:did_doc_instance_methods}
+\end{table}
+
+With DIDs, a resolver, and a class for DID documents set up, it is time to modify the discovery process of Mastodon, which relies on Webfinger. Mastodon has a class called \emph{ResolveAccountService}, which triggers the Webfinger requests and processes the respective responses. It takes a username in the form of \emph{username@domain} as a parameter. If the username does not have an existing account in the local database, it makes the Webfinger request. The JRD response gets parsed to find the actor URL, and a subsequent request to the username domain gets triggered to get the actor object. Finally, it parses the actor object to create an account for this user in the local database. It is important to clarify that even if the account is saved locally, it will be flagged as \emph{not local}. 
+
+The new class handling the decentralized DID-based discovery is not very different. It also takes the username parameter in the form of \emph{did:method:example} and then uses the resolver service to make a query to the universal resolver running locally. A \emph{DidDocument} class gets created with the JSON response and the actor URL its obtained using the \emph{serviceEndpoint} method. Finally, as in the previous flow, a request is made to this URL to get the actor object for further processing.
+
+\subsection{DIDComm}
+
+Now that finding accounts from other servers using DIDs is possible, it is time to enable DIDComm. The biggest challenge here was the compatibility between the algorithms specified by the JWA spec, the key types, and the libraries used to generate keys, sign, and encrypt. OpenSSL\footnote{https://github.com/ruby/openssl} for Ruby is the library used for generating the RSA keys. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of key management, encryption, decryption, and certificates management. To create signed and encrypted messages, the JWT library\footnote{https://github.com/jwt} for ruby on rails was added to the backend. This library allows the spec-compliant creation of JWS and JWE tokens. However, one of the drawbacks was the limited number of algorithms for JWE encryption. As the ECDH algorithm was not available during the development of this prototype, RSA key types and 
+
+The JWS tokens in the prototype were created using the \emph{RS256} algorithm and the digital signature algorithm \emph{RSASSA-PKCS1-v1\_5 using SHA-256}\footnote{https://www.rfc-editor.org/rfc/rfc3447}. 
+
+% Having now DIDs as usernames, a resolver, and a class for DID documents, it is time to modify the discovery process of Mastodon, which relies on Webfinger. Mastodon has a class called \emph{ResolveAccountService}, and its workflow is shown in the algorithm \ref{alg:resolve_account_service}.
+
+% \begin{algorithm}[H]
+%   \caption{Discovery process through the ResolveAccountService class}
+%   \label{alg:resolve_account_service}
+%     \begin{algorithmic}[1]
+%       \State ResolveAccountService(username\: "alice@alice\_server.com")
+  
+%       \If{username in local database} 
+%       \State account = query(username)
+%       \State return account
+%       \Else
+%       \State actor\_url = sendWebfingerRequest(alice\_server.com, acct\:alice@alice\_server.com)
+%       \State new\_account = GET(actorUrl)
+%       \State return new\_account
+%       \EndIf
+%       \State Alice sends \emph{jwe} to Bob.
+  
+%       \State Bob decrypts \emph{(jwe)} using his private key \emph{sk\textsubscript{b}} and obtains the \emph{jws}
+%       \State Bob verifies \emph{(jws)} using Alice's public key \emph{pk\textsubscript{a}}
+
+%   \end{algorithmic}
+% \end{algorithm}
 
 
 \section{Creating and editing a DID document}
