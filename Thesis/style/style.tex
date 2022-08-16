@@ -220,7 +220,7 @@
 \definecolor{javadoc}{cmyk}{0.88,0.59,0,0}
 \definecolor{lstgrey}{cmyk}{0.55,0.44,0.42,0.32}
 \definecolor{tablegray}{cmyk}{0.06,0.04,0,0.0196}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codegray}{cmyk}{0,0,0.04,0.04}
 \definecolor{codegreen}{rgb}{0,0.6,0}
 
 \lstdefinelanguage{SQL}{
@@ -290,12 +290,12 @@
     {\}}{{{\color{delim}{\}}}}}{1}
 }
 \lstdefinestyle{JSONStyle}{
-	backgroundcolor=\color{tablegray},
+	backgroundcolor=\color{codegray},
 	commentstyle=\color{codegreen},
 	keywordstyle=\color{black},
-	numberstyle=\tiny\color{codegray},
-	stringstyle=\color{codegreen},
-	basicstyle=\ttfamily\scriptsize,
+	numberstyle=\tiny\color{black},
+	stringstyle=\color{black},
+	% basicstyle=\ttfamily\scriptsize,
 	numbers=left,
 	stepnumber=1,
 	breakatwhitespace=false,

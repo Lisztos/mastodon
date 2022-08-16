@@ -3,9 +3,8 @@
 
 The following chapter covers the most significant concepts required to comprehend this thesis's approach. It includes a closer look at decentralized communication protocols, identifier standards, and social networks that implement them. The revision and structuring of these concepts allow us to understand, build upon, and apply them to address our identified research questions. 
 
-Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs focusing on social interactions. In addition, systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations, including a collection of standards that enable various aspects of decentralized social interaction on the Web\cite{celik_prodromou_le_hors_2014}. 
-
 \section{ActivityStreams 2.0}\label{section:activity_streams}
+Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs focusing on social interactions. In addition, systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations, including a collection of standards that enable various aspects of decentralized social interaction on the Web\cite{celik_prodromou_le_hors_2014}. 
 
 To be able to describe what a social activity is, it is essential to be able to describe an Activity. One of the standards of the SocialWG is ActivityStreams 2.0\footnote{https://www.w3.org/TR/activitystreams-core/}. This standard provides a model for representing \emph{Activities} using a JSON-based syntax and a vocabulary that includes all the standard terms needed to represent social activities \cite{snell_prodromou_2017}. ActivityStreams describes an activity following a story of \emph{an actor performing an action on an object} and specifies different types of actors, activities, and objects, as shown in \autoref{table:activitystreams_vocabulary}. Each of these objects can be represented as a JSON object, creating a solid foundation on which other protocols can build. 
 
@@ -32,7 +31,7 @@ To be able to describe what a social activity is, it is essential to be able to 
   \label{table:activitystreams_vocabulary}
 \end{table}
 
-ActivityStreams 2.0 builds on top of its predecessor, the 1.0 version, and it has improved it in more than one perspective. One of these is the compatibility with JSON-LD\footnote{https://www.w3.org/TR/json-ld/}, which is a JSON serialization for \emph{Linked Data}\footnote{https://www.w3.org/DesignIssues/LinkedData.html}. With JSON-LD, ActivityStreams 2.0 can define its own context and define the terms that will be used inside this context. Figure \ref{fig:activitystream_example} shows an example of a JSON-LD serialized ActivityStreams 2.0 activity. 
+ActivityStreams 2.0 builds on top of its predecessor, the 1.0 version, and it has improved it in more than one perspective. One of these is the compatibility with JSON-LD\footnote{https://www.w3.org/TR/json-ld/}, which is a JSON serialization for \emph{Linked Data}\footnote{https://www.w3.org/DesignIssues/LinkedData.html}. The concept of Linked Data is based on interlinking data in such a way that it becomes more usable through associative and contextual queries \cite{berners-lee_2006}.\. With JSON-LD, ActivityStreams 2.0 can define its own context and the terms that will be used inside this context. Figure \ref{fig:activitystream_example} shows an example of a JSON-LD serialized ActivityStreams 2.0 activity. 
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=Example of activity \cite{snell_prodromou_2017}, label=fig:activitystream_example, float=h]
@@ -45,14 +44,13 @@ ActivityStreams 2.0 builds on top of its predecessor, the 1.0 version, and it ha
   }
 \end{lstlisting}
 
-
+% ------------ActivityPub------------------------------------
 \section{ActivityPub}
 
-ActivityPub is another W3C Recommendation that originated from the SocialWG. It is a decentralized social networking protocol that uses the syntax and vocabulary of ActivityStreams 2.0. It provides a client-to-server API, which covers the requirements of a Social API\cite{guy_2017}, i.e., publishing, subscribing, reading content, and notifying when content gets created. In addition, it provides a server-to-server API that enables decentralized, specifically, federated communication. The way ActivityPub works is the following. A user of a social network that implements this standard has its JSON-LD-based profile \ref{fig:actor_object}, which is the actor object specified before in \autoref{section:activity_streams}. ActivityPub added to this actor object two endpoints, namely, the inbox and the outbox, which represent how the actor gets and sends messages from other users. For example, when a user wants to share a post, it makes an HTTP POST request to its outbox with the respective activity object. After this, other users interested in seeing this user's posts can make an HTTP GET request to the user's outbox and retrieve all his public posts. In the case of a private message, such as user \emph{A} wanting to send a message to user \emph{B}, the same workflow would occur. User \emph{A} posts his message to his outbox, and then the activityPub server of \emph{A} will go ahead and look for the inbox of \emph{B} to make an HTTP POST request. Following this, \emph{B} makes an HTTP GET request to his inbox to retrieve all the posts addressed to him \cite{lemmer-webber_tallon_guy_prodromou_2018}. Figure \ref{fig:ap_flow} illustrates the functioning of ActivityPub. 
+ActivityPub is another W3C Recommendation that originated from the SocialWG. It is a decentralized social networking protocol that uses the syntax and vocabulary of ActivityStreams 2.0. It provides a client-to-server API, which covers the requirements of a Social API\cite{guy_2017}, i.e., publishing, subscribing, reading content, and notifying when content gets created. In addition, it provides a server-to-server API that enables decentralized, specifically, federated communication. The way ActivityPub works is the following. A user of a social network that implements this standard has its JSON-LD-based profile \ref{fig:actor_object}, which is the actor object specified before in \autoref{section:activity_streams}. ActivityPub added to this actor object two endpoints, namely, the inbox and the outbox, which represent how the actor gets and sends messages from other users. For example, when a user wants to share a post, it makes an HTTP POST request to its outbox with the respective activity object. After this, other users interested in seeing this user's posts can make an HTTP GET request to the user's outbox and retrieve all his public posts. In the case of a private message, such as user \emph{A} wanting to send a message to user \emph{B}, the same workflow would occur. User \emph{A} posts his message to his outbox, and then the ActivityPub server of \emph{A} will go ahead and look for the inbox of \emph{B} to make an HTTP POST request. Following this, \emph{B} makes an HTTP GET request to his inbox to retrieve all the posts addressed to him \cite{lemmer-webber_tallon_guy_prodromou_2018}. Figure \ref{fig:ap_flow} illustrates the functioning of ActivityPub. 
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=Actor object example in ActivityPub \cite{lemmer-webber_tallon_guy_prodromou_2018}, label=fig:actor_object, float=h!]
-
   {
     "@context": "https://www.w3.org/ns/activitystreams",
     "type": "Person",
@@ -66,7 +64,6 @@ ActivityPub is another W3C Recommendation that originated from the SocialWG. It 
     "following": "https://social.example/alice/following/",
     "liked": "https://social.example/alice/liked/"
   }
-  
 \end{lstlisting}
 
 \begin{figure}[H]
@@ -76,23 +73,35 @@ ActivityPub is another W3C Recommendation that originated from the SocialWG. It 
   \label{fig:ap_flow}
 \end{figure}
 
-Regarding security, ActivityPub's specification does not define any official security mechanisms to ensure confidentiality, non-repudiation, message integrity, authentication, or authorization \cite{lemmer-webber_tallon_guy_prodromou_2018}. It recommends using HTTPS for its HTTP-based communication, relying on third-party certificate authorities to provide confidentiality. Nonetheless, other security aspects remain unaddressed. Although not included in ActivityPub, the SocialWG published a list of best security practices\footnote{https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication\_Authorization}. This list suggests using standards like OAuth 2.0\footnote{https://oauth.net/2/} for client-to-server authentication, as well as HTTP Signatures\footnote{https://tools.ietf.org/html/draft-cavage-http-signatures-08} and Linked Data Signatures\footnote{https://w3c-dvcg.github.io/ld-signatures/} for server-to-server authentication.
+Regarding security, ActivityPub's specification does not define any official security mechanisms to ensure confidentiality, non-repudiation, message integrity, authentication, or authorization \cite{lemmer-webber_tallon_guy_prodromou_2018}. It recommends using HTTPS for its HTTP-based communication, relying on third-party certificate authorities to provide transport-layer security. Nonetheless, other security aspects remain unaddressed. Although not included in ActivityPub, the SocialWG published a list of best security practices\footnote{https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication\_Authorization} which suggests using standards like OAuth 2.0\footnote{https://oauth.net/2/} for client-to-server authentication, as well as HTTP Signatures\footnote{https://tools.ietf.org/html/draft-cavage-http-signatures-08} and Linked Data Signatures\footnote{https://w3c-dvcg.github.io/ld-signatures/} for server-to-server authentication.
 
-HTTP signatures are a strong option that involves asymmetric keypairs for the actors, however it is exclusive for HTTP protocol.
+HTTP signatures extend the HTTP protocol by adding the possibility to cryptographically sign the HTTP requests. This signature gets added to the request within the \emph{Signature} header, and it provides not only end-to-end message integrity but also proof of the authenticity of the sender without the need for multiple round-trips \cite{cavage_sporny_2019}. Following the same idea, Linked Data Signatures offer a way to create and attach signatures to JSON-LD documents, thus providing non-repudiation to e.g. an ActivityStreams Activity object even if the object has been shared, forwarded or referenced at a future time \cite{celik_prodromou_le_hors_2014}.
+
+The reason why these security specifications were not included in ActivityPub is unclear. Nonetheless, some ActivityPub-based social networks have added HTTP and JSON-LD signatures to their implementation. Providing a new layer of security for its userbase. One of these social networks is Mastodon, which will be explained in the next section.
 
 
-\section{Mastodon}
-\subsection{Definition}
-In today's most popular social networks like Facebook, Twitter, or Youtube, a centralized architecture keeps millions of users on one platform. Control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon is a decentralized microblogging social network created to bring social networking back into the hands of its users. When switching apps and services every few years and having friends on a dozen different chat applications was a standard in terms of social networking, the German founder envisioned something that could end this, and \emph{last forever} \cite{tilley_2018}. Today, Mastodon is a network of more than 3,500 communities. Each is operated by different individuals and organizations that implement their own policies, codes of conduct, and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
+% ------------Mastodon------------------------------------
+\section{Mastodon}\label{section:mastodon}
+
+In today's most popular social networks like Facebook, Twitter, or Youtube, a centralized architecture keeps millions of users on one platform. Control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, Mastodon\footnote{https://joinmastodon.org/} is a decentralized microblogging social network created to bring social networking back into the hands of its users. The german creator of Mastodon, Eugen Rochko, shared the same opinion as what Fitzpatrick and Recordon said in 2007\cite{fitzpatrick_recordon_2007}. \emph{People are getting sick of registering and re-declaring their friends on every site}. For this reason, Eugen envisioned a social network that could end this, and \emph{last forever} \cite{tilley_2018}. 
+
+Mastodon strives to give people back control of content distribution channels by eliminating the presence of sponsored users or posts in feeds \cite{8845221}.
+
+Mastodon differs from other commercial social networks in two aspects. First, it is oriented towards small communities and community-based services. In fact, each instance may support and favor specific topics. So prior to registration, a user is encouraged to choose the instance better suited to her own tastes. Second, the Mastodon platform does not provide any algorithm for recommending new friends or promoted contents. So, the only way to establish a connection or consume a content is by searching an already known account through the search functions or by exploring the feeds of the instances in search of users with similar interests or interesting posts.
+
+
+Today, Mastodon is a network of thousands of communities. Each is operated by different individuals and organizations that implement their own policies, codes of conduct, and discussion topics. By means of this,  the user has the opportunity to choose whichever instance he finds the most fitting.
 Mastodon takes a significant share in the Fediverse. A single interoperable ecosystem of different social networks that can communicate with each other. In other words, it is a collection of federated social networks running on free open software on thousands of servers across the world that implement the same protocol in order to be able to interact with each other. The Fediverse is developed by a community of people around the globe independent of any corporation or official institution. It is not profit-driven, and it gives users the freedom to choose which service and instance of the Fediverse to register. On top of that, you are free to run your own instance with your own policies and allow other users to join \cite{holloway_2018}. The range of services that can be found inside the Fediverse includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Since its standardization, ActivityPub has been widely adopted in the Fediverse, being today the dominant protocol.
 
 After ActivityPub was published as a Recommendation by the Social Web Working Group of the W3C in January 2018, Mastodon decided to switch from its prior and pioneered the use of ActivityPub on a large scale. Promoting this way, its adoption.
 
-Mastodon is a DOSN with microblogging features, where each server runs open source software. The basic aim of the project, which dates to 2016, is to restore control of the content distribution channels to the people by avoiding the insertion of sponsored users or posts in the feeds. From an architectural viewpoint, the platform follows a federated architecture organized into two layers implementing the ActivityPub protocol,1 as shown in Fig.1. The ActivityPub protocol allows it both to manage the communications (black links) among the servers – instances – comprising the federation and to offer a client-to-server interface which enables interactions (blue links) among the users having their accounts on the instances. In the server-to-server layer the instances form a network, and each of them administrates its 1https://www.w3.org/TR/activitypub/ Instance 1 Instance 2 Instance 3 Instance 4 User1@Instance4 User1@Instance3 User3@Instance1 User2@Instance1 User1@Instance1 Fig. 1. The decentralized architecture of Mastodon. We distinguish between two layers: the server-to-server layer, made up of interconnected (black links) instances (InstanceN); and the social network layer, formed by the ’follow’ relationships (blue links) between users (UserK@InstanceN) hosted (dotted cyan links) by the different instances. own rules, account privileges, and whether or not to share messages coming to and from other instances. Each server hosts individual user accounts, the content they produce, and the content they subscribe to. From a user experience viewpoint, Mastodon releases the major features of a microblogging platform: • users can follow one another, whether or not they are hosted on the same instance; • users can post short messages consisting of up to 500 text characters, called ’toots’, for others to read. • toots are aggregated in local and federated timelines. The former show messages from users hosted on a specific instance, while the latter aggregate the messages across all participating Mastodon instances. • users have control over the visibility of their posts. They can choose whether the post can be displayed on the federated timeline, on the timelines of the user’s followers only, or on the timeline of the users mentioned in the toot. Mastodon differs from other commercial microblogging platforms w.r.t. two key points. First, it is oriented towards small communities and community-based services. In fact, each instance may support and favor specific topics. So prior to registration, a user is encouraged to choose the instance better suited to her own tastes. Second, the Mastodon platform does not provide any algorithm for recommending new friends or promoted contents. So, the only way to establish a connection or consume a content is by searching an already known account through the search functions or by exploring the feeds of the instances in search of users with similar interests or interesting posts. These two characteristics are fundamental for the study of the interplay between the physical layer of a decentralized social network and its overlaid social network, since: (i) the coupling server/topic affects how people are distributed on the servers set and how they interact among themselves, this is true because it is well-known that common interests shape the structure of social networks [7], [8]; (ii) the lack of recommendation systems removes different external factors – often hidden by recommendation algorithms – from the mechanisms driving the formation of new links [9], [10].
+From an architectural viewpoint, the platform follows a federated architecture organized into two layers  own rules, account privileges, and whether or not to share messages coming to and from other instances. Each server hosts individual user accounts, the content they produce, and the content they subscribe to. From a user experience viewpoint, Mastodon releases the major features of a microblogging platform: • users can follow one another, whether or not they are hosted on the same instance; • users can post short messages consisting of up to 500 text characters, called ’toots’, for others to read. • toots are aggregated in local and federated timelines.
+
+Mastodon differs from other commercial microblogging platforms w.r.t. two key points. First, it is oriented towards small communities and community-based services. In fact, each instance may support and favor specific topics. So prior to registration, a user is encouraged to choose the instance better suited to her own tastes. Second, the Mastodon platform does not provide any algorithm for recommending new friends or promoted contents. So, the only way to establish a connection or consume a content is by searching an already known account through the search functions or by exploring the feeds of the instances in search of users with similar interests or interesting posts. These two characteristics are fundamental for the study of the interplay between the physical layer of a decentralized social network and its overlaid social network, since: (i) the coupling server/topic affects how people are distributed on the servers set and how they interact among themselves, this is true because it is well-known that common interests shape the structure of social networks [7], [8]; (ii) the lack of recommendation systems removes different external factors – often hidden by recommendation algorithms – from the mechanisms driving the formation of new links [9], [10].
 
 process and the decentralized organization of the instance might be one of the few factors affecting the choice of who to “follow”.
 
-\subsection{Discovery}
+\subsection{Federation}
 
 \cite{nottingham_2019}
 As per documentation, Mastodon implements the following 4 different well-known endpoints: 
@@ -100,82 +109,86 @@ As per documentation, Mastodon implements the following 4 different well-known e
 % \subsubsection{Change password}
 % This endpoint origins form the proposal of the Web Application Security Working Group (WebAppSec) from the W3C, whose main mission is to provide security and policy frameworks to increase web application security and enable safe cross-site communication (https://www.w3.org/groups/wg/). It defines a well-known URL that sites can use to make their change password forms discoverable by tools. This URL would enable software, specially password managers, to easily redirect users to the right link for them to change their password.
 
-% \subsubsection{NodeInfo}
-% NodeInfo is an initiative to standardize the presentation of metadata about a server operating one of the distributed social networks. The two main aims are to get greater insights into the distributed social networking user base and to provide tools that allow users to select the most suited software and server for their requirements. Mastodon is one of the implementers of this protocol, along with other federated social networks such as Diaspora, Peertube and Wordpress [http://nodeinfo.diaspora.software/ ]. NodeInfo specifies that servers must provide the well-known path /.well-known/nodeinfo and provide a JRD document referencing the supported documents via Link elements, as shown in \label{NodeInfo response example}. [http://nodeinfo.diaspora.software/protocol.html ] Accessing the hypertext reference from the JRD response will give a schematized series of metadata of the instance running the endpoint, such as NodeInfo schema version, software, protocols supported by the server, statistics and even a list of third-party services that can interact with the server via an API. Figure \label{NodeInfo response for mastodon.social} shows the NodeInfo 2.0 schema of the Mastodon instance mastodon.social. 
+\subsubsection{NodeInfo}
+NodeInfo is an initiative to standardize the presentation of metadata about a server operating one of the distributed social networks. The two main aims are to get greater insights into the distributed social networking user base and to provide tools that allow users to select the most suited software and server for their requirements. Mastodon is one of the implementers of this protocol, along with other federated social networks such as Diaspora, Peertube and Wordpress [http://nodeinfo.diaspora.software/ ]. NodeInfo specifies that servers must provide the well-known path /.well-known/nodeinfo and provide a JRD document referencing the supported documents via Link elements, as shown in \label{NodeInfo response example}. [http://nodeinfo.diaspora.software/protocol.html ] Accessing the hypertext reference from the JRD response will give a schematized series of metadata of the instance running the endpoint, such as NodeInfo schema version, software, protocols supported by the server, statistics and even a list of third-party services that can interact with the server via an API. Figure \label{NodeInfo response for mastodon.social} shows the NodeInfo 2.0 schema of the Mastodon instance mastodon.social. 
 
-% \begin{lstlisting}[language=json, caption=NodeInfo response example, label=NodeInfo response example, float=H]
-%   {
-%       "links": [
-%           {
-%             "Rel": "http://nodeinfo.diaspora.software/ns/schema/2.1",
-%               "href": "https://example.org/nodeinfo/2.1"
-%           }
-%       ]
-%   }
-% \end{lstlisting}
+\lstset{style=JSONStyle}
+\begin{lstlisting}[caption=NodeInfo response example, label=NodeInfo response example, float=H]
+  {
+      "links": [
+          {
+            "Rel": "http://nodeinfo.diaspora.software/ns/schema/2.1",
+              "href": "https://example.org/nodeinfo/2.1"
+          }
+      ]
+  }
+\end{lstlisting}
 
-% \begin{lstlisting}[language=HTTP, caption=NodeInfo request]
-%     GET /wel-known/nodeinfo/2.0 HTTP/1.1
-%     Host: mastodon.social
-% \end{lstlisting}
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=NodeInfo request]
+    GET /wel-known/nodeinfo/2.0 HTTP/1.1
+    Host: mastodon.social
+\end{lstlisting}
 
-% \begin{lstlisting}[language=Json, caption=NodeInfo response for mastodon.social, label=NodeInfo response for mastodon.social, float=H]
-% {
-%    "version": "2.0",
-%    "software": {
-%        "name": "mastodon",
-%        "version": "3.5.3"
-%    },
-%    "protocols": [
-%        "activitypub"
-%    ],
-%    "services": {
-%        "outbound": [],
-%        "inbound": []
-%    },
-%    "usage": {
-%        "users": {
-%            "total": 718555,
-%            "activeMonth": 61717,
-%            "activeHalfyear": 178356
-%        },
-%        "localPosts": 36484017
-%    },
-%    "openRegistrations": true,
-%    "metadata": []
-% }
-% \end{lstlisting}
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=NodeInfo response for mastodon.social, label=NodeInfo response for mastodon.social, float=H]
+{
+   "version": "2.0",
+   "software": {
+       "name": "mastodon",
+       "version": "3.5.3"
+   },
+   "protocols": [
+       "activitypub"
+   ],
+   "services": {
+       "outbound": [],
+       "inbound": []
+   },
+   "usage": {
+       "users": {
+           "total": 718555,
+           "activeMonth": 61717,
+           "activeHalfyear": 178356
+       },
+       "localPosts": 36484017
+   },
+   "openRegistrations": true,
+   "metadata": []
+}
+\end{lstlisting}
 
 
 \subsubsection{Web Host Metadata}
-    Web host metadata is a lightweight metadata document format that allows for the identification of host policy or information, where "host" refers to the entity in charge of a collection of resources defined by URIs with a common URI host. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover,  it provides two mechanisms for providing resource-specific information, specifically,  link templates and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI in order to be a functioning link, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate LRDD documents to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, as shown in \ref{host_metadata_response}, accessing the host-meta endpoint will give us back the "lrdd" link to the Webfinger endpoint. In which specific resource information can be found. 
+    Web host metadata is a lightweight metadata document format that allows for the identification of host policy or information, where \emph{host} refers to the entity in charge of a collection of resources defined by URIs with a common URI host. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover, it provides two mechanisms for providing resource-specific information, specifically,  \emph{link templates} and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI to work, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate LRDD documents to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, requesting the host-meta endpoint will give us back the \emph{lrdd} link to the Webfinger endpoint, where specific resource information can be found. This is illustrated by figures \ref{fig:host_metadata_response} and \ref{fig:host_metadata_request}.
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Host Medata request, label="Host Metadata request]
+\begin{lstlisting}[language=PHP, caption=Example Host Metadata request to mastodon.social, label=fig:host_metadata_request]
     GET /.well-known/host-meta HTTP/1.1
     Host: mastodon.social
     Accept: application/xrd+xml
 \end{lstlisting}
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=XML, caption=Host metadata response from mastodon.social, label=host_metadata_response]
+\begin{lstlisting}[language=XML, caption=Example Host metadata response from mastodon.social, label=fig:host_metadata_response]
     <?xml version="1.0" encoding="UTF-8"?>
     <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
-    <Link rel="lrdd" template="https://mastodon.social/.well-known/webfinger?resource={uri}"/>
+      <Link rel="lrdd" template="https://mastodon.social/.well-known/webfinger?resource={uri}"/>
     </XRD>
 \end{lstlisting}
 
 \subsubsection{Webfinger}
-Finally, Webfinger is the protocol in which Mastodon heavily relies for the discovery process and for its normal functioning \cite{rochko_2020}. Webfinger allows for discovering information about persons or other entities on the Internet using HTTP that would not otherwise be useful as a locator, such as a personal profile address, identity service, telephone number or an email. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the \emph{acct}\footnote{https://datatracker.ietf.org/doc/html/rfc7565} URI format, which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol to be used when interacting with the account. In the same way NodeInfo works, it returns a JRD Document describing the entity \cite{jones_salgueiro_jones_smarr_2013}.  Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD that is being provided by the WebFinger endpoint in the mastodon social instance when querying the account "acct:bob@mastodon.social".
+Finally, Webfinger is the protocol on which Mastodon heavily relies for the resolving process and its federated functioning \cite{rochko_2020}. Webfinger allows for discovering information about persons or other entities on the Internet using HTTP such as a personal profile address, identity service, telephone number or email. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the \emph{acct}\footnote{https://datatracker.ietf.org/doc/html/rfc7565} URI format, which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol. In the same way NodeInfo works, it returns a JRD Document describing the entity \cite{jones_salgueiro_jones_smarr_2013}.  Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD that is being provided by the WebFinger endpoint in the mastodon social instance when querying the account "acct:bob@mastodon.social".
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=HTTP request to Webfinger endpoint, label=Webfinger request]
+\begin{lstlisting}[language=PHP, caption=HTTP request to Webfinger endpoint, label=Webfinger request, float=h]
   GET /.well-known/webfinger?resource=acct:bob@mastodon.social
   Host: mastodon.social
   Accept: application/xrd+xml
 \end{lstlisting}
 
-\begin{lstlisting}[language=PHP, caption=Webfinger response, label=Webfinger response from mastodon.social]
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Webfinger response, label=Webfinger response from mastodon.social, float=h]
 {
    "subject": "acct:bob@mastodon.social",
    "aliases": [
@@ -200,13 +213,6 @@ Finally, Webfinger is the protocol in which Mastodon heavily relies for the disc
    ]
 }
 \end{lstlisting}
-
-\subsection{Security}
-
-\subsubsection{HTTP Signature}
-
-\subsubsection{JSON LD Signature}
-
 
 
 \section{Decentralized Identifiers} \label{section:dids}
@@ -234,7 +240,7 @@ The DID itself is a URI\footnote{https://www.rfc-editor.org/rfc/rfc3986} that co
 
 \subsection{DID URL}
 
-A DID can include path, query and fragment in order to be able to locate a specific resource inside a DID document, as shown in \ref{fig:did_architecture}
+A DID can include a path, query and fragment to be able to locate a specific resource inside a DID document, as shown in \ref{fig:did_architecture}
 
 
 \subsection{DID Subject}
