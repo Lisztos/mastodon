@@ -95,8 +95,7 @@ Regarding security, ActivityPub's specification does not define any official sec
 
 \subsection{The Fediverse}
 
-It is impossible not to refer to the \emph{Fediverse} when we talk about ActivityPub. The \emph{Fediverse} is an interoperable collection of different federated social networks running on free open software on thousands of servers across the world that implement the same open-standard protocols to be able to interact with each other. In today's most popular social networks like Facebook, Twitter, or Youtube, a centralized architecture keeps millions of users on one platform. Control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, the \emph{Fediverse} is developed by a not-profit-driven community of people around the globe independent of any corporation or official institution \cite{holloway_2018} \cite{https://doi.org/10.48550/arxiv.1909.05801}. The simplest way to explain how the federation works is the following example: Bob has a Twitter account, which he uses to follow all his friends that also have a Twitter account. Alice is a friend of Bob, but she only has an account on Youtube. In the real world, these two services are completely isolated and cannot communicate with each other. However, if both had implemented the same social network protocol, such as ActivityPub, Bob would be able to find Alice by a normal search on Twitter and follow her. Allowing any new post of Alice on Youtube, to appear in Bob's Twitter timeline.
-
+It is impossible not to refer to the \emph{Fediverse} when we talk about ActivityPub. The \emph{Fediverse} is an interoperable collection of different federated social networks running on free open software on thousands of servers across the world that implement the same open-standard protocols to be able to interact with each other. In today's most popular social networks like Facebook, Twitter, or Youtube, a centralized architecture keeps millions of users on one platform. Control, decision-making, user data, and censorship depend on a single profit-driven organization. On the contrary, the \emph{Fediverse} is developed by a not-profit-driven community of people around the globe independent of any corporation or official institution \cite{holloway_2018} \cite{https://doi.org/10.48550/arxiv.1909.05801}. The simplest way to explain how the federation works is the following example: Bob has a Twitter account, which he uses to follow all his friends that also have a Twitter account. Alice is a friend of Bob, but she only has an account on Youtube. In the real world, these two services are completely isolated and cannot communicate with each other. However, if both had implemented the same social network protocol, such as ActivityPub, Bob would be able to find Alice by a normal search on Twitter and follow her. Allowing any new post of Alice on Youtube, to appear in Bob's Twitter timeline. \\
 Before ActivityPub, the \emph{Fediverse} implemented other protocols like \emph{Ostatus}\footnote{https://www.w3.org/community/ostatus/wiki/images/9/93/OStatus\_1.0\_Draft\_2.pdf}, \emph{Matrix}\footnote{https://matrix.org}, and \emph{Diaspora}\footnote{https://diaspora.github.io/diaspora\_federation}. However, after ActivityPub was published as a Recommendation by the SocialWG in January 2018, a big number of these federated social networks upgraded to ActivityPub. Becoming rapidly the predominant protocol. Furthermore, the range of services that can be found inside the \emph{Fediverse} includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. For example: 
 
 \begin{itemize}
@@ -241,51 +240,31 @@ Mastodon relies on the Webfinger protocol for the resolving process and its fede
 
 \section{Decentralized Identifiers} \label{section:dids}
 
-Globally unique identifiers are used by individuals, organizations, abstract entities, and even internet of things devices for all kinds of different contexts. Nonetheless, the large majority of these globally unique identifiers are not under the entity's control. We rely on external authorities to issue them, allowing them to decide who or what they refer to and when they can be revoked. Their existence, validity scope and even the security mechanisms that protect them are all dependent on these external authorities. Leaving their actual owners helpless against any kind of threat or misuse \cite{sporny_longley_sabadello_reed_steele_2021}. In order to address this lack of control, the W3C DID Working Group conceptualized the Decentralized Identifiers or \emph{DIDs}.
+On July 19. 2022 the W3C announced that Decentralized Identifiers (DIDs) v1.0 is officially a Web standard. This new type of globally unique identifier brings a Self-Sovereign approach to digital identities enabling both individuals and organizations to take greater control of their online information and relationships while also providing greater security and privacy \cite{w3c_2022}. Self-Sovereign Identity \emph{SSI} implies a sovereign, enduring, decentralized, and portable digital identity for any human or non-human entity, that enables its owner to access services in the digital world in a secure, private, and trusted manner. DIDs are the key component of the SSI framework, as they allow identifiers to be created independently of any centralized registry, identity provider, or certificate authority with full control given to its owner\cite{Naik_Jenkins_2021}\cite{sporny_longley_sabadello_reed_steele_2021}. 
 
-DIDs are a new type of globally unique identifier that enables individuals and organizations to create their own identifiers using trustworthy systems. By means of this, entities are able to prove control over them by authenticating using cryptographic proofs. Furthermore, given that the generation and assertion of DIDs are entity-controlled, an entity can create any number of DIDs that can be tailored and confined to specific contexts. This would enable interaction with other systems, institutions, or entities that require authentication while also limiting the amount of personal or private data to be revealed. All of this without the need to rely on a central authority \cite{sporny_longley_sabadello_reed_steele_2021}. To better illustrate how DIDs work, let's address the components which constitute DIDs. Figure \ref{fig:did_architecture} provides a basic overview of the major components of the Decentralized Identifier architecture.
+\subsection{Architecture}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{related_work/did_brief_architecture_overview.png}
-  \caption{DID architecture overview \cite{sporny_longley_sabadello_reed_steele_2021}}
-  \label{fig:did_architecture}
-\end{figure}
-
-\subsection{DID}  
-The DID itself is a URI\footnote{https://www.rfc-editor.org/rfc/rfc3986} that consists of 3 different parts, namely the did URI scheme identifier, the method identifier and the DID method-specific identifier.
+The DID itself is a URI that consists of 3 different parts. The DID URI scheme identifier, the method identifier and the DID method-specific identifier, as shown in figure \ref{fig:did}. The entity being identified by the DID is called the \emph{DID subject}. \emph{Everything} can be identified by a DID, including any person, group, organization, as well as a physical, digital, or logical thing \cite{Conway_Hughes_Ma_Poole_Riedel_2019}\cite{sporny_longley_sabadello_reed_steele_2021}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\textwidth]{related_work/parts-of-a-did.png}
+  \includegraphics[width=0.5\textwidth]{related_work/parts-of-a-did.png}
   \caption{DID composition \cite{sporny_longley_sabadello_reed_steele_2021}}
   \label{fig:did}
 \end{figure}
 
-\subsection{DID URL}
 
-A DID can include a path, query and fragment to be able to locate a specific resource inside a DID document, as shown in \ref{fig:did_architecture}
+The DID Subject that can modify the DID Document is called the \emph{DID controller}. Usually, the DID subject is the DID controller, however, this is not compulsory. As shown in figure \ref{fig:did_architecture}, a DID resolves to a \emph{DID Document}, which is a JSON-based object that contains information associated with a DID. It includes verification methods, such as cryptographic public keys, as well as services that are relevant to be able to interact with the DID Subject. An example of a DID Document can be seen in \ref{fig:did_document}. Furthermore, it is possible to retrieve a specific resource of the DID document by using a \emph{DID URL}, which is a DID that includes a path, query, or fragment \cite{sporny_longley_sabadello_reed_steele_2021}.
 
-
-\subsection{DID Subject}
-
-Refers to the entity being identified by the DID. According to the specification \cite{sporny_longley_sabadello_reed_steele_2021}, any person, group, organization, physical thing, digital thing or logical thing can be a DID Subject.
-
-\subsection{DID Controller}
-
-The DID controller is the entity that can make changes to the DID Document. This entity is not necessarily the DID Subject itself.
-  
-\subsection{DID Document}
-
-They contain information associated with a DID. They usually describe verification methods, such as cryptographic public keys, as well as services that are relevant to interactions with the DID Subject. An example of a DID Document can be seen in \ref{fig:did_document}.
-
+% ---- DID Document -----
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=Example DID Document, label=fig:did_document]
+
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:example:123456789abcdefghi",
   "publicKey": [{
-    "id": "did:example:123456789abcdefghi#keys-1",
+    "id": "did:example:123456789abcdefghi#keys-1",  // DID URL 
     "type": "RsaVerificationKey2018",
     "owner": "did:example:123456789abcdefghi",
     "publicKeyPem": "..."
@@ -301,29 +280,35 @@ They contain information associated with a DID. They usually describe verificati
 }
 
 % \end{lstlisting}
-
-The only required attribute for a DID Document is the ID. Other optional attributes include a controller, which specifies the DID Controller; verification methods, used to authenticate or authorize interactions with the DID subject or associated parties; and services, which can be any type of service the DID subject wants to advertise, including decentralized identity management services for further discovery, authentication, authorization, or interaction.
  
+DID documents are stored in a \emph{Verifiable Data Registry} (VDR). This is essentially any system that enables capturing DIDs and returning required data to generate DID documents, such as distributed ledgers, decentralized file systems, any type of database, peer-to-peer networks, or other types of trustworthy data storage. Our next component is the \emph{DID method}, which describes the processes for CRUD operations for DIDs and DID documents, based on a specific type of VDR. According to the DID registry\footnote{https://www.w3.org/TR/did-spec-registries/\#did-methods} of the W3C, there are around 103 registered DID method specifications. More information about the different existing DID methods can be found in the next \autoref{subsec:did_methods}. \\
+The last major component in this architecture overview is the one in charge of resolving DIDs is called \emph{DID resolver}. This component implements the \emph{DID resolution}, which consists of taking a DID as an input, and giving a DID Document as an output \cite{sporny_longley_sabadello_reed_steele_2021}. The Identifiers \& Discovery Working Group (ID WG) has implemented a prototype Universal Resolver\footnote{https://github.com/decentralized-identity/universal-resolver}, which allows the resolution of DIDs for numerous DID methods. In addition, this working group has also developed a Universal Registrar\footnote{https://uniregistrar.io/}, which allows the creation, edition, and deactivation of the DIDs across different DID methods.
 
-\subsection{DID methods}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{related_work/did_brief_architecture_overview.png}
+  \caption{DID architecture overview \cite{sporny_longley_sabadello_reed_steele_2021}}
+  \label{fig:did_architecture}
+\end{figure}
 
-DID methods describe the processes for CRUD operations for DIDs and DID documents, based on a specific type of verifiable data registry. Each DID method describes and implements its own security and privacy considerations. According to the DID registry of the W3C\footnote{https://www.w3.org/TR/did-spec-registries/\#did-methods}, there are around 130 registered DID methods. Based on their characteristics and patterns, the following 4-way classification of DIDs has arisen.
+\subsection{DID methods}\label{subsec:did_methods}
+
+ Based on their characteristics and patterns, DIDs can be sorted into different categories \cite{preukschat_reed_2021}, for example: 
 
 \begin{itemize}
-  \item \textbf{Ledger-based DIDs}: This includes all the DIDs that store DIDs in a blockchain or other Distributed Ledger Technologies (DLTs). Examples include did:btcr, did:ethr and did:trx, whose DIDs are stored correspondingly in the Bitcoin, Ethereum and Tron network \cite{preukschat_reed_2021}.
-  % \item \textbf{Ledger Middleware ("Layer 2") DIDs}: Broadly speaking, Layer 2 refers to a framework or protocol that is built on top of an existing blockchain system that takes the transactional burden away from layer 1 and post-finalized proofs back to layer 1. By removing this transaction load from layer 1, the base layer becomes less congested, and everything becomes more scalable [https://ethereum.org/en/layer-2/ ]. The Lightning Network ( \, LN	) \, is an example of a layer 2 Bitcoin protocol that offers users a fast micro-payment platform. Furthermore, regarding Layer 2 DID methods, the DIF has developed Sidetree\footnote{https://github.com/decentralized-identity/sidetree}. A protocol for creating scalable blockchain-agnostic Decentralized Identifier networks that enable users to create globally unique, user-controlled identifiers and manage their associated PKI metadata, without the need for centralized authorities or trusted third parties \cite{buchner_steele_ronda_2021}.
-  Examples include: did:ion, did:elem.
-  \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable, however not all of them have to be globally resolvable. The DIDs in this category do not exist on a global source of truth but in the context of relationships between peers in a limited number of participants. Nonetheless, their validity is not affected since they comply with the core properties and functionalities that a DID has to provide. 
-
-  \item \textbf{Static DIDs}: This type of DIDs are limited in the kind of operations that can be performed on them. These DIDs are not stored in any registry, consequently, it is not possible to update, deactivate or rotate them. Using the did:key method as an example, the DID-method-specific part of the DID is encoded in a way that the DID document can be deterministically extracted from the DID itself \cite{longley_zagidulin_sporny_2022}.
+  \item \textbf{Ledger-based DIDs}: This includes all the DIDs that store DIDs in a blockchain or other Distributed Ledger Technologies (DLTs). Examples include \emph{did:btcr}, \emph{did:ethr} and \emph{did:trx}, whose DIDs are stored in the Bitcoin, Ethereum, and Tron network correspondingly.
+  \item \textbf{Ledger Middleware (\emph{Layer 2}) DIDs}: Layer 2 refers to a framework or protocol that is built on top of an existing blockchain system that takes the transactional burden away from layer 1, making it more scalable \cite{weston_2022}. An example DID method in this category is the \emph{did:ion}\footnote{https://identity.foundation/ion/}, which runs in a layer on top of Bitcoin. 
+  \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable, however not all of them have to be globally resolvable. The DIDs in this category do not exist on a global source of truth but in the context of relationships between peers in a limited number of participants. Nonetheless, they are still valid DIDs as they comply with the core properties and functionalities that a DID has to provide. \cite{preukschat_reed_2021}.
+  \item \textbf{Static DIDs}: This type of DIDs are limited in the kind of operations that can be performed on them. These DIDs are not stored in any VDR, consequently, it is not possible to update, deactivate or rotate them. Using the \emph{did:key} method as an example, the DID-method-specific part of the DID is encoded in a way that the DID document can be extracted from it.\cite{longley_zagidulin_sporny_2022}.
 \end{itemize}
 
+There are more DIDs that do not necessarily fall into these categories, however, the majority of the existing ones do. Before arriving at the end of the DID section in this thesis, 
 
-did:ethr
-This DID method was registered by Uport, an Ethereum-based system for self-sovereign identity \cite{Lundkvist_Heck_Torstensson_Mitton_Sena_2016}. It allows any Ethereum smart contract or key pair account, or any secp256k1 public key to becoming a valid identifier \cite{nistor_grassberger_carlin_2022}. UPort is a smart-contract-based system that abstracts user accounts using proxy contracts that are held by the user but may be retrieved if keys are lost. To do this, controller contracts create trusted entities for asserting ownership \cite{8783188}
+% did:ethr
+% This DID method was registered by Uport, an Ethereum-based system for self-sovereign identity \cite{Lundkvist_Heck_Torstensson_Mitton_Sena_2016}. It allows any Ethereum smart contract or key pair account, or any secp256k1 public key to becoming a valid identifier \cite{nistor_grassberger_carlin_2022}. UPort is a smart-contract-based system that abstracts user accounts using proxy contracts that are held by the user but may be retrieved if keys are lost. To do this, controller contracts create trusted entities for asserting ownership \cite{8783188}
 
 
-did:ens:
+% did:ens:
 % The Ethereum Name Service (ENS) is a distributed, open, and extensible naming system based on the Ethereum blockchain. Its purpose is to map names like 'bob.eth' into machine-readable identifiers like Ethereum addresses, other cryptocurrency addresses, content hashes, and metadata. In the same way the Domain Name System (DNS) maps human-readable domains like 'google.com' to IP addresses. However, their architecture differs due to the capabilities and constraints of the Ethereum blockchain. (https://github.com/veramolabs/did-ens-spec )
 % This DID method was registered by Consensys, a blockchain venture studio founded by Ethereum's cofounder Joseph Lubin that supports Ethereum-based projects. Some of these projects include uPort, Metamask, Civil, Truffle and Gnosis. [https://decrypt.co/resources/consensys]. 
 
@@ -334,13 +319,9 @@ did:ens:
 % This DID method works by registering DIDs to the Bitcoin network. Launched to the public in March 2021, Identity Overlay Network (ION) is Microsoft's DID-network built on top of the Bitcoin Network implemented using Sidetree (https://techcommunity.microsoft.com/t5/identity-standards-blog/ion-we-have-liftoff/ba-p/1441555 ). 
 % ION is public, permissionless, it does not implement its own currency and its nodes do not require an additional consensus mechanism. (https://github.com/decentralized-identity/ion ).
 
-\subsection{Verifiable Data Registry}
 
-Essentially, any system that enables capturing DIDs and returning required data to generate DID documents. This can be distributed ledgers, decentralized file systems, any type of database, peer-to-peer networks, or other types of trustworthy data storage \cite{sporny_longley_sabadello_reed_steele_2021}.
 
-\subsection{DID resolver}
 
-A DID resolver is able to implement the DID resolution, which consists of taking a DID as an input, and giving a DID Document as an output \cite{sporny_longley_sabadello_reed_steele_2021}. As of the writing of this thesis, the Identifiers \& Discovery Working Group (ID WG) has implemented a prototype Universal Resolver\footnote{https://github.com/decentralized-identity/universal-resolver}, which allows the resolution of DIDs for numerous DID methods, including all the examples mentioned above. In addition, this working group has also developed a Universal Registrar\footnote{https://uniregistrar.io/}, which allows the creation, edition and deactivation of the DIDs across different DID methods.
 
 % Comparing DIDs with other identifiers
 
@@ -371,40 +352,37 @@ A DID resolver is able to implement the DID resolution, which consists of taking
 
 \section{DIDComm Messaging}\label{section:didcomm}
 
-\subsection{Definition}
+The Hyperledger Foundation is an open-source collaborative effort intended to further develop blockchain technologies across industries \cite{jones_boswell_2022}. Started in 2016 by the Linux Foundation, it has given birth to numerous enterprise-grade software open-source projects that can be classified into DLTs, libraries, tools and labs \cite{lusard_lehors_muscara_boswell_zsigri_2021}. One of these graduate projects is Hyperledger Aries, which together with Hyperledger Indy (HI) and Hyperledger Ursa (HU), makes up the Sovereign Identity Blockchain Solutions of Hyperledger. HI supplies a distributed ledger specifically built for decentralized identity, HU is a shared cryptography library that helps to avoid duplicating cryptographic work across projects while also potentially increasing security. Finally, Aries provides solutions for SSI-based identity management, including key management, credential management, and an encrypted, peer-to-peer DID-based messaging system that is now labeled as DIDComm v1 \cite{jones_boswell_2022}. 
+Based on DIDComm v1, the Communication Working Group (CWG) of the DIF has implemented DIDComm v2. The CWG pursues the standardization of DIDComm v2 not only to widen its implementation beyond Aries-based projects but to create an interoperable layer that would allow higher-order protocols to build upon its security, privacy, decentralization, and transport independence in the same way web services build upon HTTP. \cite{young_2020} \cite{curren_looker_terbu_2020}
 
-The Hyperledger Foundation is an open-source collaborative effort intended to further develop blockchain technologies across industries \cite{jones_boswell_2022}. Started in 2016 by the Linux Foundation, it has given birth to numerous enterprise-grade software open-source projects that can be classified into DLTs, libraries, tools and labs \cite{lusard_lehors_muscara_boswell_zsigri_2021}. One of these graduate projects is Hyperledger Aries, which together with Hyperledger Indy (HI) and Hyperledger Ursa (HU), makes up the Sovereign Identity Blockchain Solutions of Hyperledger. HI supplies a distributed ledger specifically built for decentralized identity, HU is a shared cryptography library that helps to avoid duplicating cryptographic work across projects while also potentially increasing security. Finally, Aries provides solutions for SSI-based identity management, including key management, credential management, and an encrypted, peer-to-peer DID-based messaging system that is now labeled as Didcomm v1 \cite{jones_boswell_2022}. 
-Based on Didcomm v1, the Communication Working Group (CWG) of the DIF has implemented DIDcomm v2. Among other key differences between versions, such as formalizations of Didcomm v1 methods, Didcomm v2 has removed the special handling of Peer-DIDs in order to make all DIDs equal from the perspective of the DIDComm spec. Furthermore, the CWG pursues the standardization of DIDcomm not only to widen its implementation beyond Aries-based projects but to create an interoperable layer that would allow higher-order protocols to build upon its security, privacy, decentralization, and transport independence in the same way web services build upon HTTP. \cite{young_2020} \cite{curren_looker_terbu_2020}
-
-From this point on, we are going to refer to DIDComm Messaging v2 only as DIDComm. Didcomm can be described as a communication protocol that promises a secure and private methodology that builds on top of the decentralized design of DIDs. Moreover, Didcomm is a very versatile protocol, as it supports a wide range of features, such as security, privacy, decentralization, routable, interoperability, and the ability to be transport-agnostic \cite{curren_looker_terbu_2020}.
+From this point on, the term \emph{DIDComm} will refer to DIDComm Messaging v2. DIDComm can be described as a communication protocol that promises a secure and private methodology that builds on top of the decentralized design of DIDs. It is a versatile protocol that supports a wide range of features, such as security, privacy, decentralization, routable, interoperability, and the ability to be transport-agnostic \cite{curren_looker_terbu_2020}.
 
 To better understand how it works, let's look at how it would work in a scenario where Alice wants to send a private message to Bob: 
 
+\begin{algorithm}[H]
+\caption{Example of DID communication using DIDComm \cite{Abramson_2020}}
+\label{alg:didcomm_example}
+  \begin{algorithmic}[1]
+    \State Alice has a private key \emph{sk\textsubscript{a}} and a DID Document for Bob containing an endpoint \emph{(endpoint\textsubscript{bob})} and a public key \emph{(pk\textsubscript{b})}.
 
-% \begin{algorithm}[H]
-% \caption{Example of DID communication using DIDComm \cite{Abramson_2020}}
-% \label{alg:didcomm_example}
-%   \begin{algorithmic}[1]
-%     \State Alice has a private key \emph{sk\textsubscript{a}} and a DID Document for Bob containing an endpoint \emph{(endpoint\textsubscript{bob})} and a public key \emph{(pk\textsubscript{b})}.
+    \State Bob has a private key \emph{sk\textsubscript{b}} and a DID Document for Alice containing her public key \emph{(pk\textsubscript{a})}.
 
-%     \State Bob has a private key \emph{sk\textsubscript{b}} and a DID Document for Alice containing her public key \emph{(pk\textsubscript{a})}.
+    \State Alice encrypts plaintext message \emph{(m)} using pk\textsubscript{b} and creates an encrypted message \emph{(eb)}.
 
-%     \State Alice encrypts plaintext message \emph{(m)} using pk\textsubscript{b} and creates an encrypted message \emph{(eb)}.
+    \State Alice signs eb using her private key \emph{sk\textsubscript{a}} and creates a signature \emph{(s)}.
 
-%     \State Alice signs eb using her private key \emph{sk\textsubscript{a}} and creates a signature \emph{(s)}.
+    \State Alice sends \emph{(eb, s)} to \emph{endpoint\textsubscript{bob}}.
 
-%     \State Alice sends \emph{(eb, s)} to \emph{endpoint\textsubscript{bob}}.
+    \State Bob receives the message from Alice at \emph{{endpoint\textsubscript{bob}}.}
 
-%     \State Bob receives the message from Alice at \emph{{endpoint\textsubscript{bob}}.}
+    \State Bob verifies \emph{(s)} using Alice's public key \emph{pk\textsubscript{a}}
 
-%     \State Bob verifies \emph{(s)} using Alice's public key \emph{pk\textsubscript{a}}
-
-%     \If{Verify \emph{(eb, s, pk\textsubscript{a})} = 1}
-%     \State Bob decrypts \emph{eb} using \emph{sk\textsubscript{b}}.
-%     \State Bob reads the plaintext message \emph{(m)} sent by Alice
-%     \EndIf
-%   \end{algorithmic}
-% \end{algorithm}
+    \If{Verify \emph{(eb, s, pk\textsubscript{a})} = 1}
+    \State Bob decrypts \emph{eb} using \emph{sk\textsubscript{b}}.
+    \State Bob reads the plaintext message \emph{(m)} sent by Alice
+    \EndIf
+  \end{algorithmic}
+\end{algorithm}
 
 
 % [https://arxiv.org/pdf/2006.02456.pdf ]
