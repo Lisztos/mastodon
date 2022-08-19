@@ -34,39 +34,5 @@
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=did:web DID Document, label=fig:did_web_doc, float=h]
-  {
-    "context": "https://www.w3.org/ns/did/v1",
-    "id": "did:web:lisztos.com",
-    "publicKey": {
-        "id": "did:web:lisztos.com#main-key",
-        "controller": "did:web:lisztos.com",
-        "type": "RSA",
-        "publicJwk": {...}
-    },
-    "authentication": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "assertionMethod": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "capabilityDelegation": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "capabilityInvocation": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "keyAgreement": {
-        "id": "did:web:lisztos.com#main-key",
-        "controller": "did:web:lisztos.com",
-        "type": "RSA",
-        "publicJwk": {...}
-    },
-    "service": [
-        {
-            "id": "did:web:lisztos.com#ActivityPub",
-            "type": "ActivityPub",
-            "serviceEndpoint": "https://lisztos.com/users/@did:web:lisztos.com"
-        }
-    ]
-}
+ 
 \end{lstlisting}

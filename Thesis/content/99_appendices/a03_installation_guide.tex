@@ -1,0 +1,86 @@
+\chapter{Appendix: Installation Guide}
+\label{appendix:installation_guide}
+
+\section{NGINX Configuration}\label{appendix:nginx_configuration}
+\lstset{style=CodeStyle}
+  \begin{lstlisting}[language=PHP, caption=Adding Nginx configuration file., float=h]
+    // First, clone the project
+    git clone https://gitlab.com/Lisztos/mastodon
+
+    // Quick install nginx
+    sudo apt update && sudo apt install nginx
+    
+    // Copy configuration file from the repository sample to the Nginx folder
+    cp ~/root/mastodon/nginx.conf /etc/nginx/sites-available/
+
+    // Rename with your domain name
+    mv /etc/nginx/sites-available/nginx.conf /etc/nginx/sites-available/your-domain.com.conf
+    
+    // Update the configuration file with your domain information 
+    nano /etc/nginx/sites-available/your-domain.com.conf
+
+    // Activate the Nginx configuration
+    cd /etc/nginx/sites-enabled
+    ln -s ../sites-available/your-domain.com.conf
+    sudo systemctl stop nginx
+
+    // Open ports 80 and 443
+    sudo apt install ufw
+    sudo ufw allow Nginx Full
+  
+    // Get SSL certificate using Let's encrypt
+    sudo apt install certbot
+    certbot certonly --standalone -d your-domain.com
+
+    // Start Nginx
+    sudo systemctl start nginx
+    
+\end{lstlisting}
+
+
+\section{Environment File}\label{appendix:env_file}
+
+\begin{lstlisting}[language=PHP, caption=Environment file template, float=h]
+# Federation
+# ----------
+ This identifies your server and cannot be changed safely later
+# ----------
+LOCAL_DOMAIN= 
+
+# DEV ENV
+# ---------
+RAILS_ENV=development
+NODE_ENV=development
+
+# Redis
+# -----
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# PostgreSQL
+# ----------
+DB_HOST=db
+DB_USER=mastodon
+DB_NAME=mastodon_dev
+DB_PASS=
+DB_PORT=5432
+
+
+# Sending mail
+# ------------
+SMTP_SERVER=
+SMTP_PORT=
+SMTP_LOGIN=
+SMTP_PASSWORD=
+SMTP_FROM_ADDRESS=
+SMTP_REPLY_TO=
+
+# File storage (optional)
+# -----------------------
+S3_ENABLED=true
+S3_BUCKET=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+\end{lstlisting}
+

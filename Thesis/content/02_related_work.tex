@@ -138,45 +138,45 @@ Signature: keyId="https://my-example.com/actor#main-key",headers="(request-targe
 
 For Mastodon to be able to implement these signatures, it was necessary to generate keypairs for the users. For this, Mastodon added a new property \emph{publicKey} to the actor object, which includes the pem-formatted public key of an RSA-2018 keypair, as shown in figure\ref{fig:mastodon_actor_object}.
 
-\lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Mastodon extended version of ActivityPub's actor object, label=fig:mastodon_actor_object, float=ht]
-{
-    "@context": [
-        "https://www.w3.org/ns/activitystreams",
-    ],
-    "id": "https://mastodon.social/users/bob",
-    "type": "Person",
-    "following": "https://mastodon.social/users/bob/following",
-    "followers": "https://mastodon.social/users/bob/followers",
-    "inbox": "https://mastodon.social/users/bob/inbox",
-    "outbox": "https://mastodon.social/users/bob/outbox",
-    "featured": "https://mastodon.social/users/bob/collections/featured",
-    "featuredTags": "https://mastodon.social/users/bob/collections/tags",
-    "preferredUsername": "bob",
-    "name": "Bob",
-    "summary": "",
-    "url": "https://mastodon.social/@bob",
-    "manuallyApprovesFollowers": false,
-    "discoverable": false,
-    "published": "2022-01-18T00:00:00Z",
-    "devices": "https://mastodon.social/users/bob/collections/devices",
-    "publicKey": {
-        "id": "https://mastodon.social/users/bob#main-key",
-        "owner": "https://mastodon.social/users/bob",
-        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuWWHabkb/1v/OtK3x3EJ\nvxVaHwwN0PxTbOT/UsDNhu8GynBA2A371rg+BEUFGE/yQ6ljaDcqiQtaAMnuvOpT\nLRUOXu5O5Ct+qBWoLb+Box2NkSWJWc4rP+FXEHM+PTPqJJEplZSKIboCjLijw90V\nCD0hL6nBdXSnNp3CeaiDJfjXx+8MoR7xm4AB4Av0nrrM/eGBd60UM3EqMUVAWYtN\n813hrCmbapi++KY9DE7QpMPUoyOiarvFtl8JpV9HWJ1FrwloT17jJ02smPoCy6iv\nQgDXcAWnMm2PZWuSh/uQ7Y6Iq1ZSCkdQJQwaNsyB6O4BlyPujU2f2wg4nzf5QaBn\nwQIDAQAB\n-----END PUBLIC KEY-----\n"
-    },
-    "tag": [],
-    "attachment": [],
-    "endpoints": {
-        "sharedInbox": "https://mastodon.social/inbox"
-    },
-    "icon": {
-        "type": "Image",
-        "mediaType": "image/jpeg",
-        "url": "https://files.mastodon.social/accounts/avatars/107/643/267/140/999/130/original/557f01fa567f8220.jpg"
-    }
-}
-\end{lstlisting}
+% \lstset{style=JSONStyle}
+% \begin{lstlisting}[language=PHP, caption=Mastodon extended version of ActivityPub's actor object, label=fig:mastodon_actor_object, float=ht]
+% {
+%     "@context": [
+%         "https://www.w3.org/ns/activitystreams",
+%     ],
+%     "id": "https://mastodon.social/users/bob",
+%     "type": "Person",
+%     "following": "https://mastodon.social/users/bob/following",
+%     "followers": "https://mastodon.social/users/bob/followers",
+%     "inbox": "https://mastodon.social/users/bob/inbox",
+%     "outbox": "https://mastodon.social/users/bob/outbox",
+%     "featured": "https://mastodon.social/users/bob/collections/featured",
+%     "featuredTags": "https://mastodon.social/users/bob/collections/tags",
+%     "preferredUsername": "bob",
+%     "name": "Bob",
+%     "summary": "",
+%     "url": "https://mastodon.social/@bob",
+%     "manuallyApprovesFollowers": false,
+%     "discoverable": false,
+%     "published": "2022-01-18T00:00:00Z",
+%     "devices": "https://mastodon.social/users/bob/collections/devices",
+%     "publicKey": {
+%         "id": "https://mastodon.social/users/bob#main-key",
+%         "owner": "https://mastodon.social/users/bob",
+%         "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuWWHabkb/1v/OtK3x3EJ\nvxVaHwwN0PxTbOT/UsDNhu8GynBA2A371rg+BEUFGE/yQ6ljaDcqiQtaAMnuvOpT\nLRUOXu5O5Ct+qBWoLb+Box2NkSWJWc4rP+FXEHM+PTPqJJEplZSKIboCjLijw90V\nCD0hL6nBdXSnNp3CeaiDJfjXx+8MoR7xm4AB4Av0nrrM/eGBd60UM3EqMUVAWYtN\n813hrCmbapi++KY9DE7QpMPUoyOiarvFtl8JpV9HWJ1FrwloT17jJ02smPoCy6iv\nQgDXcAWnMm2PZWuSh/uQ7Y6Iq1ZSCkdQJQwaNsyB6O4BlyPujU2f2wg4nzf5QaBn\nwQIDAQAB\n-----END PUBLIC KEY-----\n"
+%     },
+%     "tag": [],
+%     "attachment": [],
+%     "endpoints": {
+%         "sharedInbox": "https://mastodon.social/inbox"
+%     },
+%     "icon": {
+%         "type": "Image",
+%         "mediaType": "image/jpeg",
+%         "url": "https://files.mastodon.social/accounts/avatars/107/643/267/140/999/130/original/557f01fa567f8220.jpg"
+%     }
+% }
+% \end{lstlisting}
 
 \subsubsection{Resolving accounts}
 As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving process when wanting to send a message to a user whose account resides on a different server. For this, Mastodon implemented \emph{Well-Known URIs}\footnote{https://www.rfc-editor.org/rfc/rfc8615.html}, which enable the discovery of information about an origin in well-known endpoints\cite{nottingham_2019}. The two most relevant endpoints are the following: 
@@ -238,6 +238,10 @@ Mastodon relies on the Webfinger protocol for the resolving process and its fede
 \end{lstlisting}
 \end{itemize}
 
+\subsection{Extending ActivityPub}
+
+
+% ------------DIDs------------------------------------
 \section{Decentralized Identifiers} \label{section:dids}
 
 On July 19. 2022 the W3C announced that Decentralized Identifiers (DIDs) v1.0 is officially a Web standard. This new type of globally unique identifier brings a Self-Sovereign approach to digital identities enabling both individuals and organizations to take greater control of their online information and relationships while also providing greater security and privacy \cite{w3c_2022}. Self-Sovereign Identity \emph{SSI} implies a sovereign, enduring, decentralized, and portable digital identity for any human or non-human entity, that enables its owner to access services in the digital world in a secure, private, and trusted manner. DIDs are the key component of the SSI framework, as they allow identifiers to be created independently of any centralized registry, identity provider, or certificate authority with full control given to its owner\cite{Naik_Jenkins_2021}\cite{sporny_longley_sabadello_reed_steele_2021}. 

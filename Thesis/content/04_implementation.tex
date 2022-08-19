@@ -1,185 +1,172 @@
 \chapter{Implementation}
 \label{cha:implementation}
 
+The source code of this thesis prototype is available on GitLab and can be accessed under the following link: \verb|https://gitlab.com/Lisztos/mastodon|. It was implemented using two different Mastodon instances. The first one was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one, which was mainly used for debugging requests and testing the resolving processes in federated communication. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers. 
+
 \section{Mastodon}
 
-The source code\footnote{https://github.com/mastodon/mastodon} of Mastodon is open source and accessible for everyone to download. The requirements to run a mastodon server include Ubuntu 20.04 or Debian 11 for the operating system, a domain name, an email delivery service, and an object storage service optionally. The prototype was implemented using two different servers. The first was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one. However, the latter was mainly used for debugging requests and testing the new discovery process. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de/}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers. The whole project is containerized using docker, and a docker-compose.yml file for production is given. A Vagrant file is also provided for development, but for this Thesis, a custom dockerfile was written to run Mastodon in development mode. The core backend was implemented using the Model-View-Controller (MVC) server-side framework Ruby on Rails (RoR), which, as the name says, is based on the programming language ruby. The backend manages a Postgres relational database, implements the ActivityPub server, provides a REST API for the frontend, and serves web pages in the about-endpoint. In addition, Mastodon offers a node.js-based streaming API that sends real-time updates through long-lived HTTP connections or WebSockets \cite{rochko_2020}. The frontend of Mastodon was developed using the React framework, which manages most of the dynamic parts of the social network.
+The source code\footnote{https://github.com/mastodon/mastodon} of Mastodon is open source and accessible for everyone to download. The core backend was implemented using the Model-View-Controller framework Ruby on Rails\footnote{https://rubyonrails.org/}, based on the Ruby programming language. The backend manages a Postgres\footnote{https://www.postgresql.org/} database, implements the ActivityPub server, provides a REST API for the frontend, and serves some web pages. The frontend of Mastodon was complemented using the React\footnote{https://reactjs.org} framework, which manages most of the dynamic parts of the interface. Finally, Nginx serves as the reverse proxy for the Mastodon instance.  
+Mastodon provides a docker-compose configuration file to facilitate the deployment process. However, it was extended with the DID resolver services for the prototype. The services inside the extended docker-compose file are described in table \ref{table:mastodon_service}.
 
-\subsection{DIDs}
-
-The way Mastodon validates the username format is through the following regular expression: 
-
-\begin{verbatim}
-  USERNAME_REGEX = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
-\end{verbatim}
-
-Additionally, it has a length constraint of 30 characters. A DID-syntax-compliant regular expression was used for the prototype, and the maximum length was incremented to 85 characters. 
-
-\verb|DID_REGEX = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:|\\\verb|[A-Za-z0-9\.\-\:\_\#]+/i |
-
-The universal resolver of the DIF was added to the docker-compose file to allow resolving DIDs. It consists of the main service, the query endpoint, and a driver for each DID method. The resolver was added to the same docker network as the main backend application, which meant the access through the alias name \emph{did-resolver} was possible. Figure \ref{fig:example_request_resolver} shows a sample request to the resolver. The resolver validates the DID document by comparing the searched DID against the id attribute of the DID document and only returns the DID document when both match. The service class \emph{DidResolverService} was added to the backend to make the requests to the resolver. The only parameter it needs is the DID it needs to resolve, and it returns the DID Document as a JSON object. Furthermore, a class \emph{DidDocument} was added with the methods listed in table \ref{table:did_doc_instance_methods}, to facilitate the interaction with the properties of the DID document
-
-\begin{lstlisting}[language=PHP, caption=Example request to the DID resolver, label=fig:example_request_resolver]
-  GET /1.0/identifiers/<did>
-  Host: did-resolver:8080
-  Accept: application/json
-\end{lstlisting}
-
-\begin{table}[!ht]
-	\centering
-	\begin{tabular}{| l | l | l |}
-		\hline
-    Function & Description \\
-		\hline
-		\hline
-      initialize(attributes) &  Stores the attributes of the DID document in instance variables\\
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{4cm}|p{10cm}| }
     \hline
-      serviceEndpoint & Returns the service endpoint URL of the first service \\
+    Service name & Description \\
     \hline
-      rsaDidcommKey & Looks for a specific key in the \\ & DID document and returns an RSA instance of it \\
     \hline
-	\end{tabular}
-	\caption{DID document instance methods}
-  \label{table:did_doc_instance_methods}
+    Web & Mastodon Rails application \\
+    \hline
+    DB & Postgres database \\
+    \hline
+    Redis & In-memory data store for caching and streaming \\
+    \hline
+    ElasticSearch (es) & Search engine for accounts or tags\\
+    \hline
+    Streaming & Mastodon's React application \\
+    \hline
+    Sidekiq & Tool to perform asynchronous processing\\
+    \hline
+    DID Resolver & Service to resolve DIDs \\
+    \hline
+    Uni-resolver-driver-did-uport & Driver for the did:ethr method\\
+    \hline
+  \end{tabular}
+  \caption{Mastodon services}
+  \label{table:mastodon_service}
 \end{table}
 
-With DIDs, a resolver, and a class for DID documents set up, it is time to modify the discovery process of Mastodon, which relies on Webfinger. Mastodon has a class called \emph{ResolveAccountService}, which triggers the Webfinger requests and processes the respective responses. It takes a username in the form of \emph{username@domain} as a parameter. If the username does not have an existing account in the local database, it makes the Webfinger request. The JRD response gets parsed to find the actor URL, and a subsequent request to the username domain gets triggered to get the actor object. Finally, it parses the actor object to create an account for this user in the local database. It is important to clarify that even if the account is saved locally, it will be flagged as \emph{not local}. 
+\subsection{Requirements}
 
-The new class handling the decentralized DID-based discovery is not very different. It also takes the username parameter in the form of \emph{did:method:example} and then uses the resolver service to make a query to the universal resolver running locally. A \emph{DidDocument} class gets created with the JSON response and the actor URL its obtained using the \emph{serviceEndpoint} method. Finally, as in the previous flow, a request is made to this URL to get the actor object for further processing.
+The requirements to run a mastodon server are:
+\begin{itemize}
+  \item Ubuntu 20.04 or Debian 11 for the operating system
+  \item Domain name
+  \item Email delivery service
+  \item Object storage service (optionally)
+\end{itemize}
 
-\subsection{DIDComm}
+Software requirements include: 
+\begin{itemize}
+  \item Nginx
+  \item Docker
+  \item Docker-Compose
+\end{itemize}
 
-Now that finding accounts from other servers using DIDs is possible, it is time to enable DIDComm. The biggest challenge here was the compatibility between the algorithms specified by the JWA spec, the key types, and the libraries used to generate keys, sign, and encrypt. OpenSSL\footnote{https://github.com/ruby/openssl} for Ruby is the library used for generating the RSA keys. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of key management, encryption, decryption, and certificates management. To create signed and encrypted messages, the JWT library\footnote{https://github.com/jwt} for ruby on rails was added to the backend. This library allows the spec-compliant creation of JWS and JWE tokens. However, one of the drawbacks was the limited number of algorithms for JWE encryption. As the ECDH algorithm was not available during the development of this prototype, RSA key types and 
 
-The JWS tokens in the prototype were created using the \emph{RS256} algorithm and the digital signature algorithm \emph{RSASSA-PKCS1-v1\_5 using SHA-256}\footnote{https://www.rfc-editor.org/rfc/rfc3447}. 
+\subsection{Configuration}
 
-% Having now DIDs as usernames, a resolver, and a class for DID documents, it is time to modify the discovery process of Mastodon, which relies on Webfinger. Mastodon has a class called \emph{ResolveAccountService}, and its workflow is shown in the algorithm \ref{alg:resolve_account_service}.
+For external configuration, it is required that the domain name points to the IP address of the server. Furthermore, the accounts and providers for the Email delivery service or the object storage service must be set up in advance. 
+Additionally, Nginx\footnote{https://nginx.com} is used to serve the Mastodon instance. Unfortunately, Nginx was not containerized and it must be manually configured. For complete instructions to configure Nginx see appendix \ref{appendix:nginx_configuration} 
 
-% \begin{algorithm}[H]
-%   \caption{Discovery process through the ResolveAccountService class}
-%   \label{alg:resolve_account_service}
-%     \begin{algorithmic}[1]
-%       \State ResolveAccountService(username\: "alice@alice\_server.com")
+
+\subsection{Build}
+
+To build the source code of the prototype it is first required to add an \emph{env} file with the necessary environment variables for development to the root folder. An example file can be found in appendix \ref{appendix:env_file}, however, it is necessary to fill it up with the required credentials. Next, the image from the web service needs to be manually built with the following command. The \emph{-f} flag specifies to use the custom \emph{Dockerfile} and the \emph{-t} flag adds a name and tag to the image. 
   
-%       \If{username in local database} 
-%       \State account = query(username)
-%       \State return account
-%       \Else
-%       \State actor\_url = sendWebfingerRequest(alice\_server.com, acct\:alice@alice\_server.com)
-%       \State new\_account = GET(actorUrl)
-%       \State return new\_account
-%       \EndIf
-%       \State Alice sends \emph{jwe} to Bob.
-  
-%       \State Bob decrypts \emph{(jwe)} using his private key \emph{sk\textsubscript{b}} and obtains the \emph{jws}
-%       \State Bob verifies \emph{(jws)} using Alice's public key \emph{pk\textsubscript{a}}
-
-%   \end{algorithmic}
-% \end{algorithm}
+\lstset{style=CodeStyle}
+  \begin{lstlisting}[language=PHP, caption=Building the development Dockerfile, float=h]
+    docker build -f Dockerfile.dev -t mastodon:dev .
+  \end{lstlisting}
 
 
-\section{Creating and editing a DID document}
-Creating a DID is rather a simple task. This prototype's main challenge was finding a DID method that would allow CRUD operations to add the service endpoint and a \emph{keyAgreement} key to its DID Document without needing to pay any GAS or any other kind of fees. My first option was MATTR\footnote{https://mattr.global}, which offers creating DIDs using \emph{did:key}, \emph{did:web} and \emph{did:ion} methods. However, they would not allow creating own keys or accessing private keys, which is necessary according to \autoref{section:enabling_didcomm}. Furthermore, any editing of the DID document was also restricted. Independent from MATTR, \emph{did:ion} offers a set of tools\footnote{https://github.com/decentralized-identity/ion-tools} to perform CRUD operations in a self-created DID and DID document. These tools are bundled in a library called ION.js, which wraps the SDK and provides an interface to interact easily with the components of ION. However, even though the \emph{update} operation is allowed, it was not possible to fetch a previously created DID and then update it, which was a necessary step. More users have encountered this issue\footnote{https://github.com/decentralized-identity/ion-tools/discussions/25}, but so far, it has not been addressed by the developers. An alternative to ledger-based DIDs developed for this thesis was using the \emph{did:web} method. This method allows hosting the DID Document on any server, giving the owner full control. This way, any new field or attribute could be added without the burden of making a third-party library work. The DID is \emph{did:web:lisztos.com} and an example of my self-hosted DID Document can be seen in figure \ref{fig:did_web_doc}.
+\subsection{Run}
+After building the development image for the rails application, it is now possible to pull the images for the other services from the docker registry and get every container running using the commands shown in listing \ref{list:start_mastodon}.
 
+\lstset{style=CodeStyle}
+\begin{lstlisting}[language=PHP, caption=Starting all services of Mastodon, label=list:start_mastodon, float=ht]
+  // Create and start containers
+  docker-compose up -d
 
-\lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=did:web DID Document, label=fig:did_web_doc, float=h]
-  {
-    "context": "https://www.w3.org/ns/did/v1",
-    "id": "did:web:lisztos.com",
-    "publicKey": {
-        "id": "did:web:lisztos.com#main-key",
-        "controller": "did:web:lisztos.com",
-        "type": "RSA",
-        "publicJwk": {...}
-    },
-    "authentication": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "assertionMethod": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "capabilityDelegation": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "capabilityInvocation": [
-        "did:web:lisztos.com#main-key"
-    ],
-    "keyAgreement": {
-        "id": "did:web:lisztos.com#main-key",
-        "controller": "did:web:lisztos.com",
-        "type": "RSA",
-        "publicJwk": {...}
-    },
-    "service": [
-        {
-            "id": "did:web:lisztos.com#ActivityPub",
-            "type": "ActivityPub",
-            "serviceEndpoint": "https://lisztos.com/users/@did:web:lisztos.com"
-        }
-    ]
-}
+  // Restart NGINX
+  sudo systemctl restart nginx
+
+  // When everything is running, we need to run the migrations
+  docker-compose exec web rails db:migrate
 \end{lstlisting}
 
 
-Nonetheless, the discovery process of this type of DID relies heavily on DNS because the DID resolver makes a GET request to the \emph{.well-known/did} endpoint of the domain in the DID to retrieve the DID document. This dependency on the domain would prevent achieving our goal of independence of centralized services. 
+Visiting the provided domain using HTTPS will show the welcome page of Mastodon. In order to test the federated communication, this process should now be repeated using a different server. Having two different domain names was required for the prototype to test the whole DNS-based resolving process. However, the setup might also work using the raw IP address as the default domain. 
 
-Another DID method researched was the Uport-developed \emph{did:ethr}. Uport is now divided into two projects, namely Serto\footnote{https://serto.id} and Veramo\footnote{https://veramo.io}. Each one of them offers a decentralized identity solution. On the one hand, Serto provides a platform in the AWS Marketplace that can be easily deployed and would allow a user to create and manage DIDs from the \emph{did:ethr} method. Unfortunately, after failing to deploy the EC2 instance and contacting Serto's customer support, it turned out that they were having problems with the IAM permissions, and it was temporarily not available. On the other hand, Veramo offers a typescript-based API that allows users to manage DIDs not only in the Ethereum leading network but also in other test networks such as Ropsten and Rinkeby. This allows making CRUD operations to DIDs without incurring costs. Veramo provides a setup guide\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers}, where the only thing needed externally is an Infura\footnote{https://infura.io} account to use it as a Web3 Provider. Two DIDs were created in the Ropsten network for Alice and Bob, respectively. Figure \ref{fig:default_did_document_ethr} shows the default DID document that gets created when creating a new DID.
 
+\section{DIDs}
+
+In order to create a DID, the source code of the prototype includes a \emph{/veramo\_agent} folder with all the needed methods to perform CRUD operations to DIDs from the \emph{did:ethr} method. The setup was taken from Veramo's guides\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers/}, and the methods for the CRUD operations were written based on the API reference \footnote{https://veramo.io/docs/api/core}. 
+
+\subsection{Requirements}
+
+Software requirements to build the Veramo agent include: 
 \begin{itemize}
-  \item \textbf{Alice:} 
-  did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468\\e6a00cc6c4d.
-  \item \textbf{Bob:} 
-did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833d\\dd56397c37
+  \item Node 10.8.2+
+  \item Yarn
 \end{itemize}
 
+\subsection{Configuration}
+First, an \emph{.env} file that contains the variable: \emph{INFURA\_PROJECT\_ID="example-infura-project-id"} from an Infura\footnote{https://infura.io/} account is required. This project ID has to match the Ethereum network desired. The default selected in the setup is \emph{Ropsten}.
+
+\subsection{Build}
+To build the project, the only command needed is \emph{yarn install} in the root of the \emph{/veramo\_agent} folder. 
+
+\subsection{Run}
+A set of \emph{scripts} are provided to facilitate the use of the CRUD methods. See table \ref{table:yarn_scripts} for a detailed view. However, to make any changes to a DID, it is first necessary to fund the Ethereum account to which the DID is anchored. This account can be found in the DID document, with the key \emph{blockchainAccountId} of the first verification method, as shown in listing \ref{fig:blockchain_id}. It follows the format  \emph{eip155:<network id>:<0x ethereum address>}. If the DID was created using a test network, the address can be funded using any Faucet\footnote{https://faucet.egorfine.com/}. Otherwise, Ether has to be transferred from a real account.
+Finally, the prototype only supports parsing RSA keys from the DID document. To further understand how adding an RSA key works in Veramo, please refer to:\\
+ \verb|https://gist.github.com/Lisztos/eade1f9199d46392f7c7d1f9bbfe7a3b|
+
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{4cm}|p{3cm}|p{7cm}| }
+    \hline
+    Command & Parameters & Description \\
+    \hline
+    \hline
+    yarn id:create & & Creates a new DID \\
+    \hline
+    yarn id:list & & List the created identifiers by this agent \\
+    \hline
+    yarn id:resolve\_did & DID & Resolved the DID to its the DID document \\
+    \hline
+    yarn id:add\_service & DID,  Service \ref{fig:service_object} & Adds a new service to the DID document \\
+    \hline
+    yarn id:remove\_service & DID, Service ID & Removes the specified service\\
+    \hline
+    yarn id:add\_key & DID, Key & Adds a new key to the DID document. \\
+    \hline
+    yarn id:remove\_key & DID, Key ID & Removes the specified key\\
+    \hline
+  \end{tabular}
+  \caption{CRUD operations for \emph{did:ethr} DIDs}
+  \label{table:yarn_scripts}
+\end{table}
+
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Initial DID document for Alice, label=fig:default_did_document_ethr, float=h]
+\begin{lstlisting}[language=PHP, caption=Controller address inside the DID document, label=fig:blockchain_id, float=h]
   {
   "@context": [
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
   ],
-  "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+  "id": "did:ethr:ropsten:0x031be462277...",
   "verificationMethod": [
     {
-      "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
+      "id": "did:ethr:ropsten:0x031be462277...#controller",
       "type": "EcdsaSecp256k1RecoveryMethod2020",
-      "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
-      "blockchainAccountId": "eip155:3:0xcDC3B55934073f7BCA8a34d0561006CC1f26E9Fa"
-    },
-    {
-      "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controllerKey",
-      "type": "EcdsaSecp256k1VerificationKey2019",
-      "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
-      "publicKeyHex": "023ea34111106fc45001a76aed5681f8187c56d6eaf0a55fc9af92d11c2732c2c8"
+      "controller": "did:ethr:ropsten:0x031be462277...",
+      "blockchainAccountId": "eip155:3:0x577361D41748c83ab328E90a51054712Fe49e211"  // Ethereum Address
     },
   ],
-  "authentication": [
-    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
-    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controllerKey"
-  ],
-  "assertionMethod": [
-    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
-    "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controllerKey",
-  ],
-  "service": []
+  {...}
 }
 \end{lstlisting}
 
-\subsection{Adding a service}
-
-For DIDComm to work in our proposed implementation, a service endpoint with the profile URL must be added to the DID document of Bob and Alice, respectively. The parameters required for Veramo's API to process the information correctly, as shown in figure \ref{fig:add_service_payload}, are the DID, the service object, and options for the Web3 provider. The service object includes a type, the service endpoint, and a description. The service's id is optional, as the Web3 Provider will overwrite it. 
-
-
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:add_service_payload, float=h]
-  const service_args= {
-    did: <alice DID>,
+\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:service_object, float=h]
+  const service= {
+    did: <DID>,
     service: {
       id: 'ActivityPub', // This field will be overwritten
       type: "ActivityPub",
-      serviceEndpoint: "http://lisztos.com/users/" + <alice DID>,
+      serviceEndpoint: "http://your-domain.com/users/" + <DID>,
       description: "DIDComm enabled ActivityPub Actor"
     },
     options: {
@@ -190,5 +177,6 @@ For DIDComm to work in our proposed implementation, a service endpoint with the 
 \end{lstlisting}
 
 
-\subsection{Adding a key}
-Finally, the last required editing task in the DID document is to add a public key. As explained in 
+
+
+
