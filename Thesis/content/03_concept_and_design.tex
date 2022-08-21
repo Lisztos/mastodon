@@ -2,7 +2,7 @@
 \label{cha:conceptanddesign}
  
 The standards presented in \autoref{cha:relatedwork} show the potential improvements that can be achieved in key components of ActiviyPub-based social networks. In this section, we are going to go through the different steps that are required firstly to integrate DIDs into Mastodon, and finally to enable DIDComm for its communication. As explained in \autoref{cha:relatedwork}, Mastodon is the social network that pioneered the use of ActivityPub on a large scale, and it is also the social network with the most active users and presence inside the Fediverse. For this reason, the proposal presented in this section and the modus operandi of the ActivityPub server are going to be scoped to the actual implementation in Mastodon.\\
-The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, an example of a simple use case in MAstodon's implementation is going to be illustrated and analyzed in order to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but with the proposed concept and design that includes DID integration and DIDComm enablement.
+The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, an example of a simple use case in Mastodon's implementation is going to be illustrated and analyzed in order to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but with the proposed concept and design that includes DID integration and DIDComm enablement.
  
 \section{Definitions}
 Mastodon has implemented its own ActivityPub server, and with it also its own terms to express different social network vocabulary. In order to prevent confusion or ambiguities, the used terms in this chapter are explained here. 
@@ -14,7 +14,7 @@ Mastodon has implemented its own ActivityPub server, and with it also its own te
   \item \textbf{Status}: In the backend of Mastodon, the class used for a Toot is a Status. An account in Mastodon has a 1:n relationship with statuses.
 \end{itemize}
 
-\section{Use case}\label{section:use case}
+\section{Use case}\label{section:use_case}
 In order to explain the current ActivityPub flow in Mastodon, let's describe what happens in the simple use case:
 
 \emph{Alice has an account in the Mastodon instance alice\_server.com and follows Bob, who has an account in the Mastodon instance bob\_server.com. Alice sends a direct message to Bob with the text: "Hello Bob!" }
@@ -119,7 +119,27 @@ As indicated in \autoref{subsec:mastodon}, HTTP signatures are not part of the A
 
 % ------------Proposed Implementation------------------------------------
 \section{Proposed implementation}\label{section:did_flow}
-Having seen the state-of-the-art flow of our use case mentioned above, it is now imperative to address the necessary steps to make ActivityPub DID-compliant, as well as enabling DIDComm as its communication protocol. 
+Having seen a state-of-the-art implementation of ActivityPub for our use case, it is now imperative to address the necessary steps to make ActivityPub DID-compliant, as well as enabling DIDComm as its communication protocol. 
+
+\subsection{Requirements}
+The proposed implementation wants to take advantage of the features provided by both DIDs and DIDComm, mentioned in \autoref{cha:relatedwork}. The following list of non-functional requirements derives of these advantages. 
+
+\textbf{Requirement 1: Decentralization}
+The design must be independent of any kind of centralized authority in trust encryption, as well as identifier and key management.
+
+\textbf{Requirement 2: Private}
+\textbf{Requirement 2: Private}
+The design must allow users to control what information they want to disclose, and unauthorized third parties from learning who’s communicating about what
+
+MUST preserve the integrity of messages against tampering; MUST allow the authenticity of messages and message senders to be proved; MUST use best-of-breed crypto; MUST allow parties to emit both repudiable and non-repudiable messages
+
+Private (MUST prevent unauthorized third parties from learning who’s communicating about what, when; MUST give the sender the option to be anonymous to the recipient)
+Decentralized (derives trust for encryption, signing, authn, and authz from control of decentralized identifiers rather than oracles like CAs, IDPs, etc; usable at the edge)
+Transport-agnostic (usable over HTTPS 1.x and 2.0, WebSockets, BlueTooth, chat, push notifications, libp2p, AMQP, SMTP, NFC, sneakernet, snail mail; supports both simplex and duplex; works offline; doesn’t assume client-server or synchronous or real-time; allows paired or n-wise or public broadcast usage)
+Routable (like email, Alice can talk to Bob without a direct connection to Bob; allows mixed and dynamic transports; passes through mix networks and other generic infrastructure that sees only payload BLOBs)
+Interoperable (works across programming languages, blockchains, vendors, OS/platforms, networks, legal jurisdictions, geos, cryptographic schemes, and hardware — as well as across time; avoids vendor lock-in)
+Extensible (lets developers start simple without heavy learning or dependencies; customizes easily; facilitates higher-level protocols that inherit DIDComm Messaging’s guarantees)
+Efficient (doesn’t waste bandwidth, battery, storage space, or CPU)
 
 \subsection{Implications of integrating DIDs}
 The first question that needs to be addressed when approaching the integration of DIDs is, what are the implications of switching from standard mastodon usernames to DIDs. Integrating DID to ActivityPub points immediately to the actor's object, as the switch would mean that the DID has to be included somehow. Currently, most of the interactions of Mastodon via ActivityPub require the ID property to resolve to the user's profile to his actor's object. Following a simple strategy, we could simply replace the username with the DID. Thus having an ID like \verb|"www.alice_server.com/users/did:example:123456789abcdefghi"|.\\
@@ -219,7 +239,7 @@ The new class handling the decentralized DID-based resolving process is not very
 
 Having introduced DIDs to Mastodon and ActivityPub, it is now possible to enable DIDComm. Taking into account the algorithm \ref{alg:didcomm_example} shown in \autoref{section:didcomm}, it is possible to derive some requirements that DIDComm imposes:
 
-\textbf{1. Access to private key}: The ActivityPub server requires access to the private key of the selected verification method. This of course imposes risks, as the private key is no longer in the user's control. The administrator of the Mastodon instance would have access to the plain-text private key, and some security countermeasures like key rotation would not be able to counter this. Furthermore, the ActivityPub server must be able to support the keys and the cryptographic algorithms, which the JWA includes. This means having any kind of library that can parse them and perform encryption as well as decryption with them.
+\textbf{1. Access to private key}: The ActivityPub server requires access to the private key of the selected verification method. Furthermore, the ActivityPub server must be able to support the keys and the cryptographic algorithms, which the JWA includes. This means having any library that can parse them and perform encryption and decryption with them.
 
 \textbf{2. Key agreement}: DID Documents may present more than one verification method specified in them. A specific standard verification method is required to maintain compatibility between the parties involved. This means that the sender and the recipient must use the same set of keys for encryption and/or signing purposes to have a successful message exchange through DIDComm. The DID specification luckily provides us with a recommendation for this. The \emph{keyAgreement} verification relationship is intended to provide the keys, which allows an entity to confidentially share information with the DID-subject using encryption \cite{sporny_longley_sabadello_reed_steele_2021}. Even though it is possible to add an extra verification relationship called DIDComm or ActivityPub that works in conjunction with our previously defined ActivityPub service, we will stick to the recommendation using the \emph{keyAgreement} key for this proposal.
 
@@ -254,7 +274,7 @@ Having DIDs created, the next task is to add the ActivityPub service endpoint to
   }
 \end{lstlisting}
 
-The biggest challenge in implementing DIDComm is the compatibility between the algorithms specified by the JWA spec, the key types, and the libraries used to generate keys, sign, and encrypt. In Mastodon, OpenSSL\footnote{https://github.com/ruby/openssl} is the library used for generating the RSA keys used for the HTTP and JSON-LD signatures. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of key management, encryption, decryption, and certificates management. To create signed and encrypted messages the JWT library\footnote{https://github.com/jwt} for ruby on rails was selected as it allows the spec-compliant creation of JWS and JWE tokens.\\
+The biggest challenge in implementing DIDComm is the compatibility between the algorithms specified by the JWA spec, the key types, and the libraries used to generate keys, sign, and encrypt. In Mastodon, OpenSSL\footnote{https://github.com/ruby/openssl} is the library used for generating the RSA keys used for the HTTP and JSON-LD signatures. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of key management, encryption, decryption, and certificates management. To create signed and encrypted messages, the JWT library\footnote{https://github.com/jwt} for ruby on rails was selected as it allows the spec-compliant creation of JWS and JWE tokens.\\
 For this proposal, the objective is to add confidentiality, integrity, and non-repudiation to every ActivityPub object sent in Mastodon. As explained in \autoref{section:didcomm}, the recommended way to achieve this is by using \emph{authcrypt}. However, during the development of this thesis, there were no libraries for Ruby and Rails that supported the \emph{ECDH-1PU} algorithm. Furthermore, the JWT library had a limited number of available algorithms. For this reason, it was decided to implement a nested JWT, following the same procedure as algorithm \ref{alg:nested_jwt}. To prevent any further compatibility problems on the key generation side, it was decided to use the common widely-supported RSA key generation algorithm. This means, that both Alice and Bob will have an extra RSA keypair, and the private keys will be stored in their respective Mastodon instance. The JWS tokens were set to use an RSA 2048 key and the \emph{RS256} hash algorithm, and the JWE tokens to use the \emph{RSA-OAEP}\footnote{https://www.rfc-editor.org/rfc/rfc7518\#page-14} algorithm for key management with the \emph{A128CBC-HS256}\footnote{https://www.rfc-editor.org/rfc/rfc7518\#page-22} algorithm for encryption.
 With existing RSA keys for both our actors, it is now necessary to add the respective public keys to their DID documents. Veramo's API offers a way to add different kinds of cryptographic keys to a DID document, however, the only available key types that could be added were the \emph{Ed25519}, \emph{Secp256k1}, and the  \emph{X25519} from the \emph{Elliptic Curve Cryptography} (ECC) family of cryptosystems. This represented a considerable complication, as the already mentioned library for the JWT tokens did not have support for these types of keys. Luckily, after researching possible workarounds, one of the main developers of the Veramo project assisted and developed a way to \emph{force} adding an RSA key to the DID document. The final DID document for Alice's DID can be seen in figure \ref{fig:alice_ethr_doc}.
 
@@ -323,7 +343,7 @@ The final payload that will be sent in server-to-server communication will consi
   \label{fig:final_env}
 \end{figure}
 
-The final flow for our use case mention in\ref{section:use case} is illustrated in figure \ref{fig:did_flow}
+The final flow for our use case mention in\ref{section:use_case} is illustrated in figure \ref{fig:did_flow}
 
 % Proposed Flow diagram
 \begin{figure}[h]
