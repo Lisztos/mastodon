@@ -1,7 +1,8 @@
 \chapter{Concept and Design}
 \label{cha:conceptanddesign}
  
-The standards presented in \autoref{cha:relatedwork} show the potential improvements that can be achieved in key components of ActiviyPub-based social networks. In this section, we are going to go through the different steps that are required firstly to integrate DIDs into Mastodon, and finally to enable DIDComm for its communication. As explained in \autoref{cha:relatedwork}, Mastodon is the social network that pioneered the use of ActivityPub on a large scale, and it is also the social network with the most active users and presence inside the Fediverse. For this reason, the proposal presented in this section and the modus operandi of the ActivityPub server are going to be scoped to the actual implementation in Mastodon.\\
+The standards presented in \autoref{cha:relatedwork} show the potential improvements that can be achieved in key components of ActiviyPub-based social networks. In this section, the different steps that are required firstly to integrate DIDs into Mastodon and finally to enable DIDComm for its communication will be discussed. As mentioned in \autoref{cha:relatedwork}, the proposal presented in this section and the modus operandi of the ActivityPub server is going to be scoped to the actual implementation in Mastodon.
+
 The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, an example of a simple use case in Mastodon's implementation is going to be illustrated and analyzed in order to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but with the proposed concept and design that includes DID integration and DIDComm enablement.
  
 \section{Definitions}

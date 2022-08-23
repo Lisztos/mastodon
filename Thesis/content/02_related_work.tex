@@ -4,12 +4,14 @@
 The following chapter covers the most significant concepts required to comprehend this thesis's approach. It includes a closer look at decentralized communication protocols, identifier standards, and social networks that implement them. The revision and structuring of these concepts allow us to understand, build upon, and apply them to address our identified research questions.
 
 \section{Social Web Protocols}
-Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs focusing on social interactions. Following the idea that systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations, including a collection of standards that enable various aspects of decentralized social interaction on the Web called \emph{Social Web Protocols} \cite{celik_prodromou_le_hors_2014}. Standards found in this collection are \emph{WebSub}\footnote{https://www.w3.org/TR/websub/}, \emph{WebMention}\footnote{https://www.w3.org/TR/webmention/}, \emph{Linked Data Notifications}\footnote{https://www.w3.org/TR/ldn/}, and the two most relevant for this thesis, \emph{ActivityStreams 2.0}\footnote{https://www.w3.org/TR/activitystreams-core/} and \emph{ActivityPub}\footnote{https://www.w3.org/TR/activitypub/}.
+Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C embarked on the journey to bring social-networking standards to the Web. This journey included defining technical protocols, vocabularies, and APIs focusing on social interactions. Following the idea that systems implementing these features should be able to communicate with each other in a decentralized manner. These four years resulted in several W3C Recommendations, including a collection of standards that enable various aspects of decentralized social web interaction called \emph{Social Web Protocols} \cite{celik_prodromou_le_hors_2014}. Standards found in this collection are \emph{WebSub}\footnote{https://www.w3.org/TR/websub/}, \emph{WebMention}\footnote{https://www.w3.org/TR/webmention/}, \emph{Linked Data Notifications}\footnote{https://www.w3.org/TR/ldn/}, and the two most relevant for this thesis, \emph{ActivityStreams 2.0}\footnote{https://www.w3.org/TR/activitystreams-core/} and \emph{ActivityPub}\footnote{https://www.w3.org/TR/activitypub/}.
 
 % ------------ActivityStreams------------------------------------
 \subsection{ActivityStreams 2.0}\label{subsec:activitystreams}
 
-First, it is essential to be able to describe an \emph{Activity}. ActivityStreams 2.0 is a standard that provides a model for representing \emph{Activities} using a JSON-based syntax. Additionally, it provides a vocabulary that includes all the standard terms needed to represent social activities \cite{snell_prodromou_2017}. This standard describes an activity following a story of \emph{an actor performing an action on an object}. For this, it specifies different types of actors, activities, and objects, as shown in \autoref{table:activitystreams_vocabulary}. Each of these objects can be represented as a JSON object, creating a solid foundation upon which other protocols can build. 
+% First, it is essential to be able to describe an \emph{Activity}. 
+
+ActivityStreams 2.0 is a standard that provides a model for representing \emph{Activities} using a JSON-based syntax. Additionally, it provides a vocabulary that includes all the standard terms needed to represent social activities \cite{snell_prodromou_2017}. This standard describes an activity following a story of \emph{an actor performing an action on an object}. It specifies different types of actors, activities, and objects, as shown in \autoref{table:activitystreams_vocabulary}. Each of these objects can be represented as a JSON object, creating a solid foundation upon which other protocols can build. 
 
 \begin{table}[H]
   \centering
@@ -35,10 +37,10 @@ First, it is essential to be able to describe an \emph{Activity}. ActivityStream
   \label{table:activitystreams_vocabulary}
 \end{table}
 
-ActivityStreams 2.0 has improved its 1.0 version in more than one perspective. One of these is the compatibility with JSON-LD\footnote{https://www.w3.org/TR/json-ld/}, which is a JSON serialization for \emph{Linked Data}\footnote{https://www.w3.org/DesignIssues/LinkedData.html}. The concept of Linked Data is based on interlinking data in such a way that it becomes more usable through associative and contextual queries \cite{berners-lee_2006}.\. With JSON-LD, ActivityStreams 2.0 can define its own context and the terms that will be used inside this context. Figure \ref{fig:activitystream_example} shows an example of a JSON-LD serialized ActivityStreams 2.0 activity. 
+ActivityStreams 2.0 has improved its 1.0 version in more than one aspect. One of these is the compatibility with JSON-LD\footnote{https://www.w3.org/TR/json-ld/}, which is a JSON serialization for \emph{Linked Data}\footnote{https://www.w3.org/DesignIssues/LinkedData.html}. The concept of Linked Data is based on interlinking data in such a way that it becomes more usable through associative and contextual queries \cite{berners-lee_2006}.\. With JSON-LD, ActivityStreams 2.0 can define its own context and the terms that will be used inside this context. Listing \ref{fig:activitystream_example} shows an example of a JSON-LD serialized ActivityStreams 2.0 activity. 
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Example of activity \cite{snell_prodromou_2017}, label=fig:activitystream_example, float=h]
+\begin{lstlisting}[language=PHP, caption=Example of a Create activity using JSON-LD \cite{snell_prodromou_2017}, label=fig:activitystream_example, float=h]
   {
     "@context": "https://www.w3.org/ns/activitystreams",
     "summary": "Alice created an image",
@@ -51,7 +53,7 @@ ActivityStreams 2.0 has improved its 1.0 version in more than one perspective. O
 % ------------ActivityPub------------------------------------
 \subsection{ActivityPub}\label{subsec:activitypub}
 
-ActivityPub is another W3C Recommendation that originated from the SocialWG. It is a decentralized social networking protocol that is based on the syntax and vocabulary of ActivityStreams 2.0. It provides a client-to-server API, which covers the requirements of a Social API\cite{guy_2017}, i.e., publishing, subscribing, reading content, and notifying when content gets created. In addition, it provides a server-to-server API that enables federated communication. Furthermore, it provides users with a JSON-based \emph{profile}, which is an ActivityStreams 2.0 actor object. This actor object includes standard properties such as \emph{name}, \emph{type}, and \emph{summary}. ActivityPub extended this actor object with several properties, as shown in \ref{fig:actor_object}. Optional properties include collections such as \emph{following, followers, liked} and compulsory properties include an \emph{inbox} and an \emph{outbox}. These last two are URLs that represent how the actor gets and sends messages from other users.
+ActivityPub is another W3C Recommendation that originated from the SocialWG. It is a decentralized social networking protocol that is based on the syntax and vocabulary of ActivityStreams 2.0. It provides a client-to-server API, which covers the requirements of a Social API\cite{guy_2017}, i.e., publishing, subscribing, reading content, and notifying when content gets created. In addition, it provides a server-to-server API that enables federated communication. Furthermore, it provides users with a JSON-based \emph{profile}, which is an ActivityStreams 2.0 actor object. This actor object includes standard properties such as \emph{name}, \emph{type}, and \emph{summary}. ActivityPub extended this actor object with several properties. Extended optional properties include collections such as \emph{following, followers}, and \emph{liked}. Compulsory properties include an \emph{inbox} and an \emph{outbox}. These last two URLs represent how the actor gets and sends messages from other users. Listing \ref{fig:actor_object} shows an example of an ActivityPub object with the extended properties. 
 
 
 %  Actor Object ActivityPub
@@ -72,23 +74,25 @@ ActivityPub is another W3C Recommendation that originated from the SocialWG. It 
   }
 \end{lstlisting}
 
-There are two workflows of communication for a user in ActivityPub: \label{subsec:ap_workflows}
+There are two workflows of communication for a user in ActivityPub, as shown in figure \ref{ap_flow}: \label{subsec:ap_workflows}
 
 \begin{itemize}
-  \item \textbf{Client-to-server communication:} A user wants to share a post so it makes an HTTP POST request to its outbox with the respective activity object. After this, other users interested in seeing this user's posts can make an HTTP GET request to the user's outbox and retrieve all his public posts.
-  \item \textbf{Server-to-server communication (Federation)}: User \emph{A} wants to send a post to user \emph{B}, whose account is on a different server. First, user \emph{A} posts his message to his outbox. Consequently, his server looks for \emph{B}'s inbox and performs an HTTP POST request. Finally, \emph{B} makes an HTTP GET request to his inbox to retrieve all the posts addressed to him. A key thing to remember is that for this type of communication, \emph{A}'s server has to retrieve somehow the \emph{inbox} of user \emph{B} based only on his username. This resolving process is not part of the ActivityPub specification, therefore,  implementers of this standard have to figure out how to do it independently. 
+  \item \textbf{Client-to-Server Communication:} A user wants to share a post publicly. This requires an HTTP POST request to its outbox with the respective activity object. After this, other users interested in seeing this user's post can make an HTTP GET request to the user's outbox and retrieve it.
+  \item \textbf{Server-to-Server Communication (Federation)}: User \emph{A} wants to send a post to user \emph{B}, whose account is on a different server. For this scenario, the following steps are required. First, user \emph{A} posts his message to his outbox. Consequently, his server looks for \emph{B}'s inbox and performs an HTTP POST request. Finally, \emph{B} makes an HTTP GET request to his inbox to retrieve all the posts addressed to him.
+  
+  A key thing to remember is that for this type of communication, \emph{A}'s server has to retrieve somehow the \emph{inbox} of user \emph{B} based only on his username. This resolving process is not part of the ActivityPub specification. Therefore, implementers of this standard must find a way to achieve this independently. 
 \end{itemize}
  
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{related_work/ActivityPub-tutorial-image.png}
+  \includegraphics[width=0.9\textwidth]{related_work/ActivityPub-tutorial-image.png}
   \caption{ActivityPub overview \cite{lemmer-webber_tallon_guy_prodromou_2018}}
   \label{fig:ap_flow}
 \end{figure}
 \pagebreak
 
-Regarding security, although ActivityPub's specification does not define any official security mechanisms, it mentions a list published by the SocialWG of best security practices\footnote{https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication\_Authorization} that may be used in an ActivityPub implementation. This list suggests using standards such as OAuth 2.0\footnote{https://oauth.net/2/} for client-to-server authentication, as well as HTTP Signatures\footnote{https://tools.ietf.org/html/draft-cavage-http-signatures-08} and Linked Data Signatures\footnote{https://w3c-dvcg.github.io/ld-signatures/} for server-to-server authentication. Furthermore, it recommends using HTTPS for its HTTP-based communication to provide at least transport-layer encryption.
+Regarding security, although ActivityPub's specification does not define any official security mechanisms, it mentions a list published by the SocialWG of best security practices\footnote{https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication\_Authorization} that may be used in an ActivityPub implementation. This list suggests using standards such as OAuth 2.0\footnote{https://oauth.net/2/} for client-to-server authentication, as well as HTTP Signatures\footnote{https://tools.ietf.org/html/draft-cavage-http-signatures-08} and Linked Data Signatures\footnote{https://w3c-dvcg.github.io/ld-signatures/} for server-to-server authentication. Furthermore, it recommends using HTTPS for its HTTP-based communication to provide transport-layer encryption.
 
 
 % ------------ActivityPub-Based social networks------------------------------------
@@ -96,21 +100,42 @@ Regarding security, although ActivityPub's specification does not define any off
 
 \subsection{The Fediverse}
 
-It is impossible not to refer to the \emph{Fediverse} when we talk about ActivityPub. The \emph{Fediverse} is an interoperable collection of different federated social networks running on free open software on thousands of servers across the world that implement the same open-standard protocols to be able to interact with each other. The \emph{Fediverse} is developed by a not-profit-driven community of people around the globe independent of any corporation or official institution \cite{holloway_2018} \cite{https://doi.org/10.48550/arxiv.1909.05801}. The simplest way to explain how the federation works is the following example: Bob has a Twitter account, which he uses to follow all his friends that also have a Twitter account. Alice is a friend of Bob, but she only has an account on Youtube. In the real world, these two services are completely isolated and cannot communicate. However, if both had implemented the same social network protocol, such as ActivityPub, Bob would be able to find Alice by a normal search on Twitter and follow her. Allowing any new post of Alice on Youtube, to appear in Bob's Twitter timeline. \\
-Before ActivityPub, the \emph{Fediverse} implemented other protocols like \emph{Ostatus}\footnote{https://www.w3.org/community/ostatus/wiki/images/9/93/OStatus\_1.0\_Draft\_2.pdf}, \emph{Matrix}\footnote{https://matrix.org}, and \emph{Diaspora}\footnote{https://diaspora.github.io/diaspora\_federation}. However, after ActivityPub was published as a Recommendation by the SocialWG in January 2018, a big number of these federated social networks upgraded to ActivityPub. Becoming the predominant protocol rapidly. Furthermore, the range of services that can be found inside the \emph{Fediverse} includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. For example: 
+It is impossible not to refer to the \emph{Fediverse} when ActivityPub is mentioned. The \emph{Fediverse} is an interoperable collection of different federated social networks running on free open software on thousands of servers across the world that implement the same open-standard protocols to be able to interact with each other. It is developed by a not-profit-driven community of people around the globe independent of any corporation or official institution \cite{holloway_2018} \cite{https://doi.org/10.48550/arxiv.1909.05801}. The simplest way to explain how the federation works is the following example: Bob has a Twitter account, which he uses to follow all his friends that also have a Twitter account. Alice is a friend of Bob, but she only has an account on Youtube. In the real world, these two services are completely isolated and cannot communicate. However, if both had implemented the same social network protocol, such as ActivityPub, Bob would be able to find Alice by a normal search on Twitter and follow her. Allowing any new post of Alice on Youtube, to appear in Bob's Twitter timeline.
 
-\begin{itemize}
-  \item \textbf{PeerTube\footnote{https://joinpeertube.org}:} A decentralized alternative to video platforms, similar to Youtube.
-  \item \textbf{Mastodon\footnote{https://joinmastodon.org}:} A microblogging social network, similar to Twitter. 
-  \item \textbf{Pixelfed\footnote{https://pixelfed.org}:} An image-sharing platform, similar to Instagram. 
-\end{itemize} 
+Before ActivityPub, the \emph{Fediverse} implemented other protocols like \emph{Ostatus}\footnote{https://www.w3.org/community/ostatus/wiki/images/9/93/OStatus\_1.0\_Draft\_2.pdf}, \emph{Matrix}\footnote{https://matrix.org}, and \emph{Diaspora}\footnote{https://diaspora.github.io/diaspora\_federation}. However, after ActivityPub was published as a Recommendation by the SocialWG in January 2018, many of these federated social networks upgraded to ActivityPub, becoming the predominant protocol rapidly. Furthermore, the range of services that can be found inside the \emph{Fediverse} includes blogging, microblogging, video streaming, photo, music sharing as well as file hosting. Examples are shown in table \ref{table:fediverse_examples}.
 
-Although it was not the first social network to implement ActivityPub, Mastodon is the one that pioneered its use on a large scale \cite{lemmer-webber_2017}. Moreover, it is still the social network in the \emph{Fediverse} with the most extensive user base and popularity. For this reason, Mastodon will be used in this thesis to represent the ActivityPub-based social networks and will be explained further in the next section. 
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}| }
+    \hline
+    \textbf{Name} & \textbf{Type} & \textbf{Äquivalent} \\
+    \hline
+    \hline
+    \textbf{\footnote{https://joinpeertube.org}PeerTube} & Video sharing  & Youtube \\
+    \textbf{\footnote{https://friendi.ca}Friendica} & Social networking & Facebook \\ 
+    \textbf{\footnote{https://joinmastodon.org}Mastodon} & Microblogging & Twitter \\
+    \textbf{\footnote{https://pixelfed.org}Pixelfed} & Photo sharing & Instagram \\
+      \hline
+  \end{tabular}
+  \caption{Examples of DOSN in the Fediverse}
+  \label{table:fediverse_examples}
+\end{table}
+
+% \begin{itemize}
+%   \item \textbf{PeerTube\footnote{https://joinpeertube.org}:} A decentralized alternative to , similar to Youtube.
+%   \item \textbf{Friendica\footnote{https://friendi.ca}:} A Facebook-like DOSN.
+%   \item \textbf{Mastodon\footnote{https://joinmastodon.org}:} Microblogging platform, similar to Twitter.
+%   \item \textbf{Pixelfed\footnote{https://pixelfed.org}:} An image-sharing platform, similar to Instagram. 
+% \end{itemize} 
+
+Although it was not the first social network to implement ActivityPub, Mastodon is the one that pioneered its use on a large scale \cite{lemmer-webber_2017}. In addition, it is the DOSN in the \emph{Fediverse} with the most extensive user base and popularity. For this reason, Mastodon will be used in this thesis to represent the ActivityPub-based social networks and will be explained further in the next section. 
 
 % ------------Mastodon------------------------------------
 \subsection{Mastodon}\label{subsec:mastodon}
 
- Mastodon is a decentralized Twitter-like microblogging social network created with the idea of bringing social networking back into the hands of its users. The german creator of Mastodon, Eugen Rochko, shared the same opinion as what Fitzpatrick and Recordon said in 2007 \cite{fitzpatrick_recordon_2007}: \emph{People are getting sick of registering and re-declaring their friends on every site}. For this reason, Eugen envisioned a social network that could end this, and \emph{last forever} \cite{tilley_2018}. Like the \emph{Fediverse}, Mastodon differs from other commercial social networks in two aspects. First, it is oriented towards small communities and community-based services. Each \emph{instance}\footnote{A server running Mastodon} is free to choose its topics; this way, users are encouraged to choose the instance better suited to their taste. Second, the Mastodon platform eliminates the presence of sponsored users or posts in feeds. This implies that the only way to connect or consume content is through a self-search to find an already known account or to explore the users' feeds in other instances with similar interests \cite{8845221}. From a user experience perspective, Mastodon includes all the essential features of a microblogging platform, such as:
+ Mastodon is a decentralized Twitter-like microblogging social network created with the idea of bringing social networking back into the hands of its users. The german creator of Mastodon, Eugen Rochko, shared the same opinion as what Fitzpatrick and Recordon said in 2007 \cite{fitzpatrick_recordon_2007}: \emph{People are getting sick of registering and re-declaring their friends on every site}. For this reason, Eugen envisioned a social network that could end this, and \emph{last forever} \cite{tilley_2018}. Like the \emph{Fediverse}, Mastodon differs from other commercial social networks in two aspects. First, it is oriented towards small communities and community-based services. Each \emph{instance}\footnote{A server running Mastodon} is free to choose its topics; this way, users are encouraged to choose the instance better suited to their taste. Second, the Mastodon platform eliminates the presence of sponsored users or posts in feeds. This implies that the only way to connect or consume content is through a self-search to find an already known account or to explore the users' feeds in other instances with similar interests \cite{8845221}. 
+ 
+ From a user experience perspective, Mastodon includes all the essential features of a microblogging platform, such as:
 
 \begin{itemize}
   \item Follow other users, even if they are not in the same instance. 
@@ -119,11 +144,11 @@ Although it was not the first social network to implement ActivityPub, Mastodon 
   \item Control over the visibility of their posts, with the option to set them as private, instance-level only, or federated. 
 \end{itemize}
 
-Mastodon's implementation of ActivityPub follows the guidelines defined by the spec. However, the protocol does not specify how to implement some key processes required for a fully-working social network. Therefore, Mastodon extended and complemented the protocol with the following processes and features.
+Mastodon's implementation of ActivityPub follows the guidelines defined by the spec. However, as the protocol does not specify how to implement some key processes required for a fully-working social network, Mastodon extended the protocol with the following processes and features.
 
 
 \subsubsection{Security}
-Mastodon has implemented the authentication and authorization mechanisms from the best practices list of the SocialWG, to address the security concerns in ActiviyPub. However, the ones used in federated communication are relevant for this thesis, namely HTTP and JSON-LD Signatures. HTTP signatures extend the HTTP protocol by adding the possibility to sign the HTTP requests cryptographically. This signature gets added to the request within the \emph{Signature} header, and it provides not only end-to-end message integrity but also proof of the authenticity of the sender without the need for multiple round-trips \cite{cavage_sporny_2019}. Creating an HTTP signature means signing the parameters of the request itself, i.e the \emph{request-target}, the \emph{host}, and the \emph{date}. These parameters and their values are concatenated in a single string, hashed, and signed with the sender's public key. Finally, the \emph{Signature} header indicates the key that was used to sign the document, the parameters that are inside the signature, and the algorithm used to hash it. An example in Mastodon is shown by figure \ref{fig:http_signature}. 
+Mastodon implemented the authentication and authorization mechanisms from the best practices list of the SocialWG to address the security concerns in ActiviyPub. The ones relevant for this thesis are the HTTP and the JSON-LD signatures. HTTP signatures extend the HTTP protocol by adding the possibility to sign the HTTP requests cryptographically. This signature gets added to the request within the \emph{Signature} header, and it provides not only end-to-end message integrity but also proof of the authenticity of the sender without the need for multiple round-trips \cite{cavage_sporny_2019}. Creating an HTTP signature means signing the parameters of the request itself, i.e the \emph{request-target}, the \emph{host}, and the \emph{date}. These parameters and their values are concatenated in a single string, hashed, and signed with the sender's public key. Finally, the \emph{Signature} header indicates the key that was used to sign the document, the parameters that are inside the signature, and the algorithm used to hash it. An example in Mastodon is shown by listing \ref{fig:http_signature}. 
 Following the same idea, Linked Data Signatures offer a way to create and attach signatures to JSON-LD documents, thus providing non-repudiation to e.g. an ActivityStreams Activity object even if the object has been shared, forwarded, or referenced at a future time \cite{celik_prodromou_le_hors_2014}. However, this feature, although implemented, is not actively used in Mastodon.
 
 \lstset{style=JSONStyle}
@@ -180,21 +205,22 @@ For Mastodon to be able to implement these signatures, it was necessary to gener
 % \end{lstlisting}
 
 \subsubsection{Resolving accounts}
-As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving process when wanting to send a message to a user whose account resides on a different server. For this, Mastodon implemented \emph{Well-Known URIs}\footnote{https://www.rfc-editor.org/rfc/rfc8615.html}, which enable the discovery of information about an origin in well-known endpoints\cite{nottingham_2019}. The two most relevant endpoints are the following: 
+As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving process when sending a message to a user whose account resides on a different server. For this, Mastodon implemented \emph{Well-Known URIs}\footnote{https://www.rfc-editor.org/rfc/rfc8615.html}, which enable the discovery of information about an origin in well-known endpoints\cite{nottingham_2019}. The two most relevant endpoints are the following: 
 
 \begin{itemize}
-  \item \textbf{Web Host Metadata: }
-    This endpoint allows the discovery of host information, using a lightweight metadata document format. In this context, \emph{host} refers to the entity in charge of a collection of resources defined by URIs with a common URI host \cite{cook_2011}. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover, it provides two mechanisms for providing resource-specific information, \emph{link templates} and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI to work, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate LRDD documents to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, requesting the host-meta endpoint will give us back the \emph{lrdd} link to the Webfinger endpoint, where specific resource information can be found. This is illustrated by figures \ref{fig:host_metadata_response} and \ref{fig:host_metadata_request}.
+  \item \textbf{Web Host Metadata:}
+    This endpoint allows the discovery of host information, using a lightweight metadata document format. In this context, \emph{host} refers to the entity in charge of a collection of resources defined by URIs with a common URI host \cite{cook_2011}. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover, it provides two mechanisms for providing resource-specific information, \emph{link templates} and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI to work, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate \emph{LRDD documents} to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, requesting the host-meta endpoint will give us back the \emph{lrdd} link to the Webfinger endpoint, where specific resource information can be found. This is illustrated by figures \ref{fig:host_metadata_response} and \ref{fig:host_metadata_request}.
 
+    \pagebreak
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Example Host Metadata request to mastodon.social, label=fig:host_metadata_request, float=ht]
+\begin{lstlisting}[language=PHP, caption=Web Host Metadata request to mastodon.social, label=fig:host_metadata_request, float=ht]
     GET /.well-known/host-meta HTTP/1.1
     Host: mastodon.social
     Accept: application/xrd+xml
 \end{lstlisting}
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=XML, caption=Example Host metadata response from mastodon.social, label=fig:host_metadata_response, float=h!]
+\begin{lstlisting}[language=XML, caption=Web Host metadata response from mastodon.social, label=fig:host_metadata_response, float=h!]
     <?xml version="1.0" encoding="UTF-8"?>
     <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
       <Link rel="lrdd" template="https://mastodon.social/.well-known/webfinger?resource={uri}"/>
@@ -202,7 +228,7 @@ As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving proc
 \end{lstlisting}
 
 \item \textbf{Webfinger:}
-Mastodon relies on the Webfinger protocol for the resolving process and its federated functioning \cite{rochko_2020}. Webfinger allows for discovering information about persons or other entities on the Internet using HTTP such as a personal profile address, identity service, telephone number or email. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the \emph{acct}\footnote{https://datatracker.ietf.org/doc/html/rfc7565} URI format, which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol. Webfinger's response consists of a \emph{JSON Resource Descriptor} (JRD) Document describing the entity \cite{jones_salgueiro_jones_smarr_2013}. Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD document provided by the WebFinger endpoint of the \emph{mastodon.social}\footnote{https://mastodon.social} instance when querying the account \emph{acct:bob@mastodon.social}.
+Mastodon relies on the Webfinger protocol for the resolving process and its federated functioning \cite{rochko_2020}. It is an HTTP-based protocol that allows for discovering information about persons or other entities on the Internet. This information can be a personal profile, an address, an identity service, a telephone number or an email \cite{jones_salgueiro_jones_smarr_2013}. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the \emph{acct}\footnote{https://datatracker.ietf.org/doc/html/rfc7565} URI format, which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol. Webfinger's response consists of a \emph{JSON Resource Descriptor} (JRD) document describing the entity \cite{jones_salgueiro_jones_smarr_2013}. Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD document provided by the WebFinger endpoint of the \emph{mastodon.social}\footnote{https://mastodon.social} instance when querying the account \emph{acct:bob@mastodon.social}.
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=HTTP request to Webfinger endpoint, label=Webfinger request, float=h]
@@ -239,13 +265,14 @@ Mastodon relies on the Webfinger protocol for the resolving process and its fede
 \end{lstlisting}
 \end{itemize}
 
+% ------------Extending ActivityPub------------------------------------
 \subsection{Extending ActivityPub}\label{sec:extending_activitypub}
-
+% ---TODO: Add end-to-end encryption and Httpeer approaches -----
 
 % ------------DIDs------------------------------------
 \section{Decentralized Identifiers} \label{section:dids}
 
-On July 19. 2022 the W3C announced that Decentralized Identifiers (DIDs) v1.0 is officially a Web standard. This new type of globally unique identifier brings a Self-Sovereign approach to digital identities, enabling individuals and organizations to take greater control of their online information and relationships while also providing greater security and privacy \cite{w3c_2022}. Self-Sovereign Identity \emph{SSI} implies a sovereign, enduring, decentralized, and portable digital identity for any human or non-human entity, that enables its owner to access services in the digital world in a secure, private, and trusted manner. DIDs are the key component of the SSI framework, as they allow identifiers to be created independently of any centralized registry, identity provider, or certificate authority with full control given to its owner\cite{Naik_Jenkins_2021}\cite{sporny_longley_sabadello_reed_steele_2021}.
+On July 19. 2022 the W3C announced that Decentralized Identifiers (DIDs) v1.0 is officially a Web standard. This new type of globally unique identifier brings a Self-Sovereign approach to digital identities, enabling individuals and organizations to take control of their online information and relationships while also providing greater security and privacy \cite{w3c_2022}. Self-Sovereign Identity \emph{SSI} implies a sovereign, enduring, decentralized, and portable digital identity for any human or non-human entity, that enables its owner to access services in the digital world in a secure, private, and trusted manner. DIDs are the key component of the SSI framework, as they allow identifiers to be created independently of any centralized registry, identity provider, or certificate authority with full control given to its owner\cite{Naik_Jenkins_2021}\cite{sporny_longley_sabadello_reed_steele_2021}.
 
 \subsection{Architecture}
 
@@ -286,8 +313,9 @@ The DID Subject that can modify the DID Document is called the \emph{DID control
 
 % \end{lstlisting}
  
-DID documents are stored in a \emph{Verifiable Data Registry} (VDR). This is essentially any system that enables capturing DIDs and returning required data to generate DID documents, such as distributed ledgers, decentralized file systems, any type of database, peer-to-peer networks, or other types of trustworthy data storage. Our next component is the \emph{DID method}, which describes the processes for CRUD operations for DIDs and DID documents, based on a specific type of VDR. According to the DID registry\footnote{https://www.w3.org/TR/did-spec-registries/\#did-methods} of the W3C, there are around 103 registered DID method specifications. More information about the different existing DID methods can be found in the next \autoref{subsec:did_methods}. \\
-The last major component in this architecture overview is the one in charge of resolving DIDs is called \emph{DID resolver}. This component implements the \emph{DID resolution}, which consists of taking a DID as an input, and giving a DID Document as an output \cite{sporny_longley_sabadello_reed_steele_2021}. The Identifiers \& Discovery Working Group (ID WG) has implemented a prototype Universal Resolver\footnote{https://github.com/decentralized-identity/universal-resolver}, which allows the resolution of DIDs for numerous DID methods. In addition, this working group has also developed a Universal Registrar\footnote{https://uniregistrar.io/}, which allows the creation, edition, and deactivation of the DIDs across different DID methods.
+DID documents are stored in a \emph{Verifiable Data Registry} (VDR). A VDR is essentially any system that enables capturing DIDs and returning required data to generate DID documents. For example, distributed ledgers, decentralized file systems, any decentralized database, peer-to-peer networks, or other types of trustworthy data storage. The next component is the \emph{DID method}, which describes the processes for CRUD operations for DIDs and DID documents based on a specific type of VDR. According to the DID registry\footnote{https://www.w3.org/TR/did-spec-registries/\#did-methods} of the W3C, there are around 103 registered DID method specifications. More information about the different existing DID methods can be found in \autoref{subsec:did_methods}.
+
+The last major component in this architecture overview is the one in charge of resolving DIDs, namely, the \emph{DID resolver}. This component implements the \emph{DID resolution}, which consists of taking a DID as an input, and giving a DID Document as an output \cite{sporny_longley_sabadello_reed_steele_2021}. The Identifiers \& Discovery Working Group (ID WG) has implemented a prototype Universal Resolver\footnote{https://github.com/decentralized-identity/universal-resolver}, which allows the resolution of DIDs for numerous DID methods. In addition, this working group has also developed a Universal Registrar\footnote{https://uniregistrar.io/}, which allows the creation, edition, and deactivation of the DIDs across different DID methods.
 
 \begin{figure}[H]
   \centering
@@ -301,22 +329,24 @@ The last major component in this architecture overview is the one in charge of r
  Based on their characteristics and patterns, most DIDs can be sorted into different categories \cite{preukschat_reed_2021}, for example: 
 
 \begin{itemize}
-  \item \textbf{Ledger-based DIDs}: This includes all the DIDs that store DIDs in a blockchain or other Distributed Ledger Technologies (DLTs). Examples include \emph{did:btcr}, \emph{did:ethr} and \emph{did:trx}, whose DIDs are stored in the Bitcoin, Ethereum, and Tron network correspondingly.
+  \item \textbf{Ledger-based DIDs}: This includes all the DIDs that store DIDs in a blockchain or other Distributed Ledger Technologies (DLTs). Examples include \emph{did:btcr}, \emph{did:ethr} and \emph{did:trx}, whose DIDs are stored in the Bitcoin, Ethereum, and Tron network respectively.
   \item \textbf{Ledger Middleware (\emph{Layer 2}) DIDs}: Layer 2 refers to a framework or protocol that is built on top of an existing blockchain system that takes the transactional burden away from layer 1, making it more scalable \cite{weston_2022}. An example DID method in this category is the \emph{did:ion}\footnote{https://identity.foundation/ion/}, which runs in a layer on top of Bitcoin. 
   \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable, however not all of them have to be globally resolvable. The DIDs in this category do not exist on a global source of truth but in the context of relationships between peers in a limited number of participants. Nonetheless, they are still valid DIDs as they comply with the core properties and functionalities that a DID has to provide. \cite{preukschat_reed_2021}.
   \item \textbf{Static DIDs}: This type of DIDs are limited in the kind of operations that can be performed on them. These DIDs are not stored in any VDR. Consequently, it is not possible to update, deactivate or rotate them. Using the \emph{did:key} method as an example, the DID-method-specific part of the DID is encoded in a way that the DID document can be extracted from it.\cite{longley_zagidulin_sporny_2022}.
 \end{itemize}
 
-Designing a DID method comprises different tasks such as defining if and how a DID will be anchored to a VDR, selecting if CRUD operations are possible and how to make them, as well as defining privacy and security mechanisms like verification method rotations or DID recovery. Some platforms behind these DID methods include the former Uport, with \emph{did:ethr}; Sovrin Foundation, with \emph{did:sov}; and the DIF with \emph{did:ion}.
+Designing a DID method comprises different tasks such as defining if and how a DID will be anchored to a VDR, selecting if CRUD operations are possible and how to perform them, and defining privacy and security mechanisms like verification method rotations or DID recovery. Some platforms behind these DID methods include the former Uport, with \emph{did:ethr}; Sovrin Foundation, with \emph{did:sov}; and the DIF with \emph{did:ion}.
 
 % --------------DIDComm-----------------------
 \section{DIDComm Messaging}\label{section:didcomm}
 
-The Hyperledger Foundation is an open-source collaborative effort intended to further develop blockchain technologies across industries \cite{jones_boswell_2022}. Started in 2016 by the Linux Foundation, it has given birth to numerous enterprise-grade software open-source projects that can be classified into DLTs, libraries, tools, and labs \cite{lusard_lehors_muscara_boswell_zsigri_2021}. One of these graduate projects is Hyperledger Aries, which together with Hyperledger Indy (HI) and Hyperledger Ursa (HU), makes up the Sovereign Identity Blockchain Solutions of Hyperledger. HI supplies a distributed ledger specifically built for decentralized identity, HU is a shared cryptography library that helps to avoid duplicating cryptographic work across projects while also potentially increasing security. Finally, Aries provides solutions for SSI-based identity management, including key management, credential management, and an encrypted, peer-to-peer DID-based messaging system that is now labeled as DIDComm v1 \cite{jones_boswell_2022}. 
-Based on DIDComm v1, the Communication Working Group (CWG) of the DIF has implemented DIDComm v2. The CWG pursues the standardization of DIDComm v2 not only to widen its implementation beyond Aries-based projects but to create an interoperable layer that would allow higher-order protocols to build upon its security, privacy, decentralization, and transport independence in the same way web services build upon HTTP. \cite{young_2020} \cite{curren_looker_terbu_2020}
+The Hyperledger Foundation is an open-source collaborative effort intended to develop blockchain technologies across industries further \cite{jones_boswell_2022}. Started in 2016 by the Linux Foundation, it has given birth to numerous enterprise-grade software open-source projects that can be classified into DLTs, libraries, tools, and labs \cite{lusard_lehors_muscara_boswell_zsigri_2021}. One of these graduate projects is Hyperledger Aries, which, together with Hyperledger Indy (HI) and Hyperledger Ursa (HU), makes up the Sovereign Identity Blockchain Solutions of Hyperledger. HI supplies a distributed ledger specifically built for decentralized identity, and  HU is a shared cryptography library that helps avoid duplicating cryptographic work across projects while potentially increasing security. Finally, Aries provides solutions for SSI-based identity management, including key management, credential management, and an encrypted, peer-to-peer DID-based messaging system that is now labeled as DIDComm v1 \cite{jones_boswell_2022}. 
+Based on DIDComm v1, the DIF's Communication Working Group (CWG) has implemented DIDComm v2. The CWG pursues the standardization of DIDComm v2 not only to widen its implementation beyond Aries-based projects but to create an interoperable layer that allows higher-order protocols to build upon its security, privacy, decentralization, and transport independence in the same way web services build upon HTTP. \cite{young_2020} \cite{curren_looker_terbu_2020}
 
-From this point on, the term \emph{DIDComm} will refer exclusively to DIDComm Messaging v2. DIDComm can be described as a communication protocol that promises a secure and private methodology that builds on top of the decentralized design of DIDs. It is a versatile protocol that supports a wide range of features, such as security, privacy, decentralization, extensibility, efficiency, routing, interoperability, and the ability to be transport-agnostic \cite{curren_looker_terbu_2020}.\\
-DIDComm differs from the current dominant web paradigm, where something as simple as an API call requires an almost immediate response through the same channel from the receiving end. However, this duplex request-response interaction is not always possible for several reasons. For example, some agents may not have a constant network connection; others may interact only in larger time frames, and some may even not listen over the same channel where the original message was sent. DIDComm's paradigm is asynchronous and one-directional, thus showing a considerable resemblance with the email paradigm. \\
+From this point on, the term \emph{DIDComm} will refer exclusively to DIDComm Messaging v2. DIDComm can be described as a communication protocol that promises a secure and private methodology that builds on top of the decentralized design of DIDs. It is a versatile protocol that supports a wide range of features, such as security, privacy, decentralization, extensibility, interoperability, and the ability to be transport-agnostic \cite{curren_looker_terbu_2020}.
+
+DIDComm differs from the current dominant web paradigm, where something as simple as an API call requires an almost immediate response through the same channel from the receiving end. However, this duplex request-response interaction is not always possible for several reasons. For example, some agents may not have a constant network connection; others may interact only in larger time frames, and some may even not listen over the same channel where the original message came from. DIDComm's paradigm is asynchronous and one-directional, thus showing a considerable resemblance with the email paradigm. \
+
 Furthermore, the web paradigm assumes the use of traditional processes like authentication, session management, and end-to-end encryption. DIDComm does not require certificates from external parties to establish trust, nor does it require constant connections for end-to-end transport level encryption like TLS. This takes the security and privacy responsibility away from institutions and places it within the agents. All of this without limiting the communication possibilities due to its ability to function as a base layer, upon which capabilities like sessions and synchronous interactions can be built \cite{curren_looker_terbu_2020}.\\ 
 To better understand how it works, let's look at how it would work in a scenario where Alice wants to send a private message to Bob: 
 
@@ -345,7 +375,7 @@ To better understand how it works, let's look at how it would work in a scenario
   \end{algorithmic}
 \end{algorithm}
 
-To achieve the encryption and signing processes mentioned in algorithm \ref{alg:didcomm_example}, DIDComm implements a family of the Internet Engineering Task Force (IETF) standards, collectively called JSON Object Signing and Encryption (JOSE). The JOSE Working Group strived to define JSON-based object formats to represent integrity and confidentiality. As well as a JSON way to express keys. Relevant resulting standards from this WG, as shown in figure \ref{fig:didcomm_tools}, are the following: 
+To achieve the encryption and signing processes mentioned in algorithm \ref{alg:didcomm_example}, DIDComm implements a family of the Internet Engineering Task Force (IETF) standards, collectively called JSON Object Signing and Encryption (JOSE). The JOSE Working Group\footnote{https://datatracker.ietf.org/group/jose/about/} strived to define JSON-based object formats to represent integrity, confidentiality, and cryptographic keys. The following are some of the resulting standards from this working group: 
 
 \begin{itemize}
   \item \textbf{JSON Web Signature (JWS):}  A JWS is a subclass of the \textbf{JSON Web Token (JWT)} standard, which provides a JSON format to represent claims. A JWT becomes a JWS when it is digitally signed or by adding Message Authentication Codes (MAC)\cite{jones_bradley_sakimura_2015}.
@@ -354,7 +384,7 @@ To achieve the encryption and signing processes mentioned in algorithm \ref{alg:
   \item \textbf{JSON Web Algorithms (JWA):} It provides a collection of algorithms to be used by the previously mentioned standards \cite{jones_2_2015}.
 \end{itemize}
 
-DIDComm specifies using other proposed standards that were not part of the JOSE WG. For example, the \textbf{JSON Web Message (JWM)}\footnote{https://datatracker.ietf.org/doc/pdf/draft-looker-jwm-01}, which is a basic, flexible JSON format to encode messages for a transport agnostic delivery; and the \textbf{ECDH-1PU}\footnote{https://datatracker.ietf.org/doc/html/draft-madden-jose-ecdh-1pu-04}, a public key authenticated encryption algorithm designed for the JWE. 
+Furthermore, DIDComm specifies using other proposed standards that were not part of the JOSE WG. For example, the \textbf{JSON Web Message (JWM)}\footnote{https://datatracker.ietf.org/doc/pdf/draft-looker-jwm-01}, which is a basic, flexible JSON format to encode messages for a transport agnostic delivery; and the \textbf{ECDH-1PU}\footnote{https://datatracker.ietf.org/doc/html/draft-madden-jose-ecdh-1pu-04}, a public key authenticated encryption algorithm designed for the JWE. 
 
 \begin{figure}[H]
   \centering
@@ -363,8 +393,9 @@ DIDComm specifies using other proposed standards that were not part of the JOSE 
   \label{fig:didcomm_tools}
 \end{figure}
 
-As shown in figure \ref{fig:didcomm_tools}, DIDComm offers different approaches for key agreement encryption. Authenticated Sender Encryption (\emph{authcrypt}) and Anonymous Sender Encryption (\emph{anoncrypt}) are both encrypted and delivered to the recipient's DID. Still, they differ because only \emph{authcrypt} gives direct guarantees about the sender's identity. Sending anonymous messages in social networks is not usually the case, and removing the attribution of a post can lead to other problems \cite{martin_2022}. However, social networks like Ask.fm\footnote{https//ask.fm} or NGL\footnote{https://ask.fun} that rely on anonymous posts could use the advantages of \emph{anoncrypt}. \\
-DIDComm recommends using \emph{authcrypt} as the standard to provide confidentiality, message integrity, and authenticity of the sender. For this, \emph{authcrypt} requires the \emph{ECDH-1PU} proposed standard. An alternative to \emph{Authcrypt} that also complies with the required confidentiality and non-repudiation requirements is to have a nested JWT, shown in figure \ref{fig:nested_jwt}. To achieve this, the plaintext is first signed and then the resulting JWS is used as the payload of a JWE. The algorithm \ref{alg:nested_jwt} illustrates better the workings of this.
+As shown in figure \ref{fig:didcomm_tools}, DIDComm offers different approaches for key agreement encryption, namely, Authenticated Sender Encryption (\emph{authcrypt}) and Anonymous Sender Encryption (\emph{anoncrypt}). Both options are encrypted and delivered to the recipient's DID, but only \emph{authcrypt} can authenticate the sender's identity. Sending anonymous messages in social networks is not usually the case, and removing the attribution can lead to other problems \cite{martin_2022}. Nonetheless, social networks like Ask.fm\footnote{https//ask.fm} or NGL\footnote{https://ask.fun} that rely on anonymous posts could use the advantages of \emph{anoncrypt}.
+
+DIDComm recommends using \emph{authcrypt} as the standard to provide confidentiality, message integrity, and authenticity of the sender. For this, \emph{authcrypt} requires the \emph{ECDH-1PU} proposed standard. An alternative to \emph{Authcrypt} that also complies with the required confidentiality and non-repudiation requirements is to have a nested JWT, shown in figure \ref{fig:nested_jwt}. To achieve this, the plaintext is first signed, and then the resulting JWS is used as the payload of a JWE. The algorithm \ref{alg:nested_jwt} illustrates better the workings of this.
 
 \begin{algorithm}[H]
   \caption{Communication example with nested JWT}
