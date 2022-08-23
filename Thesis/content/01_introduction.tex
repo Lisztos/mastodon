@@ -1,43 +1,41 @@
 \chapter{Introduction}
 \label{cha:introduction}
 
-% This section gives an introduction into the general field in which you are writing your thesis. It further describes the situation today, and the problems that are solved and not.
-
 \section{Motivation}
 
-% “The Internet was created without an identity layer.” Therefore, the Internet has no way to uniquely identify people. 
+The Internet today is essential to our society. There is an online supply for almost every thinkable service. Activities like reading the news, booking tickets, doing sports, listening to music, calling, exploring, working, connecting, and shopping are now possible through online services. However, since the Internet was not conceptualized to identify people, all these services must find a way to do it \cite{Tobin_Reed_Windley_Foundation_2017}. This workaround can be referred to as \emph{identity one-offs}. This means that users must create a different identity for each service they want to consume, resulting in hundreds of identities, each existing only in a single organizational context. Identity one-offs prove the lack of consolidated digital identities\cite{macinnis_2019}.
 
-The Internet today is essential to our society. There is a supply for almost every thinkable service. Reading the news, booking flight tickets, doing sports, listening to music, calling, exploring, working, connecting, and ordering basically everything to your doorstep is possible through online services. However, since the Internet cannot identify people, all these services, websites, and applications must somehow find a workaround \cite{Tobin_Reed_Windley_Foundation_2017}. This workaround can be referred to as \emph{identity one-offs}. It means that users must create a different identity for each service they want to consume, resulting in hundreds of identities, each existing only in a single organizational context. Identity one-offs prove the lack of consolidated digital identities\cite{macinnis_2019}. From the service provider's perspective, storing user data has found no better solution than an internal database, a silo of personal user information. As data became the \emph{world's most valuable resource} \cite{parkins_2017}, these silos became a target. Facebook's latest data breach made the private data of around 530 million users public\cite{holmes_2021}. Unfortunately, not even a \emph{safe} password can protect a user's data because it is not under his control.
+From the service provider's perspective, storing user data has found no better solution than an internal database, in other words,  a silo of personal user information. Millions of users are kept in a centralized platform in today's most popular Online Social Networks (OSN) like Facebook, Twitter, or Youtube. Here, control, decision-making, user data, and censorship depend on a single profit-driven organization. As data became the \emph{world's most valuable resource} \cite{parkins_2017}, these silos became a target. Facebook's latest data breach made the private data of around 530 million users public\cite{holmes_2021}. Unfortunately, not even a \emph{safe} password can protect a user's data because it is not under his control. The stage that followed the centralized digital identity is the federated one, where the \emph{Sign in with}-pattern provided trusts relationships between service providers, allowing linking of identities among identity management services \cite{1556498}. However, having a centrally federated identity represented even a more considerable risk, and users still had no control over their data. Finally, as a solution, the Self-Sovereign Identity (SSI) phase brought full user autonomy, putting him in the center of the identity administration \cite{allen_2016}.  
 
-The stage that followed the centralized digital identity is the federated one. Here, the \emph{Sign in with}-pattern provided trusts relationships between service providers, allowing linking of identities among identity management services \cite{1556498}. However, having a centrally federated account represented even a more considerable risk, and users still had no control over their data. Finally, the Self-Sovereign Identity (SSI) phase puts the user in the center of the identity administration, giving him full autonomy \cite{allen_2016}.  
+SSI was not possible before because of a gap in technology to provide the infrastructure required for decentralized trust. Nonetheless, the emerging Distributed Ledger Technology (DLT) opened the door for a decentralized, verifiable identity foundation. The newly standardized Decentralized Identifiers (DIDs) from the W3C bring an approach to enable SSI. Furthermore, the DID-based communication protocol, DIDComm Messaging v2 promises high-trust, self-sovereign, and transport-agnostic interaction, following the same idea of further bringing decentralization to day-to-day Web usage.
 
-SSI was not possible before because of a gap in technology to provide the infrastructure required for decentralized trust. Nonetheless, the emerging Distributed Ledger Technology (DLT) opened the door for a decentralized, verifiable identity foundation. The newly standardized Decentralized Identifiers (DIDs) from the W3C bring an approach to enable SSI at a large scale. Furthermore, the DID-based communication protocol, DIDComm Messaging, v2 promises high-trust, self-sovereign, and transport-agnostic interaction, following the same idea of further bringing decentralization to day-to-day Web usage.
+Concerning OSNs, different approaches to bringing decentralization have been proposed and standardized. Just in 2018, the Decentralized Social Networking Protocol (DSNP) ActivityPub became a W3C recommendation \cite{lemmer-webber_tallon_guy_prodromou_2018}, and since then, many Decentralized Online Social Networks (DOSN) have implemented it. The biggest ActivityPub implementer is the Twitter-like microblogging DOSN Mastodon\footnote{https://joinmastodon.org} with around three million registered users scattered through different independent servers. Each server sets its own rules, policies, and topics like LGBT+, Art, or Music. In addition, ActivityPub allows Mastodon to interact and communicate with other DOSNs that implement ActivityPub. An unthinkable situation in centralized architectures. 
 
 
-
-A centralized architecture keeps millions of users on one platform in today's most popular Online Social Networks (OSN) like Facebook, Twitter, or Youtube. Here, control, decision-making, user data, and censorship depend on a single profit-driven organization.
-
-% Basic authentification using a password to protect an account has been around since the 1960s, and even though it proved to be unsafe soon after their invention\cite{macinnis_2019}, it is still the most used authentication method today.  The number is so significant, that users started reusing the same password again and again. To avoid this, "quick solutions" like password managers have been introduced, allowing users to create safe passwords and manage them. However, this only patches the problem from one side. 
-.
-
- 
+% --------Problem Statement------------------
 \section{Problem statement}
  
- Is there any way to bring self-sovereignty to the federated social web? \cite{webber_sporny_2017}
- 
-ActivityPub security concerns. Encryption, non-repudiation, confidentiality.. ? 
-→ No agreed-upon security mechanisms for ActivityPub. 
-→ No encryption in scope of ActivityPub.
-Research Questions
-What are the implications of introducing DIDs to Mastodon and ActivityPub in terms of usability, and human readability?
-Can a DID-compliant ActivityPub protocol use DIDComm for its standard communication?
-Can DIDs allow ActivityPub to stop relying on the DNS for its server-to-server discovery?
-Can DIDComm allow ActivityPub to stop relying on transport-level security for its communication?
+ ActivityPub has proved to be a mature protocol that restores some level of decentralization in the current Social Web paradigm.  However, it still presents significant deficiencies that this thesis wants to address. Firstly, it only brings a decentralization level similar to the email paradigm. Mastodon, for example, uses centralized identity management. Creating an account uses basic password authentication. A federated way to create an account using a third party like \emph{Google} or \emph{Facebook} is not in the scope of Mastodon. Further attempts to improve identity verification have been made, such as using \emph{Keybase}\footnote{https://keybase.io} to prove ownership of accounts cryptographically. However, this functionality was removed soon after Zoom\footnote{https://zoom.us} bought Keybase in 2020 \cite{rochko_2021}. 
 
-\section{Expected Outcome}
+Secondly, ActivityPub has no security mechanisms defined. Crucial requirements like non-repudiation, message integrity, and confidentiality have not been included in the protocol specification. So far, the only present security feature is the recommended use of HTTPS, which relies on centralized certificate authorities. In Mastodon's implementation, the administrators of the servers have access to all the user's information, including private messages. Imposing a privacy risk for its users. 
+
+\section{Research Questions}
+
+What are the implications of introducing DIDs to Mastodon and ActivityPub in terms of usability?
+Can a DID-based ActivityPub protocol use DIDComm for its standard communication?
+Can DIDComm provide a fully-decentralized communication to Mastodon?
+Can DIDComm allow ActivityPub to stop relying on HTTPS for its communication security?
+
+\section{Contribution}
+Is there any way to bring self-sovereignty to the federated social web? \cite{webber_sporny_2017}
+
+The biggest challenge for a new Web standard is that it requires adoption by a large number of people.
+
+By using a decentralized identifier system such as Decentralized Identifiers (DIDs) we can move fully from a decentralized to a distributed system,3 by escaping the core centralization mechanisms of DNS and SSL certificate authorities.
 The goal of this thesis, is to 
 The goal of this thesis is to have a fully functioning Mastodon instance that is DID-compliant and that implements ActivityPub using DIDComm as its communication protocol. 
 Replacing the existing centralized identity management with a Self-Sovereign Identity approach through DIDs, and enabling a communication protocol that allows confidentiality, non-repudiation, authenticity, and integrity without being bound to a platform-specific security mechanism.
  
 \section{Outline}
 Overview of your thesis structure in this chapter.
+
