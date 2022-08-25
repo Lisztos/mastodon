@@ -11,7 +11,7 @@ Between 2014 and 2018, the Social Web Working Group (SocialWG) from the W3C emba
 
 % First, it is essential to be able to describe an \emph{Activity}. 
 
-ActivityStreams 2.0 is a standard that provides a model for representing \emph{Activities} using a JSON-based syntax. Additionally, it provides a vocabulary that includes all the standard terms needed to represent social activities \cite{snell_prodromou_2017}. This standard describes an activity following a story of \emph{an actor performing an action on an object}. It specifies different types of actors, activities, and objects, as shown in \autoref{table:activitystreams_vocabulary}. Each of these objects can be represented as a JSON object, creating a solid foundation upon which other protocols can build. 
+ActivityStreams 2.0 is a standard that provides a model for representing \emph{Activities} using a JSON-based syntax. Additionally, it provides a vocabulary that includes all the standard terms needed to represent social activities \cite{snell_prodromou_2017}. This standard describes an activity following a story of an \emph{actor} performing an \emph{action} on an \emph{object}. It specifies different types of actors, activities, and objects, as shown in \autoref{table:activitystreams_vocabulary}. Each of these objects can be represented as a JSON object, creating a solid foundation upon which other protocols can build. 
 
 \begin{table}[H]
   \centering
@@ -19,10 +19,10 @@ ActivityStreams 2.0 is a standard that provides a model for representing \emph{A
     \hline
     \multicolumn{3}{|c|}{ActivityStreams Vocabulary} \\
     \hline
-    Activity types & Actor types & Object types \\
+    \textbf{Activity types} & \textbf{Actor types} & \textbf{Object types} \\
     \hline
     \hline
-      Accept, Add & Application & Note \\
+      Accept, Add & Application & Note \\ 
       Announce, Arrive & Group & Document \\ 
       Block, Create & Organization & Image \\
       Delete, Dislike & Person & Article \\
@@ -30,7 +30,6 @@ ActivityStreams 2.0 is a standard that provides a model for representing \emph{A
       Ignore, Invite & & Audio \\
       Join, Leave & & Event \\
       Like, Listen & & Tombstone \\
-      etc... & & etc... \\
       \hline
   \end{tabular}
   \caption{ActivityStreams 2.0 vocabulary examples}
@@ -74,10 +73,10 @@ ActivityPub is another W3C Recommendation that originated from the SocialWG. It 
   }
 \end{lstlisting}
 
-There are two workflows of communication for a user in ActivityPub, as shown in figure \ref{ap_flow}: \label{subsec:ap_workflows}
+There are two workflows of communication for a user in ActivityPub, as shown in figure \ref{fig:ap_flow} \label{subsec:ap_workflows}
 
 \begin{itemize}
-  \item \textbf{Client-to-Server Communication:} A user wants to share a post publicly. This requires an HTTP POST request to its outbox with the respective activity object. After this, other users interested in seeing this user's post can make an HTTP GET request to the user's outbox and retrieve it.
+  \item \textbf{Client-to-Server Communication:} A user wants to share a post publicly. This requires an HTTP POST request to his outbox with the respective activity object. After this, other users interested in seeing this user's post can make an HTTP GET request to the user's outbox and retrieve it.
   \item \textbf{Server-to-Server Communication (Federation)}: User \emph{A} wants to send a post to user \emph{B}, whose account is on a different server. For this scenario, the following steps are required. First, user \emph{A} posts his message to his outbox. Consequently, his server looks for \emph{B}'s inbox and performs an HTTP POST request. Finally, \emph{B} makes an HTTP GET request to his inbox to retrieve all the posts addressed to him.
   
   A key thing to remember is that for this type of communication, \emph{A}'s server has to retrieve somehow the \emph{inbox} of user \emph{B} based only on his username. This resolving process is not part of the ActivityPub specification. Therefore, implementers of this standard must find a way to achieve this independently. 
@@ -86,7 +85,7 @@ There are two workflows of communication for a user in ActivityPub, as shown in 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{related_work/ActivityPub-tutorial-image.png}
+  \includegraphics[width=0.8\textwidth]{related_work/ActivityPub-tutorial-image.png}
   \caption{ActivityPub overview \cite{lemmer-webber_tallon_guy_prodromou_2018}}
   \label{fig:ap_flow}
 \end{figure}
@@ -108,7 +107,8 @@ Before ActivityPub, the \emph{Fediverse} implemented other protocols like \emph{
   \centering
   \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}| }
     \hline
-    \textbf{Name} & \textbf{Type} & \textbf{Äquivalent} \\
+    \textbf{Name} & \textbf{Type} & \textbf{
+      Equivalent to} \\
     \hline
     \hline
     \textbf{\footnote{https://joinpeertube.org}PeerTube} & Video sharing  & Youtube \\
@@ -146,10 +146,9 @@ Although it was not the first social network to implement ActivityPub, Mastodon 
 
 Mastodon's implementation of ActivityPub follows the guidelines defined by the spec. However, as the protocol does not specify how to implement some key processes required for a fully-working social network, Mastodon extended the protocol with the following processes and features.
 
-
-\subsubsection{Security}
-Mastodon implemented the authentication and authorization mechanisms from the best practices list of the SocialWG to address the security concerns in ActiviyPub. The ones relevant for this thesis are the HTTP and the JSON-LD signatures. HTTP signatures extend the HTTP protocol by adding the possibility to sign the HTTP requests cryptographically. This signature gets added to the request within the \emph{Signature} header, and it provides not only end-to-end message integrity but also proof of the authenticity of the sender without the need for multiple round-trips \cite{cavage_sporny_2019}. Creating an HTTP signature means signing the parameters of the request itself, i.e the \emph{request-target}, the \emph{host}, and the \emph{date}. These parameters and their values are concatenated in a single string, hashed, and signed with the sender's public key. Finally, the \emph{Signature} header indicates the key that was used to sign the document, the parameters that are inside the signature, and the algorithm used to hash it. An example in Mastodon is shown by listing \ref{fig:http_signature}. 
-Following the same idea, Linked Data Signatures offer a way to create and attach signatures to JSON-LD documents, thus providing non-repudiation to e.g. an ActivityStreams Activity object even if the object has been shared, forwarded, or referenced at a future time \cite{celik_prodromou_le_hors_2014}. However, this feature, although implemented, is not actively used in Mastodon.
+\subsubsection*{\textbf{Security}}
+Mastodon implemented the authentication and authorization mechanisms from the best practices list of the SocialWG to address the security concerns in ActiviyPub. The ones relevant for this thesis are the HTTP and the JSON-LD signatures. HTTP signatures extend the HTTP protocol by adding the possibility to sign the HTTP requests cryptographically. This signature gets added to the request within the \emph{Signature} header, and it provides not only end-to-end message integrity but also proof of the authenticity of the sender without the need for multiple round-trips \cite{cavage_sporny_2019}. Creating an HTTP signature means signing the parameters of the request itself, i.e the \emph{request-target}, the \emph{host}, and the \emph{date}. These parameters and their values are concatenated in a single string, hashed, and signed with the sender's public key. Finally, the \emph{Signature} header indicates the key used to sign the document, the parameters inside the signature, and the algorithm used to hash it. An example in Mastodon is shown by listing \ref{fig:http_signature}. 
+Following the same idea, Linked Data Signatures offer a way to create and attach signatures to JSON-LD documents. This kind of signature can provide non-repudiation to a JSON-LD object, like an ActivityStreams Activity object, even if the object has been shared, forwarded, or referenced at a future time \cite{celik_prodromou_le_hors_2014}. However, this feature, although implemented, is not actively used in Mastodon. For Mastodon to be able to implement these signatures, it was necessary to generate keypairs for the users. For this reason, Mastodon added a new property \emph{publicKey} to the actor object, which includes the pem-formatted public key of an RSA-2018 keypair. See appendix \ref{fig:mastodon_actor_object} for the complete actor object that includes the added properties in the Mastodon implementation.
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=Signed HTTP Request, label=fig:http_signature, float=h]
@@ -162,54 +161,11 @@ Signature: keyId="https://my-example.com/actor#main-key",headers="(request-targe
 
 \end{lstlisting}
 
-For Mastodon to be able to implement these signatures, it was necessary to generate keypairs for the users. For this, Mastodon added a new property \emph{publicKey} to the actor object, which includes the pem-formatted public key of an RSA-2018 keypair, as shown in figure\ref{fig:mastodon_actor_object}.
+\subsubsection*{\textbf{Resolving accounts}}
+As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving process when sending a message to a user whose account resides on a different server. For this, Mastodon implemented \emph{Well-Known URIs}\footnote{https://www.rfc-editor.org/rfc/rfc8615.html}, which enable the discovery of information about an origin in well-known endpoints \cite{nottingham_2019}. The two most relevant endpoints are the following: 
 
-% \lstset{style=JSONStyle}
-% \begin{lstlisting}[language=PHP, caption=Mastodon extended version of ActivityPub's actor object, label=fig:mastodon_actor_object, float=ht]
-% {
-%     "@context": [
-%         "https://www.w3.org/ns/activitystreams",
-%     ],
-%     "id": "https://mastodon.social/users/bob",
-%     "type": "Person",
-%     "following": "https://mastodon.social/users/bob/following",
-%     "followers": "https://mastodon.social/users/bob/followers",
-%     "inbox": "https://mastodon.social/users/bob/inbox",
-%     "outbox": "https://mastodon.social/users/bob/outbox",
-%     "featured": "https://mastodon.social/users/bob/collections/featured",
-%     "featuredTags": "https://mastodon.social/users/bob/collections/tags",
-%     "preferredUsername": "bob",
-%     "name": "Bob",
-%     "summary": "",
-%     "url": "https://mastodon.social/@bob",
-%     "manuallyApprovesFollowers": false,
-%     "discoverable": false,
-%     "published": "2022-01-18T00:00:00Z",
-%     "devices": "https://mastodon.social/users/bob/collections/devices",
-%     "publicKey": {
-%         "id": "https://mastodon.social/users/bob#main-key",
-%         "owner": "https://mastodon.social/users/bob",
-%         "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuWWHabkb/1v/OtK3x3EJ\nvxVaHwwN0PxTbOT/UsDNhu8GynBA2A371rg+BEUFGE/yQ6ljaDcqiQtaAMnuvOpT\nLRUOXu5O5Ct+qBWoLb+Box2NkSWJWc4rP+FXEHM+PTPqJJEplZSKIboCjLijw90V\nCD0hL6nBdXSnNp3CeaiDJfjXx+8MoR7xm4AB4Av0nrrM/eGBd60UM3EqMUVAWYtN\n813hrCmbapi++KY9DE7QpMPUoyOiarvFtl8JpV9HWJ1FrwloT17jJ02smPoCy6iv\nQgDXcAWnMm2PZWuSh/uQ7Y6Iq1ZSCkdQJQwaNsyB6O4BlyPujU2f2wg4nzf5QaBn\nwQIDAQAB\n-----END PUBLIC KEY-----\n"
-%     },
-%     "tag": [],
-%     "attachment": [],
-%     "endpoints": {
-%         "sharedInbox": "https://mastodon.social/inbox"
-%     },
-%     "icon": {
-%         "type": "Image",
-%         "mediaType": "image/jpeg",
-%         "url": "https://files.mastodon.social/accounts/avatars/107/643/267/140/999/130/original/557f01fa567f8220.jpg"
-%     }
-% }
-% \end{lstlisting}
-
-\subsubsection{Resolving accounts}
-As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving process when sending a message to a user whose account resides on a different server. For this, Mastodon implemented \emph{Well-Known URIs}\footnote{https://www.rfc-editor.org/rfc/rfc8615.html}, which enable the discovery of information about an origin in well-known endpoints\cite{nottingham_2019}. The two most relevant endpoints are the following: 
-
-\begin{itemize}
-  \item \textbf{Web Host Metadata:}
-    This endpoint allows the discovery of host information, using a lightweight metadata document format. In this context, \emph{host} refers to the entity in charge of a collection of resources defined by URIs with a common URI host \cite{cook_2011}. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover, it provides two mechanisms for providing resource-specific information, \emph{link templates} and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI to work, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate \emph{LRDD documents} to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, requesting the host-meta endpoint will give us back the \emph{lrdd} link to the Webfinger endpoint, where specific resource information can be found. This is illustrated by figures \ref{fig:host_metadata_response} and \ref{fig:host_metadata_request}.
+\subsubsection*{Web Host Metadata}
+This endpoint allows the discovery of host information using a lightweight metadata document format. In this context, \emph{host} refers to the entity in charge of a collection of resources defined by URIs with a common URI host \cite{cook_2011}. It employs the XRD 1.0\footnote{https://docs.oasis-open.org/xri/xrd/v1.0/os/xrd-1.0-os.html} document format, which offers a basic and flexible XML-based schema for resource description. Moreover, it provides two mechanisms for providing resource-specific information, \emph{link templates} and \emph{Link-based Resource Descriptor Documents} (LRDD). On the one hand, link templates require a URI to work, thus avoiding the use of fixed URIs. On the other hand, the LRDD relation type is used to relate \emph{LRDD documents} to resources or host-meta documents \cite{cook_2011}. In the specific case of the Mastodon implementation, requesting the host-meta endpoint will give us back the \emph{lrdd} link to the Webfinger endpoint, where specific resource information can be found. This is illustrated by figures \ref{fig:host_metadata_response} and \ref{fig:host_metadata_request}.
 
     \pagebreak
 \lstset{style=JSONStyle}
@@ -227,7 +183,7 @@ As explained in \ref{subsec:ap_workflows}, ActivityPub requires a resolving proc
     </XRD>
 \end{lstlisting}
 
-\item \textbf{Webfinger:}
+\subsubsection*{\textbf{Webfinger}}
 Mastodon relies on the Webfinger protocol for the resolving process and its federated functioning \cite{rochko_2020}. It is an HTTP-based protocol that allows for discovering information about persons or other entities on the Internet. This information can be a personal profile, an address, an identity service, a telephone number or an email \cite{jones_salgueiro_jones_smarr_2013}. Performing a query to a WebFinger endpoint requires a query component with a resource parameter, which is the URI that identifies the identity that is being looked up. Mastodon employs the \emph{acct}\footnote{https://datatracker.ietf.org/doc/html/rfc7565} URI format, which aims to offer a scheme that generically identifies a user's account with a service provider without requiring a specific protocol. Webfinger's response consists of a \emph{JSON Resource Descriptor} (JRD) document describing the entity \cite{jones_salgueiro_jones_smarr_2013}. Fig. \label{Webfinger response from mastodon.social} shows an example of the returned JRD document provided by the WebFinger endpoint of the \emph{mastodon.social}\footnote{https://mastodon.social} instance when querying the account \emph{acct:bob@mastodon.social}.
 
 \lstset{style=JSONStyle}
@@ -256,27 +212,111 @@ Mastodon relies on the Webfinger protocol for the resolving process and its fede
            "type": "application/activity+json",
            "href": "https://mastodon.social/users/bob"
        },
-       {
-           "rel": "http://ostatus.org/schema/1.0/subscribe",
-           "template": "https://mastodon.social/authorize_interaction?uri={uri}"
-       }
    ]
 }
 \end{lstlisting}
-\end{itemize}
 
+
+\pagebreak
 % ------------Extending ActivityPub------------------------------------
-\subsection{Extending ActivityPub}\label{sec:extending_activitypub}
-% ---TODO: Add end-to-end encryption and Httpeer approaches -----
+\section{Extending ActivityPub}\label{sec:extending_activitypub}
+
+This thesis is not the first attempt to address the deficiencies of the ActivityPub protocol. The co-author of ActivityPub, Christopher Webber, and the co-author of the DID specification Manu Sporny presented a different approach during the Rebooting Web of Trust\footnote{https://www.weboftrust.info/} summit in 2017 \cite{webber_sporny_2017}. This approach includes the following features:
+
+\subsection*{\textbf{End-To-End Encryption}}\label{subsec:e2e}
+
+To create a web of trust when using ActivityPub, the authors suggested using the IETF standard OpenPGP\footnote{https://www.openpgp.org/}, which provides a format for encrypting data using public key cryptography. This way, only the user's device that contains the private key can decrypt and read the plain-text message. However, this encryption brings a series of consequences that affect the usability of a social network. Especially on the server side, some \emph{activities} trigger callbacks that the server usually processes in the background. For example, if a server receives a \emph{like} activity, it will increase a counter, add the liked post to the \emph{liked} collection, and notify the post's creator. Nevertheless, all these features cannot be performed if the activity is encrypted. Other consequences include the key management for the users, which makes the user experience problematic, and in case of key loss, there would be no way to read old posts \cite{webber_sporny_2017}. Listing \ref{lst:ap_encrypted} shows an example of an encrypted Activity.
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Note object with encrypted content \cite{webber_sporny_2017}, label=lst:ap_encrypted, float=h]
+{
+  "@context": ["https://securityns.example/",
+  "https://www.w3.org/ns/activitystreams"],
+  "type": "EncryptedEnvelope",
+  "encryptedMessage": "-----BEGIN PGP MESSAGE-----\r\n...",
+  "mediaType": "application/ld+json; profile=\"https://www.w3.org/ns/activitystreams\"
+}
+\end{lstlisting}
+
+\subsection*{\textbf{Signing Objects}}
+They proposed using JSON-LD signatures to provide non-repudiation and to assert the integrity of messages sent over the network. They added a public key property to the actor object, just as Mastodon did to enable HTTP Signatures. The resulting signed activity is shown by listing \ref{lst:signed_activity}.
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Note object with JSON-LD Signature. Adapted from \cite{webber_sporny_2017}, label=lst:signed_activity, float=h]
+  {
+    "type": "Note",
+    "id": "https://social.example/alyssa/posts/63cc87ec-416e-437d-...",
+    "attributedTo": "https://social.example/alyssa/",
+    "to": ["https://havoc.example~mallet/"],
+    "content": "Tortellini are delicious",
+    "signature": {
+      "type": "RsaSignature2017",
+      "creator": "https://social.example/alyssa/",
+      "created": "2017-09-23T20:21:34Z",
+      "nonce": "e3689a56da9b4bc",
+      "signatureValue": "mJfe5OCb7J3WwI...8t5/m="
+      }
+  }
+\end{lstlisting}
+
+\subsection*{\textbf{Introducing DIDs}}
+Their approach to implementing DIDs is using DIDs as actors. Thus, switching from a standard URL like \emph{https://social.example/alyssa/} to a DID. 
+
+\subsection*{\textbf{Integrating ActivityPub into the DID document}}
+
+The authors opted to combine the actor object into the DID document, allowing all the necessary endpoints to be discoverable and stored in the VDR. In addition, to remove any dependency on a centralized DNS, the inbox, outbox, following, and other properties are now based on Tor Hidden Services\footnote{https://www.torproject.org}. The resulting DID document is illustrated by listing \ref{lst:did_and_ap}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=DID document with inserted ActivityPub actor. Adapted from \cite{webber_sporny_2017}, label=lst:did_and_ap, float=h]
+  {
+    "@context": ["https://example.org/did/v1",
+                 "https://www.w3.org/ns/activitystreams"],
+    "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt",
+    "activityPubService": {
+      "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt#services/ActivityPub",
+      // ActivityPub actor information
+      "type": "Person",
+      "name": "Alyssa P. Hacker",
+      "preferredUsername": "alyssa",
+      "summary": "Lisp enthusiast hailing from MIT",
+      "inbox": "https://9GaksjPhy0mWToTV.onion/alyssa/inbox/",
+      "outbox": "https://9GaksjPhy0mWToTV.onion/alyssa/outbox/",
+      "followers": "https://9GaksjPhy0mWToTV.onion/alyssa/followers/",
+      "following": "https://9GaksjPhy0mWToTV.onion/alyssa/following/",
+      "liked": "https://9GaksjPhy0mWToTV.onion/alyssa/liked/"},
+    // DDO information
+    "owner": [{
+      "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt#key-1",
+      "type": ["CryptographicKey", "EdDsaPublicKey"],
+      "curve": "ed25519",
+      "expires": "2017-02-08T16:02:20Z",
+      "publicKeyBase64": "lji9qTtkCydxtez/bt1zdLxVMMbz4SzWvlqgOBmURoM="
+    }],
+    "control": [{
+      "type": "OrControl",
+      "signer": [
+          "did:example:d20Hg0teN72oFeo0iNYrblwqt",
+          "did:example:8uQhQMGzWxR8vw5P3UWH1j"
+      ]
+    }],
+    "created": "2002-10-10T17:00:00Z",
+    "updated": "2016-10-17T02:41:00Z"
+  }
+\end{lstlisting}
+
+
+Mastodon implemented another approach to extending ActivityPub, which consists of an end-to-end encryption API\footnote{https://github.com/mastodon/mastodon/pull/13820}. This API was the result of a long-discussed feature request\footnote{https://github.com/mastodon/mastodon/issues/1093} for an Off-The-Record\footnote{https://otr.im/}  (OTR) endpoint for direct messages. In this discussion, different alternatives were mentioned, such as using the PGP-based Mailvelope\footnote{https://mailvelope.com/en}, which provides end-to-end mail encryption; or the Message Layer Security (MLS)\footnote{https://datatracker.ietf.org/doc/draft-ietf-mls-protocol/} from the IETF. In the end, they added an API to send messages using the Matrix\footnote{https://matrix.org/docs/projects/other/olm} implementation of the Double Ratchet Algorithm\footnote{https://signal.org/docs/specifications/doubleratchet/}, which is part of the protocol used in the messaging app Signal\footnote{https://signal.org}. With these endpoints, it is possible to register a device with a key generated by Mastodon and to send encrypted messages to specific devices of other people.
+
+This implementation follows the same idea proposed by Webber and Sporny in \ref{subsec:e2e}. Nonetheless, it is still unclear why Mastodon has kept this feature \emph{hidden}. There is no documentation, and designing a UI for it is not planned. Therefore, preventing people from knowing and taking advantage of it. For an example of an encrypted Activity using this endpoint see appendix \ref{appendix:e2e}. 
 
 % ------------DIDs------------------------------------
 \section{Decentralized Identifiers} \label{section:dids}
 
-On July 19. 2022 the W3C announced that Decentralized Identifiers (DIDs) v1.0 is officially a Web standard. This new type of globally unique identifier brings a Self-Sovereign approach to digital identities, enabling individuals and organizations to take control of their online information and relationships while also providing greater security and privacy \cite{w3c_2022}. Self-Sovereign Identity \emph{SSI} implies a sovereign, enduring, decentralized, and portable digital identity for any human or non-human entity, that enables its owner to access services in the digital world in a secure, private, and trusted manner. DIDs are the key component of the SSI framework, as they allow identifiers to be created independently of any centralized registry, identity provider, or certificate authority with full control given to its owner\cite{Naik_Jenkins_2021}\cite{sporny_longley_sabadello_reed_steele_2021}.
+On July 19. 2022 the W3C announced that Decentralized Identifiers (DIDs) v1.0 is officially a Web standard. This new type of globally unique identifier brings a Self-Sovereign approach to digital identities, enabling individuals and organizations to take control of their online information and relationships while also providing greater security and privacy \cite{w3c_2022}. Self-Sovereign Identity \emph{SSI} implies a sovereign, enduring, decentralized, and portable digital identity for any human or non-human entity that enables its owner to access services in the digital world in a secure, private, and trusted manner. DIDs are the key component of the SSI framework, as they allow identifiers to be created independently of any centralized registry, identity provider, or certificate authority with full control given to its owner\cite{Naik_Jenkins_2021}\cite{sporny_longley_sabadello_reed_steele_2021}.
 
 \subsection{Architecture}
 
-The DID itself is a URI that consists of 3 different parts. The DID URI scheme identifier, the method identifier and the DID method-specific identifier, as shown in figure \ref{fig:did}. The entity being identified by the DID is called the \emph{DID subject}. \emph{Everything} can be identified by a DID, including any person, group, organization, as well as a physical, digital, or logical thing \cite{Conway_Hughes_Ma_Poole_Riedel_2019}\cite{sporny_longley_sabadello_reed_steele_2021}.
+The DID itself is a URI that consists of 3 different parts. The DID URI scheme identifier, the method identifier, and the DID method-specific identifier as shown in figure \ref{fig:did}. The entity being identified by the DID is called the \emph{DID subject}. \emph{Everything} can be identified by a DID, including any person, group, organization, as well as a physical, digital, or logical thing \cite{Conway_Hughes_Ma_Poole_Riedel_2019}\cite{sporny_longley_sabadello_reed_steele_2021}.
 
 \begin{figure}[h]
   \centering
@@ -286,7 +326,7 @@ The DID itself is a URI that consists of 3 different parts. The DID URI scheme i
 \end{figure}
 
 
-The DID Subject that can modify the DID Document is called the \emph{DID controller}. Usually, the DID subject is the DID controller, however, this is not compulsory. As shown in figure \ref{fig:did_architecture}, a DID resolves to a \emph{DID Document}, which is a JSON-based object that contains information associated with a DID. It includes verification methods, such as cryptographic public keys, as well as services that are relevant to be able to interact with the DID Subject. An example of a DID Document can be seen in \ref{fig:did_document}. Furthermore, it is possible to retrieve a specific resource of the DID document by using a \emph{DID URL}, which is a DID that includes a path, query, or fragment \cite{sporny_longley_sabadello_reed_steele_2021}.
+The DID Subject that can modify the DID Document is called the \emph{DID controller}. Usually, the DID subject is the DID controller, but this is not compulsory. As shown in figure \ref{fig:did_architecture}, a DID resolves to a \emph{DID Document}, which is a JSON-based object that contains information associated with a DID. It includes verification methods, such as cryptographic public keys and relevant services to interact with the DID Subject. An example of a DID Document can be seen in \ref{fig:did_document}. Furthermore, it is possible to retrieve a specific resource of the DID document by using a \emph{DID URL}, which is a DID that includes a path, query, or fragment \cite{sporny_longley_sabadello_reed_steele_2021}.
 
 % ---- DID Document -----
 \lstset{style=JSONStyle}
@@ -331,7 +371,7 @@ The last major component in this architecture overview is the one in charge of r
 \begin{itemize}
   \item \textbf{Ledger-based DIDs}: This includes all the DIDs that store DIDs in a blockchain or other Distributed Ledger Technologies (DLTs). Examples include \emph{did:btcr}, \emph{did:ethr} and \emph{did:trx}, whose DIDs are stored in the Bitcoin, Ethereum, and Tron network respectively.
   \item \textbf{Ledger Middleware (\emph{Layer 2}) DIDs}: Layer 2 refers to a framework or protocol that is built on top of an existing blockchain system that takes the transactional burden away from layer 1, making it more scalable \cite{weston_2022}. An example DID method in this category is the \emph{did:ion}\footnote{https://identity.foundation/ion/}, which runs in a layer on top of Bitcoin. 
-  \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable, however not all of them have to be globally resolvable. The DIDs in this category do not exist on a global source of truth but in the context of relationships between peers in a limited number of participants. Nonetheless, they are still valid DIDs as they comply with the core properties and functionalities that a DID has to provide. \cite{preukschat_reed_2021}.
+  \item \textbf{Peer DIDs}: DIDs have the required ability to be resolvable. However, not all of them have to be globally resolvable. Peer DIDs do not exist on a global source of truth but in the context of relationships between peers in a limited number of participants. Nonetheless, they are still valid DIDs as they comply with the core properties and functionalities that a DID has to provide. \cite{preukschat_reed_2021}.
   \item \textbf{Static DIDs}: This type of DIDs are limited in the kind of operations that can be performed on them. These DIDs are not stored in any VDR. Consequently, it is not possible to update, deactivate or rotate them. Using the \emph{did:key} method as an example, the DID-method-specific part of the DID is encoded in a way that the DID document can be extracted from it.\cite{longley_zagidulin_sporny_2022}.
 \end{itemize}
 
@@ -388,14 +428,14 @@ Furthermore, DIDComm specifies using other proposed standards that were not part
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{related_work/didcomm_tools.png}
+  \includegraphics[width=0.7\textwidth]{related_work/didcomm_tools.png}
   \caption{Standards used in DIDComm}
   \label{fig:didcomm_tools}
 \end{figure}
 
 As shown in figure \ref{fig:didcomm_tools}, DIDComm offers different approaches for key agreement encryption, namely, Authenticated Sender Encryption (\emph{authcrypt}) and Anonymous Sender Encryption (\emph{anoncrypt}). Both options are encrypted and delivered to the recipient's DID, but only \emph{authcrypt} can authenticate the sender's identity. Sending anonymous messages in social networks is not usually the case, and removing the attribution can lead to other problems \cite{martin_2022}. Nonetheless, social networks like Ask.fm\footnote{https//ask.fm} or NGL\footnote{https://ask.fun} that rely on anonymous posts could use the advantages of \emph{anoncrypt}.
 
-DIDComm recommends using \emph{authcrypt} as the standard to provide confidentiality, message integrity, and authenticity of the sender. For this, \emph{authcrypt} requires the \emph{ECDH-1PU} proposed standard. An alternative to \emph{Authcrypt} that also complies with the required confidentiality and non-repudiation requirements is to have a nested JWT, shown in figure \ref{fig:nested_jwt}. To achieve this, the plaintext is first signed, and then the resulting JWS is used as the payload of a JWE. The algorithm \ref{alg:nested_jwt} illustrates better the workings of this.
+DIDComm recommends using \emph{authcrypt} as the standard to provide confidentiality, message integrity, and authenticity of the sender. For this, \emph{authcrypt} requires the \emph{ECDH-1PU} proposed standard. An alternative to \emph{Authcrypt} that also complies with the required confidentiality and non-repudiation requirements is to have a nested JWT, shown in figure \ref{fig:nested_jwt}. To achieve this, the plaintext is first signed, and the resulting JWS is used as the JWE's content. The algorithm \ref{alg:nested_jwt} illustrates better the workings of this.
 
 \begin{algorithm}[H]
   \caption{Communication example with nested JWT}

@@ -1,3 +1,98 @@
-\chapter{Appendix 1}
-\label{appendix:listing1}
+\chapter{Listings}
 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Mastodon extended version of ActivityPub's actor object of user bob@mastodon.social, label=fig:mastodon_actor_object, float=ht]
+{
+    "@context": [
+        "https://www.w3.org/ns/activitystreams",
+    ],
+    "id": "https://mastodon.social/users/bob",
+    "type": "Person",
+    "following": "https://mastodon.social/users/bob/following",
+    "followers": "https://mastodon.social/users/bob/followers",
+    "inbox": "https://mastodon.social/users/bob/inbox",
+    "outbox": "https://mastodon.social/users/bob/outbox",
+    "featured": "https://mastodon.social/users/bob/collections/featured",
+    "featuredTags": "https://mastodon.social/users/bob/collections/tags",
+    "preferredUsername": "bob",
+    "name": "Bob",
+    "summary": "",
+    "url": "https://mastodon.social/@bob",
+    "manuallyApprovesFollowers": false,
+    "discoverable": false,
+    "published": "2022-01-18T00:00:00Z",
+    "devices": "https://mastodon.social/users/bob/collections/devices",
+    "publicKey": {
+        "id": "https://mastodon.social/users/bob#main-key",
+        "owner": "https://mastodon.social/users/bob",
+        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\n..."
+    },
+    "tag": [],
+    "attachment": [],
+    "endpoints": {
+        "sharedInbox": "https://mastodon.social/inbox"
+    },
+    "icon": {
+        "type": "Image",
+        "mediaType": "image/jpeg",
+        "url": "https://files.mastodon.social/accounts/avatars/107.jpg"
+    }
+}
+\end{lstlisting}
+
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Example of encrypted message using Mastodon's E2EE API and extended JSON-LD vocabulary, label=appendix:e2e, float=ht]
+  {
+    "@context": [
+      "https://www.w3.org/ns/activitystreams",
+      {
+        "toot": "http://joinmastodon.org/ns#",
+        "Device": "toot:Device",
+        "Ed25519Signature": "toot:Ed25519Signature",
+        "Ed25519Key": "toot:Ed25519Key",
+        "Curve25519Key": "toot:Curve25519Key",
+        "EncryptedMessage": "toot:EncryptedMessage",
+        "publicKeyBase64": "toot:publicKeyBase64",
+        "deviceId": "toot:deviceId",
+        "claim": {
+          "@type": "@id",
+          "@id": "toot:claim"
+        },
+        "fingerprintKey": {
+          "@type": "@id",
+          "@id": "toot:fingerprintKey"
+        },
+        "identityKey": {...},
+        "devices": {...},
+        "messageFranking": "toot:messageFranking",
+        "messageType": "toot:messageType",
+        "cipherText": "toot:cipherText"
+      }
+    ],
+    "id": "http://localhost:3000/f41c9aae-92fc-48bf-8d87-0606197f340a",
+    "type": "Create",
+    "actor": "http://localhost:3000/users/admin",
+    "to": "http://localhost:3000/users/velda_moriette0",
+    "object": {
+      "type": "EncryptedMessage",
+      "messageType": 0,
+      "cipherText": "AwogNcm0y1HR42K07iyNs37uTlQ7jrX3n7...",
+      "digest": {
+        "type": "Digest",
+        "digestAlgorithm": "http://www.w3.org/2000/09/xmldsig#hmac-sha256",
+        "digestValue": "5f6ad31acd64995483d75..."
+      },
+      "messageFranking": "...",
+      "attributedTo": {
+        "type": "Device",
+        "deviceId": "11119"
+      },
+      "to": {
+        "type": "Device",
+        "deviceId": "11876"
+      }
+    }
+  }
+\end{lstlisting}

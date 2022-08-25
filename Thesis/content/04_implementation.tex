@@ -1,6 +1,10 @@
 \chapter{Implementation}
 \label{cha:implementation}
 
+The design presented in \ref{cha:conceptanddesign} has been implemented to provide a proof of concept. This chapter discusses the implementation of the proposed design. Furthermore, it describes how to install, build and run the Mastodon prototype, as well as the steps needed to create the DIDs and DID documents. 
+
+\section{Proof of concept}
+
 The source code of this thesis prototype is available on GitLab and can be accessed under the following link: \verb|https://gitlab.com/Lisztos/mastodon|. It was implemented using two different Mastodon instances. The first one was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one, which was mainly used for debugging requests and testing the resolving processes in federated communication. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers. 
 
 \section{Mastodon}

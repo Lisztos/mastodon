@@ -1,9 +1,9 @@
 \chapter{Concept and Design}
 \label{cha:conceptanddesign}
  
-The standards presented in \autoref{cha:relatedwork} show the potential improvements that can be achieved in key components of ActiviyPub-based social networks. In this section, the different steps that are required firstly to integrate DIDs into Mastodon and finally to enable DIDComm for its communication will be discussed. As mentioned in \autoref{cha:relatedwork}, the proposal presented in this section and the modus operandi of the ActivityPub server is going to be scoped to the actual implementation in Mastodon.
+The standards presented in \autoref{cha:relatedwork} show the potential improvements that can be achieved in key components of ActiviyPub-based social networks. In this chapter, the design that combines these standards with an actual ActivityPub implementation will be presented. As mentioned in \autoref{cha:relatedwork}, the proposal presented in this chapter and the modus operandi of the ActivityPub server is going to be scoped to the actual implementation in Mastodon.
 
-The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, an example of a simple use case in Mastodon's implementation is going to be illustrated and analyzed in order to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but with the proposed concept and design that includes DID integration and DIDComm enablement.
+The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, a use case example is going to be illustrated and step-by-step explained in order to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but this time with the proposed concept and design that includes DID integration and DIDComm enablement.
  
 \section{Definitions}
 Mastodon has implemented its own ActivityPub server, and with it also its own terms to express different social network vocabulary. In order to prevent confusion or ambiguities, the used terms in this chapter are explained here. 
@@ -11,20 +11,22 @@ Mastodon has implemented its own ActivityPub server, and with it also its own te
 \begin{itemize}
   \item \textbf{Username}: The username in Mastodon consists of a unique local username and the domain of the instance. Ex. alice@example.com
   \item \textbf{Actor object}: In this section, the term \emph{Actor object} refers solely to the ActivityPub's actor object. 
-  \item \textbf{Toot}: In the user-facing part of Mastodon, a Toot is the äquivalent of a Tweet on Twitter. This is a small status update with a 500-character limit.
   \item \textbf{Status}: In the backend of Mastodon, the class used for a Toot is a Status. An account in Mastodon has a 1:n relationship with statuses.
 \end{itemize}
 
 \section{Use case}\label{section:use_case}
-In order to explain the current ActivityPub flow in Mastodon, let's describe what happens in the simple use case:
+In order to explain the current ActivityPub flow in Mastodon, the following use case will be used:
 
-\emph{Alice has an account in the Mastodon instance alice\_server.com and follows Bob, who has an account in the Mastodon instance bob\_server.com. Alice sends a direct message to Bob with the text: "Hello Bob!" }
+\emph{Alice has an account in the Mastodon instance alice\_server.com. Alice follows Bob, who has an account in the Mastodon instance bob\_server.com. Alice sends a direct message to Bob with the text: "Hello Bob!" }
+
+\pagebreak
 
 \section{Mastodon's implementation}
+In this section, each step required for the use case to be successful will be explained. At the end of this section, there is a sequence diagram, figure \ref{fig:normal_flow}, that provides an overview of the whole process, with a reference to every step. 
 
 \subsection{Activity creation}
 The first thing that happens when Alice presses the send button is the creation of an ActivityStreams object. In this case, the object is of type \emph{Note} and will be created by Alice's server, as shown in \ref{fig:create_note}. Then, following the ActivityPub pattern of "some activity by some actor being taken on some object"\cite{lemmer-webber_tallon_guy_prodromou_2018}, the server wraps it in a \emph{Create} activity. The activity includes Alice in the \emph{attributeTo} field \ref{fig:create_activity}. Now that the actor, the activity, and the object are well defined and wrapped, it is time to shift our focus to the recipients of this note object. 
-Alice's server will now look at the fields to, bto, cc, bcc, and audience to retrieve the recipients. Depending on where the recipient's account lives, the Alices' server may take one of two options. Nonetheless, the use case explicitly dictates that Bob's account resides in a different Mastodon instance, namely \emph{bob\_server.com}.
+Alice's server will now look at the fields to, bto, cc, bcc, and audience to retrieve the recipients. Depending on where the recipient's account lives, Alices' server may take one of two options. If the recipient's account is on the same server, a simple query in the server would find the right account and save the status to the account's collection. Nonetheless, the use case explicitly dictates that Bob's account resides in a different Mastodon instance, namely \emph{bob\_server.com}. Therefore, a resolving process must be started.
 
 % Note Object with content: 'Hello Bob'
 \lstset{style=JSONStyle}
@@ -56,16 +58,16 @@ Alice's server will now look at the fields to, bto, cc, bcc, and audience to ret
 \end{lstlisting}
 
 \subsection{DNS-based Resolving Process}
-If the recipient's account is on the same server, there is then no explicit resolving process. A simple query in the ActivityPub's server would find the right account and save the status within the account's statuses. On the contrary, when the recipient's account is not on the same server, then a resolving process must be started. Resolving is the fundamental part of the federated side of Mastodon. Without it, users within different instances would not be able to interact, as the instance itself does not know where to find the actor object with all required endpoints to send or receive activities from and to external accounts. For this reason, the current way to look up other accounts is through the DNS. In the same way Email works, the domain part of the username in Mastodon points to the domain of the instance where the account lives. The purpose of the resolving in this specific use case is to find the inbox URL of Bob, which can be found in Bob's actor object. As explained in \autoref{cha:relatedwork}, Mastodon includes a series of well-known endpoints that are used to retrieve information about resources managed by the host. As Bob's account lives inside \emph{bob\_server.com}, Mastodon triggers a Webquery request to bob's server Webquery endpoint. The request shown in \ref{fig:webfinger_request} will return a JRD Document, as shown in figure \ref{fig:webfinger_response}. Based on this document, Alice's server retrieves the link with the \emph{rel: 'self'} which includes the type and the URL where Bob's actor object can be retrieved. A subsequent HTTP GET request to this URL with the specific \emph{application/activity+json} header will return Bob's actor object. If the Webfinger request \ref{fig:hostmeta_request} returns a 404 code, it will then try, as a fallback, using the Host-Meta endpoint. The response constains a link template\ref{fig:hostmeta_response}, that Alice's server can use to try the Webquery request again.  
+ Resolving is the fundamental part of the federated side of Mastodon. Without it, users within different instances would not be able to interact, as the instance itself does not know where to find the actor object with all required endpoints to send or receive activities from and to external accounts. For this reason, the current way to look up other accounts is through the DNS. In the same way Email works, the domain part of the username in Mastodon points to the domain of the instance where the account lives. The purpose of resolving is to find Bob's inbox URL, which can be found in Bob's actor object. As explained in \autoref{cha:relatedwork}, Mastodon includes a series of well-known endpoints that are used to retrieve information about resources managed by the host. As Bob's account lives inside \emph{bob\_server.com}, Mastodon triggers a Webfinger request to Bob's server. This request returns a JRD Document, as shown in listing \ref{fig:webfinger_request} and \ref{fig:webfinger_response}. Based on this document, Alice's server retrieves the link with the \emph{rel: 'self'} which includes the type and the URL where Bob's actor object can be retrieved. A subsequent HTTP GET request to this URL with the specific \emph{application/activity+json} header will return Bob's actor object \ref{fig:bob_object}. If the Webfinger request \ref{fig:hostmeta_request} returns a 404 code, it will then try, as a fallback, using the Host-Meta endpoint. The response contains a link template \ref{fig:hostmeta_response}, that Alice's server can use to try the Webfinger request again.  
 
-\begin{lstlisting}[language=PHP, caption=Webfinger request, label=fig:webfinger_request]
+\begin{lstlisting}[language=PHP, caption=Webfinger request to \emph{bob\_server.com}, label=fig:webfinger_request]
   GET /.well-known/webfinger?resource=acct:bob@bob_server.com HTTP/1.1
   Host: bob_server.com
   Accept: application/ld+json
 \end{lstlisting}
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Webfinger response, label=fig:webfinger_response, float=h]
+\begin{lstlisting}[language=PHP, caption=Webfinger response from \emph{bob\_server.com}, label=fig:webfinger_response, float=h]
   {
     "subject": "acct:bob@bob_server.com",
     "aliases": [
@@ -82,27 +84,43 @@ If the recipient's account is on the same server, there is then no explicit reso
         "type": "application/activity+json",
         "href": "https://bob_server.com/users/bob"
       },
-      {
-        "rel": "http://ostatus.org/schema/1.0/subscribe",
-        "template": "https://bob_server.com/authorize_interaction?uri={uri}"
-      }
     ]
   }
 \end{lstlisting}
 
-\begin{lstlisting}[language=PHP, caption=Hostmeta request, label=fig:hostmeta_request, float=h]
+\pagebreak
+
+\begin{lstlisting}[language=PHP, caption=Host-Meta request to \emph{bob\_server.com}, label=fig:hostmeta_request, float=h]
   GET /.well-known/host-meta HTTP/1.1
   Host: bob_server.com
   Accept: application/xrd+xml
 \end{lstlisting}
 
 \lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP,caption=Hostmeta response, label=fig:hostmeta_response, float=h]
+\begin{lstlisting}[language=PHP,caption=Host-Meta response from \emph{bob\_server.com}, label=fig:hostmeta_response, float=h]
   <?xml version="1.0" encoding="UTF-8"?>
   <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
       <Link rel="lrdd" template="https://bob_server.com/.well-known/webfinger?resource={uri}"/>
   </XRD>
 \end{lstlisting} 
+
+%  Actor Object ActivityPub
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Bob's actor object, label=fig:bob_object, float=h!]
+  {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    "type": "Person",
+    "id": "https://bob_server.com/bob/",
+    "name": "Bob",
+    "preferredUsername": "Bob",
+    "summary": "Example Person",
+    "inbox": "https://bob_server.com/users/bob/inbox/",// Needed inbox URL
+    "outbox": "https://bob_server.com/users/bob/outbox/",
+    "followers": "https://bob_server.com/users/bob/followers/",
+    "following": "https://bob_server.com/users/bob/following/",
+    "liked": "https://bob_server.com/users/bob/liked/"
+  }
+\end{lstlisting}
 
 \subsection{Delivery}
 Succeeding the retrieval of Bob's inbox URL, the delivery can now take place. To provide end-to-end message integrity and to authenticate Alice in Bob's server, the request is signed by Alice's server using the HTTP Signature specification. Upon receiving the POST request to Bob's inbox URL, Bob's server has to verify the signature. For this, it starts the resolving process all over again to access the actor object of Alice, where Alice's public key can be found. After successful validation, Bob's server saves the Note object in Bob's statuses.
@@ -112,7 +130,7 @@ As indicated in \autoref{subsec:mastodon}, HTTP signatures are not part of the A
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{concept_and_design/normal_flow.png}
-  \caption{Current flow for sending message}
+  \caption{Mastodon's implementation for the use case mentioned in \ref{section:use_case}}
   \label{fig:normal_flow}
 \end{figure}
 
@@ -143,60 +161,12 @@ MUST preserve the integrity of messages against tampering; MUST allow the authen
 % Efficient (doesn’t waste bandwidth, battery, storage space, or CPU)
 
 \subsection{Implications of integrating DIDs}
-The first question that needs to be addressed when approaching the integration of DIDs is the implications of switching from standard mastodon usernames to DIDs. Integrating DID to ActivityPub points immediately to the actor's object, as the switch would mean that the DID has to be included somehow. Currently, most of the interactions of Mastodon via ActivityPub require the ID property to resolve to the user's profile to his actor's object. Following a simple strategy, we could simply replace the username with the DID. Thus having an ID like \verb|"www.alice_server.com/users/did:example:123456789abcdefghi"|.\\
-However, there is another alternative that might work. Following the ActivityPub's specification, the ID must be a publicly dereferenceable URI, whose authority belongs to the originating server \cite{lemmer-webber_tallon_guy_prodromou_2018}. As explained in \autoref{section:dids}, a DID is a URI and it is publicly dereferenceable by nature. This allows different possibilities, to which the DID can be added. For example, using a stand-alone DID as an ID to take advantage of the discoverability of DIDs. This scenario would have the following implications. If another ActivityPub server wanted to get the user's profile URL, it would require resolving the DID to its respective DID document. This requires the DID document to include the actor's profile URL in the services section. Moreover, another option would be to add a DID URL with a query that points directly to the service endpoint that contains the actor's profile URL. Adding more precision, although still requiring a DID resolution as an intermediate step, as well as adding the service endpoint to the DID Document. Both cases are possible because ActivityPub has the \emph{URL} property that requires the actor's profile URL in case it is not in the ID property \cite{lemmer-webber_tallon_guy_prodromou_2018}. Although plausible, for this thesis a simple replacing strategy will be implemented, keeping the ID property as the profile's URL with the username replaced with the DID. \\
+The first question that needs to be addressed when approaching the integration of DIDs is the implications of switching from standard mastodon usernames to DIDs. Integrating DID to ActivityPub points immediately to the actor's object, as the switch would mean that the DID has to be included. Currently, most of the interactions of Mastodon via ActivityPub require the ID property to resolve to the user's profile, and therefore, to his actor's object. The simplest strategy could be, replacing the username with the DID. Thus having an ID like \verb|"www.alice_server.com/users/did:example:123456789abcdefghi"|.\\
+However, there is another alternative that might work. Following the ActivityPub's specification, the ID must be a publicly dereferenceable URI, whose authority belongs to the originating server \cite{lemmer-webber_tallon_guy_prodromou_2018}. As explained in \autoref{section:dids}, a DID is a URI and it is publicly dereferenceable by nature. This allows different possibilities, to which the DID can be added. For example, using a stand-alone DID as an ID to take advantage of the discoverability of DIDs, just as proposed by Webber and Sporney in \autoref{sec:extending_activitypub}. This scenario would have the following implications. If another ActivityPub server wanted to get the user's profile URL, it would require resolving the DID to its respective DID document. This requires the DID document to include the actor's profile URL in the services section. Another option would be to add a DID URL with a query that points directly to the service endpoint that contains the actor's profile URL. Adding more precision, although still requiring a DID resolution as an intermediate step, as well as adding the service endpoint to the DID Document. Both cases are possible because ActivityPub has the \emph{URL} property that requires the actor's profile URL in case it is not in the ID property \cite{lemmer-webber_tallon_guy_prodromou_2018}. Although plausible, to prevent any unnecessary overhead a simple replacing strategy will be implemented, keeping the ID property as the profile's URL with the username replaced with the DID.
+
 In addition to the ID, the actor's object must provide a supplementary set of URLs that point to different collections related to the user, as mentioned in \autoref{subsec:mastodon}. Following the same approach as with the ID, what if instead of using the actual URL of these collections, DID URLs pointing to the correct endpoint inside the DID Document were specified? An example for the inbox could be: \verb|"did:example:123456789abcdefghi#inbox"|.
 
-This approach leads to the question, would it be simpler just to shift the whole actor object directly to the DID Document? This would imply that the actor object of ActivityPub is not necessary anymore and could be removed. This idea was briefly suggested by \cite{webber_sporny_2017} in a paper prepared for the 2017 Rebooting Web of Trust summit. Such an idea would look like fig. (DID Document with all ActivityPub endpoints). Furthermore, the authors went a step further and proposed cutting all dependency from the DNS by using onion websites. However, there are some security privacy concerns regarding the use of service endpoints in the DID Document that would advise against this. The DID specification stipulates \emph{"revealing public information through services, such as social media accounts, personal websites, and email addresses, is discouraged"} \cite{sporny_longley_sabadello_reed_steele_2021}. DID Documents are stored in a publicly available verifiable data registry, therefore any personal information revealed here is for everyone to see. The usage of URLs in service endpoints might lead to involuntary leakage of personal information or a correlation between the URL and the DID subject. Looking at figure \ref{fig:diddoc_related}, the amount of personal information displayed in the DID Document, which would not be otherwise inferable, already poses a privacy issue for the DID Subject. For this reason, in this thesis we differ from removing the actor's object from the ActivityPub protocol itself. This would also allow us to use freely all the other attributes in the actor's object to further describe its owner, such as name, preferredUsername, or summary without making this information forever public in an immutable ledger. Fig(final Actor'S object) illustrates the final design for the DID-compliant actor object. 
-
-% \lstset{style=JSONStyle}
-% \begin{lstlisting}[language=PHP,caption=DID document with ActivityPub actor, label=fig:diddoc_related, float=h]
-%   {
-%     "@context": ["https://example.org/did/v1",
-%                  "https://www.w3.org/ns/activitystreams"],
-%     "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt",
-%     "activityPubService": {
-%       "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt#services/ActivityPub",
-%       // ActivityPub actor information
-%       "type": "Person",
-%       "name": "Alyssa P. Hacker",
-%       "preferredUsername": "alyssa",
-%       "summary": "Lisp enthusiast hailing from MIT",
-%       "inbox": "https://9GaksjPhy0mWToTV.onion/alyssa/inbox/",
-%       "outbox": "https://9GaksjPhy0mWToTV.onion/alyssa/outbox/",
-%       "followers": "https://9GaksjPhy0mWToTV.onion/alyssa/followers/",
-%       "following": "https://9GaksjPhy0mWToTV.onion/alyssa/following/",
-%       "liked": "https://9GaksjPhy0mWToTV.onion/alyssa/liked/"},
-%     // DDO information
-%     "owner": [{
-%       "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt#key-1",
-%       "type": ["CryptographicKey", "EdDsaPublicKey"],
-%       "curve": "ed25519",
-%       "expires": "2017-02-08T16:02:20Z",
-%       "publicKeyBase64": "lji9qTtkCydxtez/bt1zdLxVMMbz4SzWvlqgOBmURoM="
-%     }, {
-%       "id": "did:example:d20Hg0teN72oFeo0iNYrblwqt#key-2",
-%       "type": ["CryptographicKey", "RsaPublicKey"],
-%       "expires": "2017-03-22T00:00:00Z",
-%       "publicKeyPem": "----BEGIN PUBLIC KEY-----\r\n.."
-%     }],
-%     "control": [{
-%       "type": "OrControl",
-%       "signer": [
-%           "did:example:d20Hg0teN72oFeo0iNYrblwqt",
-%           "did:example:8uQhQMGzWxR8vw5P3UWH1j"
-%       ]
-%     }],
-%     "created": "2002-10-10T17:00:00Z",
-%     "updated": "2016-10-17T02:41:00Z",
-%     "signature": {
-%       "type": "RsaSignature2016",
-%       "created": "2016-02-08T16:02:20Z",
-%       "creator": "did:example:8uQhQMGzWxR8vw5P3UWH1j#key/1",
-%       "signatureValue": "IOmA4R7TfhkYTYW8...CBMq2/gi25s="
-%     }
-%   }
-% \end{lstlisting} 
+This approach leads to the question, would it be simpler just to shift the whole actor object directly to the DID Document? This would imply that the actor object of ActivityPub is not necessary anymore and could be removed. This is also the approach Webber and Sporny proposed, mentioned in \ref{sec:extending_activitypub}. However, there are some security privacy concerns regarding the use of service endpoints in the DID Document that would advise against this. The DID specification stipulates \emph{"revealing public information through services, such as social media accounts, personal websites, and email addresses, is discouraged"} \cite{sporny_longley_sabadello_reed_steele_2021}. DID Documents are stored in a publicly available VDR, therefore any personal information revealed here is for everyone to see. The usage of URLs in service endpoints might lead to involuntary leakage of personal information or a correlation between the URL and the DID subject. In the DID document proposed by these authors, listing \ref{lst:did_and_ap}, the amount of personal information displayed, which would not be otherwise inferable, already poses a privacy issue for the DID Subject. For this reason, the actor's object will remain a part of the ActivityPub protocol in this design. This would also allow the unrestricted use of all the other attributes in the actor's object to further describe its owner, such as \emph{name}, \emph{preferredUsername}, or \emph{summary} without making this information forever public in an immutable ledger.
 
 % --- Mastodon implementation -----
 Regarding Mastodon, replacing the standard username with a DID does not imply huge complications. The way Mastodon validates the username format is through the following regular expression: 
@@ -211,22 +181,25 @@ Additionally, it has a length constraint of 30 characters. The following DID-syn
 
 
 \subsection{Decentralized resolving process}
-As stated in the previous section, Mastodon starts the resolving process based on the username of the user. By replacing the standard username with a DID, the current resolving flow gets disrupted, as there is no domain and thus no well-known endpoints to send requests to. Nonetheless, here is where the resolvability of the DIDs come into play. The proposed flow takes the following steps. Firstly, the username, which now is a DID, can be resolved to its DID Document using any kind of DID resolver. The DID Document must now contain a service with the type ActivityPub and an endpoint, where the actor's object can be retrieved. This gives us 2 possibilities. On the one hand, we could add in the well-known Webfinger endpoint, which then provides us with the profile URL from the user. On the other hand, we could skip the Webfinger request and provide the profile URL directly in the DID Document. The latter looks like the most meaningful path to take. Especially when we refer to the purpose of Webfinger, which was to enable discoverability of entities represented by URIs \cite{jones_salgueiro_jones_smarr_2013}. Webfinger's purpose shares a lot of ground with the design of DIDs, nevertheless, the DID design provides a less limited structure of resolving, as it does not rely on DNS and HTTP for its functioning. For this reason, the proposed workflow will completely remove the use of the  Webfinger protocol used in Mastodon and include the URL of the user's profile in the ActivityPub service section in the DID Document.
+As stated in the previous section, Mastodon starts the resolving process based on the username of the user. By replacing the standard username with a DID, the current resolving flow gets disrupted, as there is no domain and thus no well-known endpoints to send requests to. Nonetheless, here is where the resolvability of the DIDs come into play. The proposed flow takes the following steps. First, the username, which now is a DID, can be resolved to its DID Document using any kind of DID resolver. The DID Document must now contain a service with the type ActivityPub and an endpoint, where the actor's object can be retrieved. This gives us 2 possibilities. On the one hand, we could add in the well-known Webfinger endpoint, which then provides us with the profile URL from the user. On the other hand, we could skip the Webfinger request and provide the profile URL directly in the DID Document. The latter looks like the most meaningful path to take. Especially when we refer to the purpose of Webfinger, which was to enable discoverability of entities represented by URIs \cite{jones_salgueiro_jones_smarr_2013}. Webfinger's purpose shares a lot of ground with the design of DIDs, nevertheless, the DID design provides a less limited structure of resolving, as it does not rely on DNS and HTTP for its functioning. For this reason, the proposed workflow will completely remove the use of the  Webfinger protocol used in Mastodon and include the URL of the user's profile in the ActivityPub service section in the DID Document.
+
 
 The easiest way to set a DID resolver, is to use the one from the DIF. They provide Docker images for the service running the query endpoint, and for the drivers needed for each DID method. As Mastodon can be run using Docker Compose, the resolver can be added to the same docker network as the main backend application. This would allow accessing the resolver through the alias name \emph{did-resolver}. The resolver validates the DID document by comparing the searched DID against the ID attribute of the DID document and only returns the DID document when both match. To make the requests to the resolver the service class \emph{DidResolverService} will be added to the backend. The only parameter it needs is the DID it needs to resolve, and it returns the DID Document as a JSON object. Furthermore, to facilitate the interaction with the properties of the DID document a class \emph{DidDocument} with the methods listed in table \ref{table:did_doc_instance_methods} is also needed.
 
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{| l | l | l |}
-		\hline
-    Function & Description \\
+	\begin{tabular}{|p{5cm}|p{10cm}| }
+    \hline
+    \multicolumn{2}{|c|}{DID document Class} \\
+    \hline
+    \textbf{Function} & \textbf{Description} \\
 		\hline
 		\hline
       initialize(attributes) &  Stores the attributes of the DID document in accesible variables\\
     \hline
       serviceEndpoint & Returns the service endpoint URL of the first service \\
     \hline
-      didcommKey & Looks for a specific key in the \\ & DID document and returns a parsed instance of it \\
+      didcommKey & Looks for a specific key in the DID document and returns a parsed instance of it \\
     \hline
 	\end{tabular}
 	\caption{DID document instance methods}
@@ -244,7 +217,51 @@ Having introduced DIDs to Mastodon and ActivityPub, it is now possible to enable
 
 \textbf{2. Key agreement}: DID Documents may present more than one verification method specified in them. A specific standard verification method is required to maintain compatibility between the parties involved. This means that the sender and the recipient must use the same set of keys for encryption and/or signing purposes to have a successful message exchange through DIDComm. The DID specification luckily provides us with a recommendation for this. The \emph{keyAgreement} verification relationship is intended to provide the keys, which allows an entity to confidentially share information with the DID-subject using encryption \cite{sporny_longley_sabadello_reed_steele_2021}. Even though it is possible to add an extra verification relationship called DIDComm or ActivityPub that works in conjunction with our previously defined ActivityPub service, we will stick to the recommendation using the \emph{keyAgreement} key for this proposal.
 
-\textbf{3. Access to DID-Resolver}: This is for cases where a signature needs to be verified using an external public key. However, this requirement has already been fulfilled. 
+\textbf{3. Access to DID-Resolver}: This is for cases where a signature needs to be verified using an external public key published in a DID document. 
+
+Now it's time to define how ActivityPub and DIDComm will work together. This design intends to keep the social protocol as intact as possible. Therefore, a modular rather than a modification approach will be pursued. The best approach would be to follow DIDComm's schema of a nested JWT. Where a plain-text message is encapsulated by a JWM, following a further encapsulation inside a JWS, and so on. This means, that our activity object will be used as the content of the JWM, as shown in figure \ref{fig:final_env}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{concept_and_design/final_env.png}
+  \caption{Proposed Payload structure using DIDComm and ActivityPub}
+  \label{fig:final_env}
+\end{figure}
+
+To make this architecture possible, Mastodon will require the following additions. First, a class \emph{JWM}, with a setter to assign the activity object to its \emph{body}. Second, a service class called \emph{DIDCommService}, with the methods shown in table \ref{table:didcomm_service}, will be responsible for signing, encrypting outgoing messages, and decrypting and verifying signatures of incoming messages. 
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{5cm}|p{10cm}| }
+    \hline
+    \multicolumn{2}{|c|}{DIDComm Service Class} \\
+    \hline
+    \textbf{Function} & \textbf{Description} \\
+    \hline
+    \hline
+    initialize & Takes the parameters \emph{payload, from, to,} and \emph{direction} and makes them instance variables. Parameter \emph{direction} can be \emph{incoming} or \emph{outgoing}. \\
+    \hline
+    getKey & It fetches a private or public key based on an account\\
+    \hline
+    setFromAccount & If the message is \emph{incoming}, sets the account based on the owner of the inbox URL\\
+    \hline
+    encrypt! & Encrypts the payload using a public key\\
+    \hline
+    encryptedPayload & Validates that all elements are present and then calls \emph{encrypt!} to create the JWE\\
+    \hline
+    decrypt! & Decrypts a JWE using a private key\\ 
+    \hline
+    signedPayload & Creates a JWS using a private key\\ 
+    \hline
+    verifiedPayloadAndSigner & Verifies the signature of a JWS using a public key\\
+    \hline
+  \end{tabular}
+  \caption{Function list for a DIDComm Service class}
+  \label{table:didcomm_service}
+\end{table}
+
+Finally, a \emph{DIDCommHelper} class will be implemented in the controller area, which is the one in charge of processing incoming requests to the server. This helper will check the incoming request for the \emph{application/didcomm-encrypted+json} header. If present, it will send the payload to the \emph{DIDCommService} to set the account of the receiver, decrypt the data, verify the signature, and then forward the Activity for its standard processing. 
+
 
 Creating a DID is rather a simple task. However, finding a DID method that would allow CRUD operations to add the service endpoint and a \emph{keyAgreement} key to its DID Document without needing to pay any GAS or any other kind of fees is not. The following options were tested. MATTR\footnote{https://mattr.global}offers creating DIDs using \emph{did:key}, \emph{did:web} and \emph{did:ion} methods. However, they do not allow creating own keys or accessing private keys, which is necessary according to the first requirement. \emph{did:ion} offers a set of tools\footnote{https://github.com/decentralized-identity/ion-tools} to perform CRUD operations in a self-created DID and DID document. These tools are bundled in a library called ION.js, which wraps the SDK and provides an interface to interact easily with the components of ION. However, even though the \emph{update} operation is allowed, it was not possible to fetch a previously created DID and then update it, which was a necessary step. More users have encountered this issue\footnote{https://github.com/decentralized-identity/ion-tools/discussions/25}, but so far, it has not been addressed by the developers. An alternative to ledger-based DIDs developed for this thesis was using the \emph{did:web} method. This method allows hosting the DID Document on any server, giving the server-owner full control. Nonetheless, the discovery process of this type of DID relies heavily on DNS because the DID resolver makes a GET request to the \emph{.well-known/did} endpoint of the domain in the DID to retrieve the DID document. This dependency on the domain would prevent achieving the goal of independence of centralized services. \\
 Another DID method researched was the Uport-developed \emph{did:ethr}. Uport is now divided into two projects, namely Serto\footnote{https://serto.id} and Veramo\footnote{https://veramo.io}. Each one of them offers a decentralized identity solution. On the one hand, Serto provides a platform in the AWS Marketplace that can be easily deployed and would allow a user to create and manage DIDs from the \emph{did:ethr} method. Unfortunately, after failing to deploy the EC2 instance and contacting Serto's developers, it turned out it was temporarily not working. On the other hand, Veramo's typescript-based API allows users to manage DIDs not only in the Ethereum main network but also in other test networks such as Ropsten and Rinkeby. This allows making CRUD operations to DIDs without incurring costs. Veramo provides a setup guide\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers}, where the only thing needed externally is an Infura\footnote{https://infura.io} account to use as a Web3 Provider. Two DIDs were created in the Ropsten network for Alice and Bob, respectively.
@@ -337,12 +354,7 @@ The final payload that will be sent in server-to-server communication will consi
   }
 \end{lstlisting}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.5\textwidth]{concept_and_design/final_env.png}
-  \caption{Proposed Payload structure using DIDComm and ActivityPub}
-  \label{fig:final_env}
-\end{figure}
+
 
 The final flow for our use case mention in\ref{section:use_case} is illustrated in figure \ref{fig:did_flow}
 
@@ -355,6 +367,7 @@ The final flow for our use case mention in\ref{section:use_case} is illustrated 
 \end{figure}
 
 
+\section{Implementin}
 
 %
 % -------DID Flow-------------
