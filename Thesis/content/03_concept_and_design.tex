@@ -3,10 +3,10 @@
  
 The standards presented in \autoref{cha:relatedwork} show the potential improvements that can be achieved in key components of ActiviyPub-based social networks. In this chapter, the design that combines these standards with an actual ActivityPub implementation will be presented. As mentioned in \autoref{cha:relatedwork}, the proposal presented in this chapter and the modus operandi of the ActivityPub server is going to be scoped to the actual implementation in Mastodon.
 
-The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, a use case example is going to be illustrated and step-by-step explained in order to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but this time with the proposed concept and design that includes DID integration and DIDComm enablement.
+The outline for this chapter is the following. First, individual concepts of the ActivityPub implementation are explained. Then, a use case example is going to be illustrated and step-by-step explained to be able to compare it with \autoref{section:did_flow}, which finally presents the same use case but this time with the proposed concept and design that includes DID integration and DIDComm enablement.
  
 \section{Definitions}
-Mastodon has implemented its own ActivityPub server, and with it also its own terms to express different social network vocabulary. In order to prevent confusion or ambiguities, the used terms in this chapter are explained here. 
+Mastodon has implemented its own ActivityPub server, and with it also its own terms to express different social network vocabulary. To prevent confusion or ambiguities, the used terms in this chapter are explained here. 
  
 \begin{itemize}
   \item \textbf{Username}: The username in Mastodon consists of a unique local username and the domain of the instance. Ex. alice@example.com
@@ -14,17 +14,17 @@ Mastodon has implemented its own ActivityPub server, and with it also its own te
   \item \textbf{Status}: In the backend of Mastodon, the class used for a Toot is a Status. An account in Mastodon has a 1:n relationship with statuses.
 \end{itemize}
 
-\section{Use case}\label{section:use_case}
-In order to explain the current ActivityPub flow in Mastodon, the following use case will be used:
+\section{Use Case}\label{section:use_case}
+To explain the current ActivityPub flow in Mastodon, the following use case will be used:
 
 \emph{Alice has an account in the Mastodon instance alice\_server.com. Alice follows Bob, who has an account in the Mastodon instance bob\_server.com. Alice sends a direct message to Bob with the text: "Hello Bob!" }
 
 \pagebreak
 
-\section{Mastodon's implementation}
+\section{Mastodon's Implementation}
 In this section, each step required for the use case to be successful will be explained. At the end of this section, there is a sequence diagram, figure \ref{fig:normal_flow}, that provides an overview of the whole process, with a reference to every step. 
 
-\subsection{Activity creation}
+\subsection{Activity Creation}
 The first thing that happens when Alice presses the send button is the creation of an ActivityStreams object. In this case, the object is of type \emph{Note} and will be created by Alice's server, as shown in \ref{fig:create_note}. Then, following the ActivityPub pattern of "some activity by some actor being taken on some object"\cite{lemmer-webber_tallon_guy_prodromou_2018}, the server wraps it in a \emph{Create} activity. The activity includes Alice in the \emph{attributeTo} field \ref{fig:create_activity}. Now that the actor, the activity, and the object are well defined and wrapped, it is time to shift our focus to the recipients of this note object. 
 Alice's server will now look at the fields to, bto, cc, bcc, and audience to retrieve the recipients. Depending on where the recipient's account lives, Alices' server may take one of two options. If the recipient's account is on the same server, a simple query in the server would find the right account and save the status to the account's collection. Nonetheless, the use case explicitly dictates that Bob's account resides in a different Mastodon instance, namely \emph{bob\_server.com}. Therefore, a resolving process must be started.
 
@@ -124,7 +124,7 @@ Alice's server will now look at the fields to, bto, cc, bcc, and audience to ret
 
 \subsection{Delivery}
 Succeeding the retrieval of Bob's inbox URL, the delivery can now take place. To provide end-to-end message integrity and to authenticate Alice in Bob's server, the request is signed by Alice's server using the HTTP Signature specification. Upon receiving the POST request to Bob's inbox URL, Bob's server has to verify the signature. For this, it starts the resolving process all over again to access the actor object of Alice, where Alice's public key can be found. After successful validation, Bob's server saves the Note object in Bob's statuses.
-As indicated in \autoref{subsec:mastodon}, HTTP signatures are not part of the ActivityPub protocol standard. These security feature are within the Mastodon implementation of ActivityPub.
+As indicated in \autoref{subsec:mastodon}, HTTP signatures are not part of the ActivityPub protocol standard. These security features are within the Mastodon implementation of ActivityPub.
 
 % Current Flow diagram
 \begin{figure}[H]
@@ -137,30 +137,12 @@ As indicated in \autoref{subsec:mastodon}, HTTP signatures are not part of the A
 \pagebreak
 
 % ------------Proposed Implementation------------------------------------
-\section{Proposed implementation}\label{section:did_flow}
-Having seen a state-of-the-art implementation of ActivityPub for our use case, it is now imperative to address the necessary steps to make ActivityPub DID-compliant, as well as enabling DIDComm as its communication protocol. 
+\section{Proposed Implementation}\label{section:did_flow}
+Having seen a state-of-the-art implementation of ActivityPub for our use case, it is now imperative to address the necessary steps to make ActivityPub DID-compliant, as well as enable DIDComm as its communication protocol. 
 
-\subsection{Requirements}
-The proposed implementation wants to take advantage of the features provided by both DIDs and DIDComm, mentioned in \autoref{cha:relatedwork}. The following list of non-functional requirements derives of these advantages. 
 
-\textbf{Requirement 1: Decentralization}
-The design must be independent of any kind of centralized authority in trust encryption, as well as identifier and key management.
-
-\textbf{Requirement 2: Private}
-\textbf{Requirement 2: Private}
-The design must allow users to control what information they want to disclose, and unauthorized third parties from learning who’s communicating about what
-
-MUST preserve the integrity of messages against tampering; MUST allow the authenticity of messages and message senders to be proved; MUST use best-of-breed crypto; MUST allow parties to emit both repudiable and non-repudiable messages
-
-% Private (MUST prevent unauthorized third parties from learning who’s communicating about what, when; MUST give the sender the option to be anonymous to the recipient)
-% Decentralized (derives trust for encryption, signing, authn, and authz from control of decentralized identifiers rather than oracles like CAs, IDPs, etc; usable at the edge)
-% Transport-agnostic (usable over HTTPS 1.x and 2.0, WebSockets, BlueTooth, chat, push notifications, libp2p, AMQP, SMTP, NFC, sneakernet, snail mail; supports both simplex and duplex; works offline; doesn’t assume client-server or synchronous or real-time; allows paired or n-wise or public broadcast usage)
-% Routable (like email, Alice can talk to Bob without a direct connection to Bob; allows mixed and dynamic transports; passes through mix networks and other generic infrastructure that sees only payload BLOBs)
-% Interoperable (works across programming languages, blockchains, vendors, OS/platforms, networks, legal jurisdictions, geos, cryptographic schemes, and hardware — as well as across time; avoids vendor lock-in)
-% Extensible (lets developers start simple without heavy learning or dependencies; customizes easily; facilitates higher-level protocols that inherit DIDComm Messaging’s guarantees)
-% Efficient (doesn’t waste bandwidth, battery, storage space, or CPU)
-
-\subsection{Implications of integrating DIDs}
+% --------------Integrating DIDs-----------------------------
+\subsection{Integrating DIDs} \label{subsec:integrating_dids}
 The first question that needs to be addressed when approaching the integration of DIDs is the implications of switching from standard mastodon usernames to DIDs. Integrating DID to ActivityPub points immediately to the actor's object, as the switch would mean that the DID has to be included. Currently, most of the interactions of Mastodon via ActivityPub require the ID property to resolve to the user's profile, and therefore, to his actor's object. The simplest strategy could be, replacing the username with the DID. Thus having an ID like \verb|"www.alice_server.com/users/did:example:123456789abcdefghi"|.\\
 However, there is another alternative that might work. Following the ActivityPub's specification, the ID must be a publicly dereferenceable URI, whose authority belongs to the originating server \cite{lemmer-webber_tallon_guy_prodromou_2018}. As explained in \autoref{section:dids}, a DID is a URI and it is publicly dereferenceable by nature. This allows different possibilities, to which the DID can be added. For example, using a stand-alone DID as an ID to take advantage of the discoverability of DIDs, just as proposed by Webber and Sporney in \autoref{sec:extending_activitypub}. This scenario would have the following implications. If another ActivityPub server wanted to get the user's profile URL, it would require resolving the DID to its respective DID document. This requires the DID document to include the actor's profile URL in the services section. Another option would be to add a DID URL with a query that points directly to the service endpoint that contains the actor's profile URL. Adding more precision, although still requiring a DID resolution as an intermediate step, as well as adding the service endpoint to the DID Document. Both cases are possible because ActivityPub has the \emph{URL} property that requires the actor's profile URL in case it is not in the ID property \cite{lemmer-webber_tallon_guy_prodromou_2018}. Although plausible, to prevent any unnecessary overhead a simple replacing strategy will be implemented, keeping the ID property as the profile's URL with the username replaced with the DID.
 
@@ -168,23 +150,12 @@ In addition to the ID, the actor's object must provide a supplementary set of UR
 
 This approach leads to the question, would it be simpler just to shift the whole actor object directly to the DID Document? This would imply that the actor object of ActivityPub is not necessary anymore and could be removed. This is also the approach Webber and Sporny proposed, mentioned in \ref{sec:extending_activitypub}. However, there are some security privacy concerns regarding the use of service endpoints in the DID Document that would advise against this. The DID specification stipulates \emph{"revealing public information through services, such as social media accounts, personal websites, and email addresses, is discouraged"} \cite{sporny_longley_sabadello_reed_steele_2021}. DID Documents are stored in a publicly available VDR, therefore any personal information revealed here is for everyone to see. The usage of URLs in service endpoints might lead to involuntary leakage of personal information or a correlation between the URL and the DID subject. In the DID document proposed by these authors, listing \ref{lst:did_and_ap}, the amount of personal information displayed, which would not be otherwise inferable, already poses a privacy issue for the DID Subject. For this reason, the actor's object will remain a part of the ActivityPub protocol in this design. This would also allow the unrestricted use of all the other attributes in the actor's object to further describe its owner, such as \emph{name}, \emph{preferredUsername}, or \emph{summary} without making this information forever public in an immutable ledger.
 
-% --- Mastodon implementation -----
-Regarding Mastodon, replacing the standard username with a DID does not imply huge complications. The way Mastodon validates the username format is through the following regular expression: 
 
-\begin{verbatim}
-  USERNAME_REGEX = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
-\end{verbatim}
-
-Additionally, it has a length constraint of 30 characters. The following DID-syntax-compliant regular expression can be used instead, as well as an extended maximum length of 85 characters. 
-
-\verb|DID_REGEX = /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:|\\\verb|[A-Za-z0-9\.\-\:\_\#]+/i |
-
-
-\subsection{Decentralized resolving process}
-As stated in the previous section, Mastodon starts the resolving process based on the username of the user. By replacing the standard username with a DID, the current resolving flow gets disrupted, as there is no domain and thus no well-known endpoints to send requests to. Nonetheless, here is where the resolvability of the DIDs come into play. The proposed flow takes the following steps. First, the username, which now is a DID, can be resolved to its DID Document using any kind of DID resolver. The DID Document must now contain a service with the type ActivityPub and an endpoint, where the actor's object can be retrieved. This gives us 2 possibilities. On the one hand, we could add in the well-known Webfinger endpoint, which then provides us with the profile URL from the user. On the other hand, we could skip the Webfinger request and provide the profile URL directly in the DID Document. The latter looks like the most meaningful path to take. Especially when we refer to the purpose of Webfinger, which was to enable discoverability of entities represented by URIs \cite{jones_salgueiro_jones_smarr_2013}. Webfinger's purpose shares a lot of ground with the design of DIDs, nevertheless, the DID design provides a less limited structure of resolving, as it does not rely on DNS and HTTP for its functioning. For this reason, the proposed workflow will completely remove the use of the  Webfinger protocol used in Mastodon and include the URL of the user's profile in the ActivityPub service section in the DID Document.
-
-
-The easiest way to set a DID resolver, is to use the one from the DIF. They provide Docker images for the service running the query endpoint, and for the drivers needed for each DID method. As Mastodon can be run using Docker Compose, the resolver can be added to the same docker network as the main backend application. This would allow accessing the resolver through the alias name \emph{did-resolver}. The resolver validates the DID document by comparing the searched DID against the ID attribute of the DID document and only returns the DID document when both match. To make the requests to the resolver the service class \emph{DidResolverService} will be added to the backend. The only parameter it needs is the DID it needs to resolve, and it returns the DID Document as a JSON object. Furthermore, to facilitate the interaction with the properties of the DID document a class \emph{DidDocument} with the methods listed in table \ref{table:did_doc_instance_methods} is also needed.
+% ------------Decentralized resolving process------------------------------------
+\subsection{Decentralized Resolving Process}
+As stated in the previous section, Mastodon starts the resolving process based on the username of the user. By replacing the standard username with a DID, the current resolving flow gets disrupted, as there is no domain and thus no well-known endpoints to send requests to. Nonetheless, here is where the resolvability of the DIDs comes into play. The proposed flow takes the following steps. First, the username, which now is a DID, can be resolved to its DID Document using any kind of DID resolver. The DID Document must now contain a service with the type ActivityPub and an endpoint, where the actor's object can be retrieved. This gives us 2 possibilities. On the one hand, we could add in the well-known Webfinger endpoint, which then provides us with the profile URL from the user. On the other hand, we could skip the Webfinger request and provide the profile URL directly in the DID Document. The latter looks like the most meaningful path to take. Especially when we refer to the purpose of Webfinger, which was to enable discoverability of entities represented by URIs \cite{jones_salgueiro_jones_smarr_2013}. Webfinger's purpose shares a lot of ground with the design of DIDs, nevertheless, the DID design provides a less limited structure of resolving, as it does not rely on DNS and HTTP for its functioning. For this reason, the proposed workflow will completely remove the use of the  Webfinger protocol used in Mastodon and include the URL of the user's profile in the DID Document.
+ 
+To make the requests to the resolver a service class \emph{DidResolverService} is needed. This class will only require one parameter, which is the DID it needs to resolve, and the response will consist of a DID document in JSON format. Furthermore, to facilitate the interaction with the properties of the DID document a class \emph{DidDocument} with the methods listed in table \ref{table:did_doc_instance_methods} is also needed.
 
 \begin{table}[!ht]
 	\centering
@@ -206,29 +177,80 @@ The easiest way to set a DID resolver, is to use the one from the DIF. They prov
   \label{table:did_doc_instance_methods}
 \end{table}
 
-With DIDs, a resolver, and a class for DID documents set up, the next task is to modify the Webfinger-based resolving process of Mastodon. Mastodon has a class called \emph{ResolveAccountService}, which triggers the Webfinger requests and processes the respective responses. It takes a username in the form of \emph{username@domain} as a parameter. If the username does not have an existing account in the local database, it makes the Webfinger request. The JRD response gets parsed to find the actor URL, and a subsequent request to the username domain gets triggered to get the actor object. Finally, it parses the actor object to create an account for this user in the local database.
-The new class handling the decentralized DID-based resolving process is not very different. It also takes the username parameter in the form of \emph{did:method:example} and then uses the resolver service to make a query to the universal resolver. A \emph{DidDocument} class gets created with the JSON response and the actor URL its obtained using the \emph{serviceEndpoint} method. Finally, as in the previous flow, a request is made to this URL to get the actor object for further processing.
+With DIDs, a DID resolver, a resolver service, and a class for DID documents set up, the next task is to modify the Webfinger-based resolving process of Mastodon. Mastodon has a class called \emph{ResolveAccountService}, which triggers the Webfinger requests and processes the respective responses. It takes a username in the form of \emph{username@domain} as a parameter. If the username does not have an existing account in the local database, it makes the Webfinger request. The JRD response gets parsed to find the actor URL, and a subsequent request to the username domain gets triggered to get the actor object. Finally, it parses the actor object to create an account for this user in the local database.
+The new class handling the decentralized DID-based resolving process is not very different. It will be called \emph{DID::ResolveAccountService} and will also take the username parameter in the form of \emph{did:method:example}. To resolve a DID it will first make a query to the DID resolver calling the \emph{DidResolverService}, this service instantiates a new \emph{DidDocument} class with the JSON object of the response. The profile URL of the account is then retrieved using the \emph{serviceEndpoint} method. Finally, as in the previous flow, a request is made to this URL to get the actor object for further processing, finalizing the resolving process. 
 
-\subsection{Enabling DIDComm Messaging}\label{section:enabling_didcomm}
+
+% ------------Enabling DIDComm------------------------------------
+\subsection{Enabling DIDComm}\label{section:enabling_didcomm}
 
 Having introduced DIDs to Mastodon and ActivityPub, it is now possible to enable DIDComm. Taking into account the algorithm \ref{alg:didcomm_example} shown in \autoref{section:didcomm}, it is possible to derive some requirements that DIDComm imposes:
 
-\textbf{1. Access to private key}: The ActivityPub server requires access to the private key of the selected verification method. Furthermore, the ActivityPub server must be able to support the keys and the cryptographic algorithms, which the JWA includes. This means having any library that can parse them and perform encryption and decryption with them.
+\subsubsection*{\textbf{Access to DID-Resolver}}
+This is for cases where a signature needs to be verified using an external public key published in a DID document. However, as the DID-based resolving process already requires and implements a DID resolver, this requirement can be considered fulfilled. 
 
-\textbf{2. Key agreement}: DID Documents may present more than one verification method specified in them. A specific standard verification method is required to maintain compatibility between the parties involved. This means that the sender and the recipient must use the same set of keys for encryption and/or signing purposes to have a successful message exchange through DIDComm. The DID specification luckily provides us with a recommendation for this. The \emph{keyAgreement} verification relationship is intended to provide the keys, which allows an entity to confidentially share information with the DID-subject using encryption \cite{sporny_longley_sabadello_reed_steele_2021}. Even though it is possible to add an extra verification relationship called DIDComm or ActivityPub that works in conjunction with our previously defined ActivityPub service, we will stick to the recommendation using the \emph{keyAgreement} key for this proposal.
+\subsubsection*{\textbf{Key agreement}}
+DID Documents may present more than one verification method specified in them. A specific standard verification method is required to maintain compatibility between the parties involved. This means that the sender and the recipient must use the same set of keys for encryption and/or signing purposes to have a successful message exchange through DIDComm. 
+Nonetheless, addressing this requirement is unproblematic because the DID specification already provides a recommendation for this. The \emph{keyAgreement} verification relationship is intended to provide the keys, which allows an entity to confidentially share information with the DID-subject using encryption \cite{sporny_longley_sabadello_reed_steele_2021}. Even though it is possible to add an extra verification relationship called DIDComm or ActivityPub that works in conjunction with our previously defined ActivityPub service, this work will comply with the recommendation using the \emph{keyAgreement} key.
 
-\textbf{3. Access to DID-Resolver}: This is for cases where a signature needs to be verified using an external public key published in a DID document. 
+\subsubsection*{\textbf{Access to private key}}
+The ActivityPub server requires access to the private key of the selected verification method. The reason is, that creating a JWS, as well as decrypting a JWE requires the private key of the user performing the action. To address this requirement, the private key of the user will be stored in the Mastodon server. The implications of this decision will be discussed in the \ref{sec:confidentiality}
 
-Now it's time to define how ActivityPub and DIDComm will work together. This design intends to keep the social protocol as intact as possible. Therefore, a modular rather than a modification approach will be pursued. The best approach would be to follow DIDComm's schema of a nested JWT. Where a plain-text message is encapsulated by a JWM, following a further encapsulation inside a JWS, and so on. This means, that our activity object will be used as the content of the JWM, as shown in figure \ref{fig:final_env}.
+\subsubsection*{\textbf{JWA Compatibility}}
+The ActivityPub server must be able to support the keys and the cryptographic algorithms, which the JWA includes. This means having any library that can parse them and perform signing, signature verification,  encryption, and decryption. 
+This requirement raises the complexity level in implementing DIDComm. During the development of this thesis, there were no libraries that implemented the \emph{ECDH-1PU} algorithm. For this reason, this design will implement the nested JWT alternative explained in \autoref{section:didcomm}, given that various libraries support JWS and JWE in different programming languages. In addition, to prevent any further compatibility problems on the key generation side, the common widely-supported RSA key generation algorithm will be implemented, which is also supported for JWS and JWE creation \cite{jones_2_2015}. This results in the following algorithm selection JWS tokens will use an RSA 2048 key and the \emph{RS256} hash algorithm, and the JWE tokens the \emph{RSA-OAEP}\footnote{https://www.rfc-editor.org/rfc/rfc7518\#page-14} algorithm for key management with the \emph{A128CBC-HS256}\footnote{https://www.rfc-editor.org/rfc/rfc7518\#page-22} algorithm for encryption.
+
+
+\subsection{Payload Definition}\label{subsec:payload_definition}
+
+Having addressed these requirements, it is now time to define how ActivityPub and DIDComm will work together. As part of this proposal, further changes to the ActivityPub protocol itself are not in scope. However, extending it and removing the dependency on the HTTP protocol for its communication is still intended. Therefore, encapsulation rather than modification of ActivityPub within DIDComm allows for a modular approach that keeps both protocols independent from each other. The best approach would be to follow DIDComm's schema of a nested JWT, where a plain-text message is encapsulated by a JWM, following a further encapsulation inside a JWS, and so on. The result consists of our \emph{activity} object being used as the \emph{body} of the JWM, as shown in figure \ref{fig:final_env}. 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.5\textwidth]{concept_and_design/final_env.png}
-  \caption{Proposed Payload structure using DIDComm and ActivityPub}
+  \includegraphics[width=0.4\textwidth]{concept_and_design/final_env.png}
+  \caption{Proposed JWT structure using DIDComm and ActivityPub}
   \label{fig:final_env}
 \end{figure}
 
-To make this architecture possible, Mastodon will require the following additions. First, a class \emph{JWM}, with a setter to assign the activity object to its \emph{body}. Second, a service class called \emph{DIDCommService}, with the methods shown in table \ref{table:didcomm_service}, will be responsible for signing, encrypting outgoing messages, and decrypting and verifying signatures of incoming messages. 
+The final nested JWT consists only of a JWE token, which is the data that will be sent. A JWE offers two types of serializations. The first one is a compact one, where all elements are concatenated in a single string separated by dots \cite{jones_hildebrand_2015}, as shown in listing \ref{lst:compact_jwe}. 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=JWE compact serialization \cite{jones_hildebrand_2015}, label=lst:compact_jwe, float=h!]
+  BASE64URL(UTF8(JWE Protected Header)) || '.' ||
+  BASE64URL(JWE Encrypted Key) || '.' ||
+  BASE64URL(JWE Initialization Vector) || '.' ||
+  BASE64URL(JWE Ciphertext) || '.' ||
+  BASE64URL(JWE Authentication Tag)
+\end{lstlisting}
+
+The compact serialization was conceptualized in a way, that it could be used in fields with a length limit, such as HTTP headers. On the contrary, the second one offers a JSON format, which is better suited to be sent as the body of an HTTP request rather than a plain-text token. For this reason, the payload should follow the JWE JSON serialization \ref{lst:json_jwe}. Nevertheless, if the library used to create the JWE does not support the JSON format, or fails to provide access to the components of the JSON format, then the compact serialization can be implemented using the format specified in listing \ref{lst:alternative_payload}.
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=JWE JSON serialization \cite{jones_hildebrand_2015}, label=lst:json_jwe, float=h!]
+  {
+    "protected":"<integrity-protected shared header contents>",
+    "unprotected":<non-integrity-protected shared header contents>,
+    "recipients":[
+      {
+        "header":<per-recipient unprotected header 1 contents>,
+        "encrypted_key":"<encrypted key 1 contents>"
+      },
+    "aad":"<additional authenticated data contents>",
+    "iv":"<initialization vector contents>",
+    "ciphertext":"<ciphertext contents>",
+    "tag":"<authentication tag contents>"
+   }
+\end{lstlisting}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Alternativ payload structure, label=lst:alternative_payload, float=h!]
+  { 
+    "payload": "JWE with compact serialization" 
+  }
+   
+\end{lstlisting}
+
+To make this architecture possible, Mastodon will require the following additions. First, a class \emph{JWM}, with a setter to assign the activity object to its \emph{body}. Second, a service class called \emph{DIDCommService}, with the methods shown in table \ref{table:didcomm_service}. This service will be responsible for signing, encrypting outgoing messages, and decrypting and verifying signatures of incoming messages. 
 
 \begin{table}[H]
   \centering
@@ -253,124 +275,38 @@ To make this architecture possible, Mastodon will require the following addition
     \hline
     signedPayload & Creates a JWS using a private key\\ 
     \hline
-    verifiedPayloadAndSigner & Verifies the signature of a JWS using a public key\\
+    verifiedPayloadAndSigner & Verifies the JWS using a public key. Returns the decoded payload, and the account that signed it. \\
     \hline
   \end{tabular}
   \caption{Function list for a DIDComm Service class}
   \label{table:didcomm_service}
 \end{table}
 
-Finally, a \emph{DIDCommHelper} class will be implemented in the controller area, which is the one in charge of processing incoming requests to the server. This helper will check the incoming request for the \emph{application/didcomm-encrypted+json} header. If present, it will send the payload to the \emph{DIDCommService} to set the account of the receiver, decrypt the data, verify the signature, and then forward the Activity for its standard processing. 
-
-
-Creating a DID is rather a simple task. However, finding a DID method that would allow CRUD operations to add the service endpoint and a \emph{keyAgreement} key to its DID Document without needing to pay any GAS or any other kind of fees is not. The following options were tested. MATTR\footnote{https://mattr.global}offers creating DIDs using \emph{did:key}, \emph{did:web} and \emph{did:ion} methods. However, they do not allow creating own keys or accessing private keys, which is necessary according to the first requirement. \emph{did:ion} offers a set of tools\footnote{https://github.com/decentralized-identity/ion-tools} to perform CRUD operations in a self-created DID and DID document. These tools are bundled in a library called ION.js, which wraps the SDK and provides an interface to interact easily with the components of ION. However, even though the \emph{update} operation is allowed, it was not possible to fetch a previously created DID and then update it, which was a necessary step. More users have encountered this issue\footnote{https://github.com/decentralized-identity/ion-tools/discussions/25}, but so far, it has not been addressed by the developers. An alternative to ledger-based DIDs developed for this thesis was using the \emph{did:web} method. This method allows hosting the DID Document on any server, giving the server-owner full control. Nonetheless, the discovery process of this type of DID relies heavily on DNS because the DID resolver makes a GET request to the \emph{.well-known/did} endpoint of the domain in the DID to retrieve the DID document. This dependency on the domain would prevent achieving the goal of independence of centralized services. \\
-Another DID method researched was the Uport-developed \emph{did:ethr}. Uport is now divided into two projects, namely Serto\footnote{https://serto.id} and Veramo\footnote{https://veramo.io}. Each one of them offers a decentralized identity solution. On the one hand, Serto provides a platform in the AWS Marketplace that can be easily deployed and would allow a user to create and manage DIDs from the \emph{did:ethr} method. Unfortunately, after failing to deploy the EC2 instance and contacting Serto's developers, it turned out it was temporarily not working. On the other hand, Veramo's typescript-based API allows users to manage DIDs not only in the Ethereum main network but also in other test networks such as Ropsten and Rinkeby. This allows making CRUD operations to DIDs without incurring costs. Veramo provides a setup guide\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers}, where the only thing needed externally is an Infura\footnote{https://infura.io} account to use as a Web3 Provider. Two DIDs were created in the Ropsten network for Alice and Bob, respectively.
-
-\begin{itemize}
-  \item \textbf{Alice:} 
-  did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468\\e6a00cc6c4d
-  \item \textbf{Bob:} 
-did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833d\\dd56397c37
-\end{itemize}
-
-Having DIDs created, the next task is to add the ActivityPub service endpoint to the DID documents of Bob and Alice. The parameters required for Veramo's API to process the information correctly, as shown in figure \ref{fig:add_service_payload}, are the DID, the service, and options for the Web3 provider. The service includes must have a type, a service endpoint, and a description. A service's id is optional, as the Web3 Provider will overwrite it. 
-
-\lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:add_service_payload, float=h]
-  const service_args= {
-    did: <alice DID>,
-    service: {
-      id: 'ActivityPub', // This field will be overwritten
-      type: "ActivityPub",
-      serviceEndpoint: "http://alice_server.com/users/" + <alice DID>,
-      description: "DIDComm enabled ActivityPub Actor"
-    },
-    options: {
-      gas: 100_000, // between 40-60000
-      ttl: 60 * 60 * 24 * 365 * 10 // make the service valid for ~10 years
-    }
-  }
-\end{lstlisting}
-
-The biggest challenge in implementing DIDComm is the compatibility between the algorithms specified by the JWA spec, the key types, and the libraries used to generate keys, sign, and encrypt. In Mastodon, OpenSSL\footnote{https://github.com/ruby/openssl} is the library used for generating the RSA keys used for the HTTP and JSON-LD signatures. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of key management, encryption, decryption, and certificates management. To create signed and encrypted messages, the JWT library\footnote{https://github.com/jwt} for ruby on rails was selected as it allows the spec-compliant creation of JWS and JWE tokens.\\
-For this proposal, the objective is to add confidentiality, integrity, and non-repudiation to every ActivityPub object sent in Mastodon. As explained in \autoref{section:didcomm}, the recommended way to achieve this is by using \emph{authcrypt}. However, during the development of this thesis, there were no libraries for Ruby and Rails that supported the \emph{ECDH-1PU} algorithm. Furthermore, the JWT library had a limited number of available algorithms. For this reason, it was decided to implement a nested JWT, following the same procedure as algorithm \ref{alg:nested_jwt}. To prevent any further compatibility problems on the key generation side, it was decided to use the common widely-supported RSA key generation algorithm. This means, that both Alice and Bob will have an extra RSA keypair, and the private keys will be stored in their respective Mastodon instance. The JWS tokens were set to use an RSA 2048 key and the \emph{RS256} hash algorithm, and the JWE tokens to use the \emph{RSA-OAEP}\footnote{https://www.rfc-editor.org/rfc/rfc7518\#page-14} algorithm for key management with the \emph{A128CBC-HS256}\footnote{https://www.rfc-editor.org/rfc/rfc7518\#page-22} algorithm for encryption.
-With existing RSA keys for both our actors, it is now necessary to add the respective public keys to their DID documents. Veramo's API offers a way to add different kinds of cryptographic keys to a DID document, however, the only available key types that could be added were the \emph{Ed25519}, \emph{Secp256k1}, and the  \emph{X25519} from the \emph{Elliptic Curve Cryptography} (ECC) family of cryptosystems. This represented a considerable complication, as the already mentioned library for the JWT tokens did not have support for these types of keys. Luckily, after researching possible workarounds, one of the main developers of the Veramo project assisted and developed a way to \emph{force} adding an RSA key to the DID document. The final DID document for Alice's DID can be seen in figure \ref{fig:alice_ethr_doc}.
-
-% \lstset{style=JSONStyle}
-% \begin{lstlisting}[language=PHP, caption=\emph{did:ethr} DID document with added RSA verification method and ActivityPub service endpoint in the mastodon instance \emph{lisztos.com}, label=fig:alice_ethr_doc, float=h]
-%   {
-%   "@context": [
-%     "https://www.w3.org/ns/did/v1",
-%     "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
-%   ],
-%   "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
-%   "verificationMethod": [
-%     {...},
-%     {
-%       "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#delegate-1",
-%       "type": "RSAVerificationKey2018",
-%       "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
-%       "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAspiTbG8OCy39BvI0rnTH\nVGEW2YpYTs+ayH9FtmyTdeHifIJLF0breFsKAM/HE8EQF3iI4tjMYI5c1A04FLRY\ncmwLRkNGlv8+2seCFoN+Hkv+5eupjkr+x32amvmbB92B3s7oqW5IftveAnxWJPEi\nY1Fm3tGiYz85Yg+3IOEp9083IKaZu1visW1Sp0YObwZLJCNzE6o3bOfpKMSBkzoc\nmBxkFXD0ilmXqM2CETsYfaywFachOu1dC+XcF/npUZV+Q1FdWLiuFlKAwDt3DiD3\nNSz2b27Iga7wTSCoQ/DAhFAZ8KH8uCMrioIWFSKuYRgFOysbDfTT9Kpha8ST8K/H\nTQIDAQAB\n-----END PUBLIC KEY-----\n"
-%     }
-%   ],
-%   "authentication": [...],
-%   "assertionMethod": [...],
-%   "service": [
-%     {
-%       "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#service-1",
-%       "type": "ActivityPub",
-%       "serviceEndpoint": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d"
-%     }
-%   ]
-% }
-% \end{lstlisting}
-
-
-At this point, all the elements needed to enable DIDComm are present, i.e. two Mastodon instances for federated communication with DID integration, a DID resolver and a service class that can resolve DIDs, as well as DID documents for both actors with the ActivityPub service endpoint and the public key for the verification method. The next step is to put them together. As part of this proposal, further changes to the ActivityPub protocol itself are not in the scope. However, extending it and removing the dependency on the HTTP protocol for its communication is still intended. Therefore, encapsulation rather than modification of ActivityPub within DIDComm allows for a modular approach that keeps both protocols independent from each other. The simplest way to keep a modular approach is by using the ActivityStream object as a payload for our JWM, which would look like figure \ref{fig:jwm_example}. 
-The final payload that will be sent in server-to-server communication will consist of a JWE token, whose content is a signed JWM that includes the Activity in its body, following the structure of figure \ref{fig:final_env}.
-
-\lstset{style=JSONStyle}
-\begin{lstlisting}[language=PHP, caption=JWM example, label=fig:jwm_example, float=h]
-  {
-    "id": "https://alice_server/users/did:example:alice/statuses/634367/activity",
-    "type": "https://www.w3.org/ns/activitystreams",
-    "body": {
-      "@context": "https://www.w3.org/ns/activitystreams",
-      "type": "Create",
-      "id": "https://alice_server/users/did:example:alice/statuses/634367/activity",
-      "actor": "https://alice_server.com/users/did:example:alice",
-      "to": [ 
-            "https://bob_server.com/users/did:example:bob"
-        ],
-      "object": {
-        "type": "Note",
-        "to": [ 
-            "https://bob_server.com/users/did:example:bob"
-        ],
-        "attributedTo": "https://alice_server.com/users/did:example:alice",
-        "content": "Hello Adrian!"
-      }
-    }
-  }
-\end{lstlisting}
+Finally, a \emph{DIDCommHelper} class will be implemented in the controller area, which is the one in charge of processing incoming requests to the server. This helper will check the incoming request for the \emph{application/didcomm-encrypted+json} header. If present, it will send the payload to the \emph{DIDCommService} to set the account of the receiver, decrypt the data, verify the signature, and then forward the Activity for its standard processing. Otherwise, it will allow the unmodified payload to be processed normally.
 
 
 
-The final flow for our use case mention in\ref{section:use_case} is illustrated in figure \ref{fig:did_flow}
+% -------CRUD methods DID-----------------------
+\subsection{CRUD Operations on a DID}\label{subsec:did_crud}
+
+Creating a DID is rather a simple task. However, finding a DID method that allows CRUD operations to add the service endpoint and a \emph{keyAgreement} key to the DID Document, without needing to pay any GAS or any other kind of fees, is not. The following options were tested. MATTR\footnote{https://mattr.global}offers creating DIDs using \emph{did:key}, \emph{did:web} and \emph{did:ion} methods. However, they do not allow creating their keys or accessing private keys, which is necessary according to the first requirement. \emph{did:ion} offers a set of tools\footnote{https://github.com/decentralized-identity/ion-tools} to perform CRUD operations in a self-created DID and DID document. These tools are bundled in a library called ION.js, which wraps the SDK and provides an interface to interact easily with the components of ION. However, even though the \emph{update} operation is allowed, it was not possible to fetch a previously created DID and then update it, which was a necessary step. More users have encountered this issue\footnote{https://github.com/decentralized-identity/ion-tools/discussions/25}, but so far, it has not been addressed by the developers. 
+
+An alternative to ledger-based DIDs is using the \emph{did:web} method. This method allows hosting the DID Document on any server, thus giving the server-owner full control. Nonetheless, the discovery process of this type of DID relies heavily on DNS because the DID resolver makes a GET request to the \emph{.well-known/did} endpoint of the domain in the DID to retrieve the DID document. This dependency on the domain would prevent achieving the goal of independence of centralized services.
+
+Another DID method researched was the Uport-developed \emph{did:ethr}. Uport is now divided into two projects, namely Serto\footnote{https://serto.id} and Veramo\footnote{https://veramo.io}. Each one of them offers a decentralized identity solution. On the one hand, Serto provides a platform in the AWS Marketplace that can be easily deployed and would allow a user to create and manage DIDs from the \emph{did:ethr} method. Unfortunately, after failing to deploy the EC2 instance and contacting Serto's developers, it turned out it was temporarily not working. On the other hand, Veramo's typescript-based API allows users to manage DIDs not only in the Ethereum main network but also in other test networks such as Ropsten and Rinkeby. This allows making CRUD operations to DIDs without incurring costs. Veramo provides a setup guide\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers}, where the only thing needed externally is an Infura\footnote{https://infura.io} account to use as a Web3 Provider. Using Veramo's API will allow the creation of two different DIDs, and add the respective public keys and service endpoints.
+
+Finally, to test this design the following elements are required. First, two DIDs for Alice and Bob respectively. Second, two servers running the Mastodon instance with the presented classes and methods implemented. One server will host the account for Alice, and the other for Bob with the respective DIDs as usernames. Third, both DID documents need to be updated with the service endpoint and the public key of the \emph{keyAgreement} keypair they were provided by the Mastodon instance. With all these elements in place, Alice can send a private message to Bob's DID, which will trigger the whole flow this design presented. Figure \ref{fig:did_flow} provides an updated diagram using the proposed DID and DIDComm-based flow. 
 
 % Proposed Flow diagram
 \begin{figure}[h]
   \centering
   \includegraphics[height=\textheight, width=\textwidth]{concept_and_design/did_flow.png}
-  \caption{DID and DIDComm flow for use case}
+  \caption{DID and DIDComm flow for use case mentioned in \ref{section:use_case}}
   \label{fig:did_flow}
 \end{figure}
 
+% -------------------------------UML diagramms----------------------------------
 
-\section{Implementin}
-
-%
-% -------DID Flow-------------
 % @startuml
 
 % skinparam backgroundColor White
@@ -413,28 +349,28 @@ The final flow for our use case mention in\ref{section:use_case} is illustrated 
 
 % as->as: Create Note Object
 % as->as: Wrap object in Activity object
-% group JWS
 % as->as: Wrap Activity in JWM
-% as->as: Sign using Alice's private key
+% group JWS Creation
+% as->as: Sign JWM using Alice's private key
 % end
 
-% == Resolving Process ==
+% == Decentralized Resolving Process ==
 % as->VDR ++ #gray: Resolve Bob's DID
 % VDR-->as --: Return Bob's DID Document
-% as->as: Retrieve Bob's profile URL \n url and public key 
+% as->as: Retrieve Bob's profile URL \n and public key 
 % note right
 % Profile URL: 
 % https://bob_server.com/users/did:example:bob
 % end note
-% group JWE
-% as->as: Encrypt JWS using\nBob's public Key
-% end group
 % as->bs ++ #gold: GET request to Bob's profile URL
 % bs-->as --: Return Bob's actor Object
 % as<-as: Retrieve inbox url
 
 % == Delivery ==
-% as->bs: POST JWE to inbox url
+% group JWE creation
+% as->as: Encrypt JWS using Bob's public Key
+% end group
+% as->bs: POST JWE to inbox URL
 
 % bs->bs: Decrypt using Bob's\nprivate key
 % bs->VDR ++ #gray: Resolve Alice's DID

@@ -3,20 +3,14 @@
 
 The design presented in \ref{cha:conceptanddesign} has been implemented to provide a proof of concept. This chapter discusses the implementation of the proposed design. Furthermore, it describes how to install, build and run the Mastodon prototype, as well as the steps needed to create the DIDs and DID documents. 
 
-\section{Proof of concept}
-
-The source code of this thesis prototype is available on GitLab and can be accessed under the following link: \verb|https://gitlab.com/Lisztos/mastodon|. It was implemented using two different Mastodon instances. The first one was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one, which was mainly used for debugging requests and testing the resolving processes in federated communication. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers. 
-
-\section{Mastodon}
-
 The source code\footnote{https://github.com/mastodon/mastodon} of Mastodon is open source and accessible for everyone to download. The core backend was implemented using the Model-View-Controller framework Ruby on Rails\footnote{https://rubyonrails.org/}, based on the Ruby programming language. The backend manages a Postgres\footnote{https://www.postgresql.org/} database, implements the ActivityPub server, provides a REST API for the frontend, and serves some web pages. The frontend of Mastodon was complemented using the React\footnote{https://reactjs.org} framework, which manages most of the dynamic parts of the interface. Finally, Nginx serves as the reverse proxy for the Mastodon instance.  
 Mastodon provides a docker-compose configuration file to facilitate the deployment process. However, it was extended with the DID resolver services for the prototype. The services inside the extended docker-compose file are described in table \ref{table:mastodon_service}.
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{|p{4cm}|p{10cm}| }
+  \begin{tabular}{|p{5cm}|p{10cm}| }
     \hline
-    Service name & Description \\
+    \textbf{Service name} & \textbf{Description} \\
     \hline
     \hline
     Web & Mastodon Rails application \\
@@ -31,14 +25,117 @@ Mastodon provides a docker-compose configuration file to facilitate the deployme
     \hline
     Sidekiq & Tool to perform asynchronous processing\\
     \hline
-    DID Resolver & Service to resolve DIDs \\
+    *DID Resolver & Service to resolve DIDs \\
     \hline
-    Uni-resolver-driver-did-uport & Driver for the did:ethr method\\
+    *Uni-resolver-driver-did-uport & Driver for the did:ethr method\\
     \hline
   \end{tabular}
-  \caption{Mastodon services}
+  \caption{Mastodon services. *Only present in the Prototype}
   \label{table:mastodon_service}
 \end{table}
+
+
+% ----------Proof of concept-----------------------
+\section{Proof of concept}
+
+The source code of this thesis prototype is available on GitLab and can be accessed under the following link: \verb|https://gitlab.com/Lisztos/mastodon|. It was implemented using two different Mastodon instances. The first one was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one, which was mainly used for debugging requests and testing the resolving processes in federated communication. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers.
+
+OpenSSL\footnote{https://github.com/ruby/openssl} is the library Mastodon uses for generating the RSA keys used for the HTTP and JSON-LD signatures. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of services such as key management, encryption, decryption, and certificate management. To create signed and encrypted messages, the JWT library\footnote{https://github.com/jwt} for Ruby on Rails was selected as it allows the spec-compliant creation of JWS and JWE tokens.
+
+
+% ---------Mastodon implementation-----------------------
+Replacing the standard username with a DID was unproblematic in Mastodon. The way Mastodon validates the username format is through the regular expression shown in listing \ref{lst:regex}. Additionally, it has a length constraint of 30 characters. For the prototype, the DID-syntax-compliant regular expression shown in listing \ref{lst:did_regex} was used, as well as an extended maximum length of 85 characters.
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Mastodon username regex, label=lst:regex, float=h!]
+USERNAME_REGEX = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
+\end{lstlisting}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption= Regex for DID used in the prototype, label=lst:did_regex, float=h!]
+DID= /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\:\_\#]+/i 
+\end{lstlisting}
+
+\subsection*{DID creation}
+Using Veramo's API mentioned in \autoref{subsec:did_crud}, two DIDs were created in the Ropsten network for Alice and Bob, respectively. An account on each server was created with the DIDs. Figure \ref{fig:alice_profile} shows Alice's created account. 
+
+\begin{itemize}
+  \item \textbf{Alice:} 
+  did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468\\e6a00cc6c4d
+  \item \textbf{Bob:} 
+did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833d\\dd56397c37
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{implementation/alice_did_profile.png}
+  \caption{Alice's profile using DID as username in the Mastodon prototype.}
+  \label{fig:alice_profile}
+\end{figure}
+
+\subsection*{DID Document modification}
+Adding the ActivityPub service endpoint to the DID documents of Bob and Alice Veramo requires the following parameters. DID, service, and the options for the Web3 provider, as shown in figure \ref{fig:add_service_payload}. The service must have a type, a service endpoint, and a description. A service's id is optional, as the Web3 Provider will overwrite it. 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:add_service_payload, float=h]
+  const service_args= {
+    did: <alice DID>,
+    service: {
+      id: 'ActivityPub', // This field will be overwritten
+      type: "ActivityPub",
+      serviceEndpoint: "http://lisztos.com/users/" + <alice DID>,
+      description: "DIDComm enabled ActivityPub Actor"
+    },
+    options: {
+      gas: 100_000, // between 40-60000
+      ttl: 60 * 60 * 24 * 365 * 10 // make the service valid for ~10 years
+    }
+  }
+\end{lstlisting}
+
+The next step was adding the public key to the DID document. Mastodon generates an RSA keypair for an account when the account is created. After creating the accounts for Alice and Bob, it was possible to retrieve the public key, which needed to be added to the DID document. Veramo's API offers a way to add different kinds of cryptographic keys to a DID document, however, the only available key types that could be added were the \emph{Ed25519}, \emph{Secp256k1}, and the  \emph{X25519} from the \emph{Elliptic Curve Cryptography} (ECC) family of cryptosystems. This represented a considerable complication because the already selected library for the JWT tokens did not have support for these types of keys. Luckily, after researching possible workarounds, one of the main developers of the Veramo project assisted and developed a way to \emph{force} an RSA key into the DID document. The parameters required to add a key are a type, the \emph{kid}, Key ID; and the public key of the RSA key in Base16 encoding, as shown in listing \ref{fig:add_key_payload}. Furthermore, the final DID document for Alice can be seen in appendix \ref{lst:alice_ethr_doc}. 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Adding an RSA key using Veramo, label=fig:add_key_payload, float=h]
+
+  const rsaKeyPair = {
+    privateKey: "-----BEGIN PRIVATE KEY----.....",
+    publicKey: "-----BEGIN PUBLIC KEY-----\nMII...."
+  }
+
+
+  const key_args{
+    did: <Alice DID>,
+    key: {
+      type: "RSA" as TKeyType,  // Veramo doesn't really know about RSA keys, but it doesn't matter in this case if we coerce it.
+      kms: 'local',
+      kid: 'my RSA key',
+      publicKeyHex: u8a.toString(u8a.fromString(rsaKeyPair.publicKey, 'utf-8'), 'base16')
+    },
+    options: {
+      encoding: 'pem',
+      ttl: 60*60*24*365*10, // the key will be valid for 10 years
+      gas: 100000 // use 100,000 gas at most for this transaction
+    }
+  }
+
+\end{lstlisting}
+
+
+Finally, an example of a successful direct message sent with DIDComm can be seen in fig. \ref{fig:didcomm_message}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{implementation/didcomm_message.png}
+  \caption{Alice's private message sent to Bob's server using proposed design}
+  \label{fig:didcomm_message}
+\end{figure}
+
+
+% ----------Running Mastodon---------------------------
+\section{Mastodon}
+
+
 
 \subsection{Requirements}
 

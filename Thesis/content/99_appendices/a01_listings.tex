@@ -1,5 +1,4 @@
-\chapter{Listings}
-
+\chapter{Appendix: Listings}
 
 \lstset{style=JSONStyle}
 \begin{lstlisting}[language=PHP, caption=Mastodon extended version of ActivityPub's actor object of user bob@mastodon.social, label=fig:mastodon_actor_object, float=ht]
@@ -94,5 +93,39 @@
         "deviceId": "11876"
       }
     }
+  }
+\end{lstlisting}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=DID Document for Alicecreated with the \emph{did:ethr} DID method. It includes an RSA public key and a service that points to her profile URL in the Mastodon instance \emph{lisztos.com}, label=lst:alice_ethr_doc, float=ht]
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+    ],
+    "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+    "verificationMethod": [
+      {
+        "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#controller",
+        "type": "EcdsaSecp256k1RecoveryMethod2020",
+        "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+        "blockchainAccountId": "eip155:3:0x577361D41748c83ab328E90a51054712Fe49e211"
+      },
+      {
+        "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#delegate-1",
+        "type": "RSAVerificationKey2018",
+        "controller": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFA...npUZV+Q1FdWLiuFlKAwDt3DiD3\nNSz2b27Iga7wTSCoQ/DAhFAZ8KH8uCMrioIWFSKuYRgFOysbDfTT9Kpha8ST8K/H\nTQIDAQAB\n-----END PUBLIC KEY-----\n"
+      }
+    ],
+    "authentication": [...],
+    "assertionMethod": [...],
+    "service": [
+      {
+        "id": "did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d#service-1",
+        "type": "ActivityPub",
+        "serviceEndpoint": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d"
+      }
+    ]
   }
 \end{lstlisting}
