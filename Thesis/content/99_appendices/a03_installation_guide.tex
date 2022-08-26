@@ -1,0 +1,39 @@
+\chapter{Appendix: Nginx Configuration}
+\label{appendix:nginx_configuration}
+
+\lstset{style=CodeStyle}
+  \begin{lstlisting}[language=PHP, caption=Adding Nginx configuration file., float=h]
+    // First, clone the project
+    git clone https://gitlab.com/Lisztos/mastodon
+
+    // Quick install nginx
+    sudo apt update && sudo apt install nginx
+    
+    // Copy configuration file from the repository sample to the Nginx folder
+    cp ~/root/mastodon/nginx.conf /etc/nginx/sites-available/
+
+    // Rename with your domain name
+    mv /etc/nginx/sites-available/nginx.conf /etc/nginx/sites-available/your-domain.com.conf
+    
+    // Update the configuration file with your domain information 
+    nano /etc/nginx/sites-available/your-domain.com.conf
+
+    // Activate the Nginx configuration
+    cd /etc/nginx/sites-enabled
+    ln -s ../sites-available/your-domain.com.conf
+    sudo systemctl stop nginx
+
+    // Open ports 80 and 443
+    sudo apt install ufw
+    sudo ufw allow Nginx Full
+  
+    // Get SSL certificate using Let's encrypt
+    sudo apt install certbot
+    certbot certonly --standalone -d your-domain.com
+
+    // Start Nginx
+    sudo systemctl start nginx
+    
+\end{lstlisting}
+
+

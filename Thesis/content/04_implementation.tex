@@ -1,4 +1,283 @@
 \chapter{Implementation}
 \label{cha:implementation}
 
-Describe the details of the actual implementation here...
+The design presented in \ref{cha:conceptanddesign} has been implemented to provide a proof of concept. This chapter discusses the implementation of the proposed design. Furthermore, it describes how to install, build and run the Mastodon prototype, as well as the steps needed to create the DIDs and DID documents. 
+
+The source code\footnote{https://github.com/mastodon/mastodon} of Mastodon is open source and accessible for everyone to download. The core backend was implemented using the Model-View-Controller framework Ruby on Rails\footnote{https://rubyonrails.org/}, based on the Ruby programming language. The backend manages a Postgres\footnote{https://www.postgresql.org/} database, implements the ActivityPub server, provides a REST API for the frontend, and serves some web pages. The frontend of Mastodon was complemented using the React\footnote{https://reactjs.org} framework, which manages most of the dynamic parts of the interface. Finally, Nginx serves as the reverse proxy for the Mastodon instance.  
+Mastodon provides a docker-compose configuration file to facilitate the deployment process. However, it was extended with the DID resolver services for the prototype. The services inside the extended docker-compose file are described in table \ref{table:mastodon_service}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{5cm}|p{10cm}| }
+    \hline
+    \textbf{Service name} & \textbf{Description} \\
+    \hline
+    \hline
+    Web & Mastodon Rails application \\
+    \hline
+    DB & Postgres database \\
+    \hline
+    Redis & In-memory data store for caching and streaming \\
+    \hline
+    ElasticSearch (es) & Search engine for accounts or tags\\
+    \hline
+    Streaming & Mastodon's React application \\
+    \hline
+    Sidekiq & Tool to perform asynchronous processing\\
+    \hline
+    *DID Resolver & Service to resolve DIDs \\
+    \hline
+    *Uni-resolver-driver-did-uport & Driver for the did:ethr method\\
+    \hline
+  \end{tabular}
+  \caption{Mastodon services. *Only present in the Prototype}
+  \label{table:mastodon_service}
+\end{table}
+
+
+% ----------Proof of concept-----------------------
+\section{Proof of concept}
+
+The source code of this thesis prototype is available on GitLab and can be accessed under the following link: \verb|https://gitlab.com/Lisztos/mastodon|. It was implemented using two different Mastodon instances. The first one was a Linux server with Ubuntu 20.04, 2 CPU cores,  4GB RAM, and 80 GB storage capacity provided by the cloud provider Linode\footnote{https://linode.com}. The TU Berlin provided the second one, which was mainly used for debugging requests and testing the resolving processes in federated communication. Both domains used for the servers are \emph{lisztos.com} and \emph{tawki.snet.tu-berlin.de}. Amazon Simple Email Service (SES) was selected as the email delivery service, and Amazon S3 was used for storing the profile images of the servers.
+
+OpenSSL\footnote{https://github.com/ruby/openssl} is the library Mastodon uses for generating the RSA keys used for the HTTP and JSON-LD signatures. This library wraps the OpenSSL project toolkit\footnote{https://www.openssl.org/} and provides a wide range of services such as key management, encryption, decryption, and certificate management. To create signed and encrypted messages, the JWT library\footnote{https://github.com/jwt} for Ruby on Rails was selected as it allows the spec-compliant creation of JWS and JWE tokens.
+
+
+% ---------Mastodon implementation-----------------------
+Replacing the standard username with a DID was unproblematic in Mastodon. The way Mastodon validates the username format is through the regular expression shown in listing \ref{lst:regex}. Additionally, it has a length constraint of 30 characters. For the prototype, the DID-syntax-compliant regular expression shown in listing \ref{lst:did_regex} was used, as well as an extended maximum length of 85 characters.
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Mastodon username regex, label=lst:regex, float=h!]
+USERNAME_REGEX = /[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?/i
+\end{lstlisting}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption= Regex for DID used in the prototype, label=lst:did_regex, float=h!]
+DID= /did+:+[a-z0-9_]+([a-z0-9_\.-]+[a-z0-9_]+)?:[A-Za-z0-9\.\-\:\_\#]+/i 
+\end{lstlisting}
+
+\subsection*{DID creation}
+Using Veramo's API mentioned in \autoref{subsec:did_crud}, two DIDs were created in the Ropsten network for Alice and Bob, respectively. An account on each server was created with the DIDs. Figure \ref{fig:alice_profile} shows Alice's created account. 
+
+\begin{itemize}
+  \item \textbf{Alice:} 
+  did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468\\e6a00cc6c4d
+  \item \textbf{Bob:} 
+did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833d\\dd56397c37
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{implementation/alice_did_profile.png}
+  \caption{Alice's profile using DID as username in the Mastodon prototype.}
+  \label{fig:alice_profile}
+\end{figure}
+
+\subsection*{DID Document modification}
+Adding the ActivityPub service endpoint to the DID documents of Bob and Alice Veramo requires the following parameters. DID, service, and the options for the Web3 provider, as shown in figure \ref{fig:add_service_payload}. The service must have a type, a service endpoint, and a description. A service's id is optional, as the Web3 Provider will overwrite it. 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:add_service_payload, float=h]
+  const service_args= {
+    did: <alice DID>,
+    service: {
+      id: 'ActivityPub', // This field will be overwritten
+      type: "ActivityPub",
+      serviceEndpoint: "http://lisztos.com/users/" + <alice DID>,
+      description: "DIDComm enabled ActivityPub Actor"
+    },
+    options: {
+      gas: 100_000, // between 40-60000
+      ttl: 60 * 60 * 24 * 365 * 10 // make the service valid for ~10 years
+    }
+  }
+\end{lstlisting}
+
+The next step was adding the public key to the DID document. Mastodon generates an RSA keypair for an account when the account is created. After creating the accounts for Alice and Bob, it was possible to retrieve the public key, which needed to be added to the DID document. Veramo's API offers a way to add different kinds of cryptographic keys to a DID document, however, the only available key types that could be added were the \emph{Ed25519}, \emph{Secp256k1}, and the  \emph{X25519} from the \emph{Elliptic Curve Cryptography} (ECC) family of cryptosystems. This represented a considerable complication because the already selected library for the JWT tokens did not have support for these types of keys. Luckily, after researching possible workarounds, one of the main developers of the Veramo project assisted and developed a way to \emph{force} an RSA key into the DID document\footnote{https://gist.github.com/mirceanis/8a6a3b118db3624f402c9644af4cd8b4}. The parameters required to add a key are a type, the \emph{kid}, Key ID; and the public key of the RSA key in Base16 encoding, as shown in listing \ref{fig:add_key_payload}. Furthermore, the final DID document for Alice can be seen in appendix \ref{lst:alice_ethr_doc}. 
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Adding an RSA key using Veramo, label=fig:add_key_payload, float=h]
+
+  const rsaKeyPair = {
+    privateKey: "-----BEGIN PRIVATE KEY----.....",
+    publicKey: "-----BEGIN PUBLIC KEY-----\nMII...."
+  }
+
+
+  const key_args{
+    did: <Alice DID>,
+    key: {
+      type: "RSA" as TKeyType,  // Veramo doesn't really know about RSA keys, but it doesn't matter in this case if we coerce it.
+      kms: 'local',
+      kid: 'my RSA key',
+      publicKeyHex: u8a.toString(u8a.fromString(rsaKeyPair.publicKey, 'utf-8'), 'base16')
+    },
+    options: {
+      encoding: 'pem',
+      ttl: 60*60*24*365*10, // the key will be valid for 10 years
+      gas: 100000 // use 100,000 gas at most for this transaction
+    }
+  }
+
+\end{lstlisting}
+
+
+Finally, an example of a successful direct message sent with DIDComm can be seen in fig. \ref{fig:didcomm_message}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{implementation/didcomm_message.png}
+  \caption{Alice's private message sent to Bob's server using proposed design}
+  \label{fig:didcomm_message}
+\end{figure}
+
+
+% ----------Running Mastodon---------------------------
+\section{Mastodon}
+
+
+
+\subsection{Requirements}
+
+The requirements to run a mastodon server are:
+\begin{itemize}
+  \item Ubuntu 20.04 or Debian 11 for the operating system
+  \item Domain name
+  \item Email delivery service
+  \item Object storage service (optionally)
+\end{itemize}
+
+Software requirements include: 
+\begin{itemize}
+  \item Nginx
+  \item Docker
+  \item Docker-Compose
+\end{itemize}
+
+
+\subsection{Configuration}
+
+For external configuration, it is required that the domain name points to the IP address of the server. Furthermore, the accounts and providers for the Email delivery service or the object storage service must be set up in advance. 
+Additionally, Nginx\footnote{https://nginx.com} is used to serve the Mastodon instance. Unfortunately, Nginx was not containerized and it must be manually configured. For complete instructions to configure Nginx see appendix \ref{appendix:nginx_configuration} 
+
+
+\subsection{Build}
+
+To build the source code of the prototype it is first required to add an \emph{env} file with the necessary environment variables for development to the root folder. An example file can be found in appendix \ref{appendix:env_file}, however, it is necessary to fill it up with the required credentials. Next, the image from the web service needs to be manually built with the following command. The \emph{-f} flag specifies to use the custom \emph{Dockerfile} and the \emph{-t} flag adds a name and tag to the image. 
+  
+\lstset{style=CodeStyle}
+  \begin{lstlisting}[language=PHP, caption=Building the development Dockerfile, float=h]
+    docker build -f Dockerfile.dev -t mastodon:dev .
+  \end{lstlisting}
+
+
+\subsection{Run}
+After building the development image for the rails application, it is now possible to pull the images for the other services from the docker registry and get every container running using the commands shown in listing \ref{list:start_mastodon}.
+
+\lstset{style=CodeStyle}
+\begin{lstlisting}[language=PHP, caption=Starting all services of Mastodon, label=list:start_mastodon, float=ht]
+  // Create and start containers
+  docker-compose up -d
+
+  // Restart NGINX
+  sudo systemctl restart nginx
+
+  // When everything is running, we need to run the migrations
+  docker-compose exec web rails db:migrate
+\end{lstlisting}
+
+
+Visiting the provided domain using HTTPS will show the welcome page of Mastodon. In order to test the federated communication, this process should now be repeated using a different server. Having two different domain names was required for the prototype to test the whole DNS-based resolving process. However, the setup might also work using the raw IP address as the default domain. 
+
+
+\section{DIDs}
+
+In order to create a DID, the source code of the prototype includes a \emph{/veramo\_agent} folder with all the needed methods to perform CRUD operations to DIDs from the \emph{did:ethr} method. The setup was taken from Veramo's guides\footnote{https://veramo.io/docs/node\_tutorials/node\_setup\_identifiers/}, and the methods for the CRUD operations were written based on the API reference \footnote{https://veramo.io/docs/api/core}. 
+
+\subsection{Requirements}
+
+Software requirements to build the Veramo agent include: 
+\begin{itemize}
+  \item Node v14+
+  \item Yarn
+\end{itemize}
+
+\subsection{Configuration}
+First, an \emph{.env} file that contains the variable: \emph{INFURA\_PROJECT\_ID="example-infura-project-id"} from an Infura\footnote{https://infura.io/} account is required. This project ID has to match the Ethereum network desired. The default selected in the setup is \emph{Ropsten}.
+
+\subsection{Build}
+To build the project, the only command needed is \emph{yarn install} in the root of the \emph{/veramo\_agent} folder. 
+
+\subsection{Run}
+A set of \emph{scripts} are provided to facilitate the use of the CRUD methods. See table \ref{table:yarn_scripts} for a detailed view. However, to make any changes to a DID, it is first necessary to fund the Ethereum account to which the DID is anchored. This account can be found in the DID document, with the key \emph{blockchainAccountId} of the first verification method, as shown in listing \ref{fig:blockchain_id}. It follows the format  \emph{eip155:<network id>:<0x ethereum address>}. If the DID was created using a test network, the address can be funded using any Faucet\footnote{https://faucet.egorfine.com/}. Otherwise, Ether has to be transferred from a real account.
+Finally, the prototype only supports parsing RSA keys from the DID document. To further understand how adding an RSA key works in Veramo, please refer to:\\
+ \verb|https://gist.github.com/Lisztos/eade1f9199d46392f7c7d1f9bbfe7a3b|
+
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|p{4cm}|p{3cm}|p{7cm}| }
+    \hline
+    Command & Parameters & Description \\
+    \hline
+    \hline
+    yarn id:create & & Creates a new DID \\
+    \hline
+    yarn id:list & & List the created identifiers by this agent \\
+    \hline
+    yarn id:resolve\_did & DID & Resolved the DID to its the DID document \\
+    \hline
+    yarn id:add\_service & DID,  Service \ref{fig:service_object} & Adds a new service to the DID document \\
+    \hline
+    yarn id:remove\_service & DID, Service ID & Removes the specified service\\
+    \hline
+    yarn id:add\_key & DID, Key & Adds a new key to the DID document. \\
+    \hline
+    yarn id:remove\_key & DID, Key ID & Removes the specified key\\
+    \hline
+  \end{tabular}
+  \caption{CRUD operations for \emph{did:ethr} DIDs}
+  \label{table:yarn_scripts}
+\end{table}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Controller address inside the DID document, label=fig:blockchain_id, float=h]
+  {
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+  ],
+  "id": "did:ethr:ropsten:0x031be462277...",
+  "verificationMethod": [
+    {
+      "id": "did:ethr:ropsten:0x031be462277...#controller",
+      "type": "EcdsaSecp256k1RecoveryMethod2020",
+      "controller": "did:ethr:ropsten:0x031be462277...",
+      "blockchainAccountId": "eip155:3:0x577361D41748c83ab328E90a51054712Fe49e211"  // Ethereum Address
+    },
+  ],
+  {...}
+}
+\end{lstlisting}
+
+\lstset{style=JSONStyle}
+\begin{lstlisting}[language=PHP, caption=Parameters to add a service in Veramo, label=fig:service_object, float=h]
+  const service= {
+    did: <DID>,
+    service: {
+      id: 'ActivityPub', // This field will be overwritten
+      type: "ActivityPub",
+      serviceEndpoint: "http://your-domain.com/users/" + <DID>,
+      description: "DIDComm enabled ActivityPub Actor"
+    },
+    options: {
+      gas: 100_000, // between 40-60000
+      ttl: 60 * 60 * 24 * 365 * 10 // make the service valid for ~10 years
+    }
+  }
+\end{lstlisting}
+
+
+
+
+
