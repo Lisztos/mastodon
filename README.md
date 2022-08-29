@@ -5,6 +5,20 @@ This Mastodon instance is part of my Bachelor Thesis, where I integrate DIDs and
 
 Adrian Sanchez
 
+The code is running on the TU server: https://tawki.snet.tu-berlin.de/
+
+| Service      |      Description       |    Port   |
+| -----------  | --------------------   | ----------|
+| Web          | Main Rails application |  3000     |
+| Streaming    | React app              |  4000     |
+| DB           | Postgres databas       |  4000     |
+| Nginx        | Reverse Proxy          |  80, 443  |
+| ES           | Elastic Search         |           |
+| Redis        | In-memory data store   |           |
+| Sidekiq      | Background processing  |           |
+| DID resolver | Takes DID and DID doc. |           |
+| uni-resolver | Driver for did:ethr    |           |
+
 -----------
 
 

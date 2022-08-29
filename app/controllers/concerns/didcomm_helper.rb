@@ -26,6 +26,6 @@ module DidcommHelper
   private
   
   def set_didcomm_account
-    @account ||= Account.find_by(display_name: "alice")
+    @account ||= Account.find_by(display_name: "bob")
   end
 end
