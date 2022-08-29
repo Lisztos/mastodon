@@ -55,12 +55,12 @@ Configure Nginx:
 * Copy configuration file from the repository sample to the Nginx folder
   
     ```
-    cp ~/root/mastodon/nginx.conf /etc/nginx/sites-available/
+    cp ~/root/mastodon/nginx.conf.sample /etc/nginx/sites-available/
     ```
 
 * Rename with your domain name
   ```
-    mv /etc/nginx/sites-available/nginx.conf /etc/nginx/sites-available/your-domain.com.conf
+    mv /etc/nginx/sites-available/nginx.conf.sample /etc/nginx/sites-available/your-domain.com.conf
   ```
     
 * Update the configuration file with your domain information 
