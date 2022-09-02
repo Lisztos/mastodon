@@ -1,0 +1,22 @@
+{
+  "subject": "acct:bob@bob_server.com",
+  "aliases": [
+    "https://bob_server.com/@bob",
+    "https://bob_server.com/users/bob"
+  ],
+  "links": [{
+      "rel": "http://webfinger.net/rel/profile-page",
+      "type": "text/html",
+      "href": "https://bob_server.com/@bob"
+    },
+    {
+      "rel": "self",
+      "type": "application/activity+json",
+      "href": "https://bob_server.com/users/bob"
+    },
+    {
+      "rel": "http://ostatus.org/schema/1.0/subscribe",
+      "template": "https://bob_server.com/authorize_interaction?uri={uri}"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "@context": ["https://www.w3.org/ns/activitystreams",
+    {
+      "ostatus": "http://ostatus.org#",
+      "atomUri": "ostatus:atomUri",
+      "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+      "conversation": "ostatus:conversation",
+      "sensitive": "as:sensitive",
+      "toot": "http://joinmastodon.org/ns#",
+      "votersCount": "toot:votersCount"
+    }
+  ],
+  "id": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/statuses/108793051864955593/activity",
+  "type": "Create",
+  "actor": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+  "published": "2022-08-09T13:03:49Z",
+  "to": ["http://tawki.snet.tu-berlin.de/users/did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833ddd56397c37"],
+  "cc": [],
+  "object": {
+    "id": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/statuses/108793051864955593",
+    "type": "Note",
+    "summary": "",
+    "inReplyTo": "",
+    "published": "2022-08-09T13:03:49Z",
+    "url": "http://lisztos.com/@did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/108793051864955593",
+    "attributedTo": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d",
+    "to": ["http://tawki.snet.tu-berlin.de/users/did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833ddd56397c37"],
+    "cc": [],
+    "sensitive": false,
+    "atomUri": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/statuses/108793051864955593",
+    "inReplyToAtomUri": "",
+    "conversation": "tag:lisztos.com,2022-08-09:objectId=63:objectType=Conversation",
+    "content": "<p>@did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833ddd56397c37 <br />Hello Bob, greetings from Sebastian :)</p>",
+    "contentMap": {
+      "en": "<p>@did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833ddd56397c37 <br />Hello Bob, greetings from Sebastian :)</p>"
+    },
+    "attachment": [],
+    "tag": [{
+      "type": "Mention",
+      "href": "http://tawki.snet.tu-berlin.de/users/did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833ddd56397c37",
+      "name": "@did:ethr:ropsten:0x03117951c6011b4a46f11a67fc7f67f746a7ad84daaae69623db833ddd56397c37"
+    }],
+    "replies": {
+      "id": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/statuses/108793051864955593/replies",
+      "type": "Collection",
+      "first": {
+        "type": "CollectionPage",
+        "next":
+        "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/statuses/108793051864955593/replies?only_other_accounts=true&page=true",
+        "partOf": "http://lisztos.com/users/did:ethr:ropsten:0x031be4622770a8ee4a7b25d1673e829fd2eb5f4762efcb18d09d468e6a00cc6c4d/statuses/108793051864955593/replies",
+        "items": []
+      }
+    }
+  }
+}

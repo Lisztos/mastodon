@@ -16,7 +16,7 @@ class Did::DidDocumentSerializer < ActiveModel::Serializer
   end
 
   def publicKey
-    Did::KeyService.serialize_to_jwk(did: did, key: object.keys.publicKey.first) 
+    Did::KeyService.serialize_to_jwk(did: did, key: object.keys.keyAgreement.first) 
   end
 
   def authentication

@@ -19,14 +19,6 @@ class ActivityPub::InboxesController < ActivityPub::BaseController
 
   private
 
-  def encrypted?
-    Rails.logger.info "raw post: #{request.raw_post}"
-    body = Oj.load(request.raw_post, mode: :strict).with_indifferent_access
-    
-    @raw_data = Oj.dump(body[:payload])
-    body[:payload].start_with?(JWT_SUFFIX)
-  end
-
   def skip_unknown_actor_activity
     head 202 if unknown_affected_account?
   end

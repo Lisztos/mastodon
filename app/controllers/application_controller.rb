@@ -42,6 +42,16 @@ class ApplicationController < ActionController::Base
     raise ActionController::RoutingError, "No route matches #{params[:unmatched_route]}"
   end
 
+  def encrypted?
+    return true unless request.post?
+
+    Rails.logger.info "raw post: #{request.raw_post}"
+    body = Oj.load(request.raw_post, mode: :strict).with_indifferent_access
+    
+    @raw_data = Oj.dump(body[:payload])
+    body[:payload].start_with?(DID::JWT_SUFFIX)
+  end
+
   private
 
   def authorized_fetch_mode?

@@ -1,7 +1,7 @@
 {
   "@context": "https://www.w3.org/ns/activitystreams",
   "type": "Note",
-  "to": "did:method:did:example:29384otherdid2938498",
-  "attributedTo": "did:method:did:example:123456789abcdefghi",
-  "content": "Hello Adrian!"
+  "to": "http://bob_server.com/users/bob",
+  "attributedTo": "http://alice_server.com/users/alice",
+  "content": "Hello Bob!"
 }

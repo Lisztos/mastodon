@@ -3,8 +3,6 @@
 module DidcommHelper
   extend ActiveSupport::Concern
 
-  JWT_SUFFIX = "ey"
-
   attr_accessor :signed_request_account
 
   included do

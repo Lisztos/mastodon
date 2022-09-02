@@ -13,7 +13,7 @@ module WellKnown
   private 
 
   def set_account
-    @account = Account.find_local!("did:web:lisztos.com")
+    @account = Account.alice
   end
 
   end
