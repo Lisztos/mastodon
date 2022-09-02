@@ -1,4 +1,18 @@
 \chapter{Conclusion}
 \label{cha:conclusion}
 
-Describe what you did here
+This thesis presented a design to integrate DIDs and enable DIDComm Messaging v2 into an ActivityPub-based Online Social Network (OSN). The OSN Mastodon was chosen as the representative ActivityPub implementer, where DIDs could be introduced and used to enable DIDComm. 
+The integration of DIDs into ActivityPub was discussed, concluding with the substitution of Mastodon's standard usernames with DIDs. Consequently, a way to preserve the ActivityPub protocol while using DIDComm was explained, resulting in the encapsulation of ActivityPub as the content of a JWM.
+
+Different DID methods were researched to find a way to create DIDs and modify the DID documents to include a new verification method and a service endpoint. Tested methods included \emph{did:ion, did:web} and \emph{did:key}. As the selected DID method for the prototype, \emph{did:ethr}, did not support adding RSA keys to a DID document, a custom way was developed with the help of one of the lead developers of the SSI platform provider \emph{Veramo}.
+Using the RSA keys and the service endpoints in two DID documents, Mastodon's process to resolve an account in federated communication was modified to partially remove any dependency on centralized third parties and allow a decentralized communication flow when sending a private message. This decentralization process included the following features. First is the ability to send and receive encrypted payload without needing HTTPS for encryption. The second is finding other users based on their DIDs by retrieving their DID documents stored in Ethereum's test network Ropsten instead of using Mastodon's default Webfinger. The DID resolver from the DIF was deployed to achieve the latter. Furthermore, nested JWTs were implemented to provide non-repudiation, message integrity, and encryption using JWM and the JWS and JWE standards.
+
+The proposed design took advantage of most of the features of DIDs and DIDComm. However, it is still not entirely independent of the centralized DNS. In addition, risks and deficiencies were found. For instance, the private key being stored in Mastodons' database and the still present administrators' access to plain-text private messages. Nonetheless, it proved to be a successful implementation of DIDs and DIDComm in a real-world social network. 
+
+
+\section{Future Work}
+The evaluation has shown that although achieving this thesis's goal, some issues still need to be addressed. For example, the risks imposed by sharing a private key with an ActivityPub server, or Mastodon instance, could be solved using the self-hosted approach of Göndör et al. called \emph{Blade} \cite{inproceedings}. If every user had its own Mastodon server, storing private data would not represent a problem. Nevertheless, this implies a considerable overhead for an average user and goes against the lightweight and easy-to-deploy idea that \emph{Blade} proposes. Alternatively, taking advantage of the marketplace implemented in \emph{Blade}, a module for ActivityPub that can interact with a Mastodon instance while keeping private data under the user's control, could prove to be a better option. 
+
+Furthermore, a registration process that takes advantage of the \emph{authentication} property of a DID document has yet to be implemented. Spruce\footnote{https://www.spruceid.com/} is working on a similar idea, where a user can \emph{sign in} to a service using their Ethereum-based \emph{ENS} domain. 
+
+Finally, further development for the DID-based Mastodon prototype is intended. The goal is to be able to participate in the federation while still supporting DIDs by adding backward compatibility. In this manner, DIDs can be introduced to Mastodon and promote their further adoption. Following this idea, a DIDComm endpoint will be adapted so that users can send private messages, following the design proposed in this thesis.

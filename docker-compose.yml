@@ -14,8 +14,7 @@ services:
       - test
     volumes:
       - ./postgres14:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+
 
   redis:
     restart: always

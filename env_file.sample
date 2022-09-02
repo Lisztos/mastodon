@@ -1,0 +1,59 @@
+# This is a sample configuration file. You can generate your configuration
+# with the `rake mastodon:setup` interactive setup wizard, but to customize
+# your setup even further, you'll need to edit it manually. This sample does
+# not demonstrate all available configuration options. Please look at
+# https://docs.joinmastodon.org/admin/config/ for the full documentation.
+
+# Note that this file accepts slightly different syntax depending on whether
+# you are using `docker-compose` or not. In particular, if you use
+# `docker-compose`, the value of each declared variable will be taken verbatim,
+# including surrounding quotes.
+# See: https://github.com/mastodon/mastodon/issues/16895
+
+
+#       |-------------------------------------|
+#       | RENAME this file to env.development |
+#       |-------------------------------------|
+
+
+# Federation
+# ----------
+# This identifies your server and cannot be changed safely later
+# ----------
+LOCAL_DOMAIN=
+
+# DEV ENV
+# ---------
+RAILS_ENV=
+NODE_ENV=
+
+# Redis
+# -----
+REDIS_HOST=
+REDIS_PORT=
+
+# PostgreSQL
+# ----------
+DB_HOST=
+DB_USER=
+DB_NAME=
+DB_PASS=
+DB_PORT=
+
+
+# Sending mail
+# ------------
+SMTP_SERVER=
+SMTP_PORT=
+SMTP_LOGIN=
+SMTP_PASSWORD=
+SMTP_FROM_ADDRESS=
+SMTP_REPLY_TO=
+
+# File storage (optional)
+# -----------------------
+S3_ENABLED=
+S3_BUCKET=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
