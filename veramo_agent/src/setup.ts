@@ -46,7 +46,7 @@ const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
 const DATABASE_FILE = 'database.sqlite';
 
 // This will be the secret key for the KMS
-const KMS_SECRET_KEY = '24c8be1ef425eb5a29d1ed2439bf8372128edcf2edcc8a5b3214e35089117e1e';
+const KMS_SECRET_KEY = process.env.KMS_SECRET_KEY;
 
 const PROVIDER = new ethers.providers.InfuraProvider(
   'ropsten',
