@@ -1,7 +1,9 @@
+
 ![Mastodon](https://i.imgur.com/NhZc40l.png)
 ========
+Original Repo: https://github.com/mastodon/mastodon
 
-This Mastodon instance is part of my Bachelor Thesis, where I integrate DIDs and the DIDComm v2 communication Protocol in order to add a decentralized identity management, as well as a confidential, non-repudiable and transport-agnostic communication based on DIDs. 
+This Mastodon instance is part of my Bachelor Thesis, where I integrate DIDs and the DIDComm v2 communication Protocol in order to add a decentralized identity management, as well as a confidential, non-repudiable and transport-agnostic communication based on DIDs.
 
 Adrian Sanchez
 
@@ -40,20 +42,20 @@ Mastodon is a **free, open-source social network server** based on ActivityPub w
 
 ### Deployment
 -------
-Configure Nginx: 
+Configure Nginx:
 
 *  First, clone the project
-    
+
     ```
-    git clone https://gitlab.com/Lisztos/mastodon 
+    git clone https://gitlab.com/Lisztos/mastodon
     ```
 *   Quick install nginx
     ```
     sudo apt update && sudo apt install nginx
     ```
-    
+
 * Copy configuration file from the repository sample to the Nginx folder
-  
+
     ```
     cp ~/root/mastodon/nginx.conf.sample /etc/nginx/sites-available/
     ```
@@ -62,9 +64,9 @@ Configure Nginx:
   ```
     mv /etc/nginx/sites-available/nginx.conf.sample /etc/nginx/sites-available/your-domain.com.conf
   ```
-    
-* Update the configuration file with your domain information 
-  ``` 
+
+* Update the configuration file with your domain information
+  ```
     nano /etc/nginx/sites-available/your-domain.com.conf
   ```
 
@@ -85,7 +87,7 @@ Configure Nginx:
     sudo apt install certbot
     certbot certonly --standalone -d your-domain.com
   ```
-  
+
 * Start Nginx
     ```
     sudo systemctl start nginx
@@ -103,7 +105,7 @@ Build for development
     docker-compose up -d
   ```
 
-* Restart Nginx 
+* Restart Nginx
   ```
     sudo systemctl restart nginx
   ```
@@ -112,9 +114,6 @@ Build for development
   ```
     docker-compose exec web rails db:migrate
   ```
-
-
-
 
 ## License
 
