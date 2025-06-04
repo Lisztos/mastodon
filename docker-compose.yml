@@ -8,7 +8,7 @@ services:
     environment:
       - "POSTGRES_DB=mastodon_dev"
       - "POSTGRES_USER=mastodon"
-      - "POSTGRES_PASSWORD=TsLXJPYaN7N06YQAHkNj"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
       - "POSTGRES_HOST_AUTH_METHOD=trust"
     networks:
       - test
@@ -101,7 +101,7 @@ services:
 
   sidekiq:
     image: mastodon:dev
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.dev
     restart: always
